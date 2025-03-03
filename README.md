@@ -46,6 +46,7 @@ Make requests using the clients:
 
 ```java
 import com.langfuse.client.core.LangfuseClientApiException;
+import com.langfuse.client.resources.prompts.types.PromptMetaListResponse;
 
 try {
     PromptMetaListResponse prompts = client.prompts().list();
