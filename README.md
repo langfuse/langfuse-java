@@ -29,7 +29,31 @@ as well.
 
 ## Usage
 
+Instantiate the Langfuse Client with the respective endpoint and your API Keys.
 
+```java
+import com.langfuse.client.LangfuseClient;
+
+LangfuseClient client = LangfuseClient.builder()
+        .url("https://cloud.langfuse.com") // 🇪🇺 EU data region
+        // .url("https://us.cloud.langfuse.com") // 🇺🇸 US data region
+        // .url("http://localhost:3000") // 🏠 Local deployment
+        .credentials("pk-lf-...", "sk-lf-...")
+        .build();
+```
+
+Make requests using the clients:
+
+```java
+import com.langfuse.client.core.LangfuseClientApiException;
+
+try {
+    PromptMetaListResponse prompts = client.prompts().list();
+} catch (LangfuseClientApiException error) {
+    System.out.println(error.getBody());
+    System.out.println(error.getStatusCode());
+}
+```
 
 ## Updating
 
