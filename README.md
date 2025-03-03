@@ -46,4 +46,5 @@ as well.
    ```
 3. Generate the new client code using `npx fern-api generate --api server`.
 4. Manually set the `package` across all files to `com.langfuse.client`.
-5. Commit the changes in langfuse-java and push them to the repository.
+5. Overwrite `this.clientOptionsBuilder.addHeader("Authorization", "Bearer " + encodedToken);` to `Basic` in LangfuseClientBuilder.java.
+6. Commit the changes in langfuse-java and push them to the repository.

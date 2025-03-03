@@ -79,7 +79,7 @@ public final class LangfuseClientBuilder {
   public LangfuseClient build() {
     String unencodedToken = username + ":" + password;
     String encodedToken = Base64.getEncoder().encodeToString(unencodedToken.getBytes());
-    this.clientOptionsBuilder.addHeader("Authorization", "Bearer " + encodedToken);
+    this.clientOptionsBuilder.addHeader("Authorization", "Basic " + encodedToken);
     if (xLangfuseSdkName != null) {
       this.clientOptionsBuilder.addHeader("X-Langfuse-Sdk-Name", this.xLangfuseSdkName);
     }
