@@ -3,6 +3,10 @@
 This repository contains an auto-generated Langfuse API client for Java based on our [API specification](https://github.com/langfuse/langfuse/tree/main/fern/apis/server).
 See the [Langfuse API reference](https://api.reference.langfuse.com) for more details on the available endpoints.
 
+We recommend to solve tracing via the [OpenTelemetry Instrumentation](https://langfuse.com/docs/opentelemetry/get-started) instead of using the Ingestion API directly.
+This allows for a more detailed and standardized tracing experience without the need to handle batching and updates internally.
+Check out our [Spring AI Example](https://langfuse.com/docs/integrations/spring-ai) for more details.
+
 ## Installation
 
 Add the langfuse-java API client as a dependency using 
