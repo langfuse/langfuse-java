@@ -10,6 +10,10 @@
     <name>langfuse-java</name>
     <url>https://langfuse.com</url>
 
+    <scm>
+        <connection>scm:git:git@github.com/langfuse/langfuse-java.git</connection>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jackson.version>2.18.2</jackson.version>
