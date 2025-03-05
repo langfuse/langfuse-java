@@ -3,7 +3,7 @@
 
     <groupId>com.langfuse</groupId>
     <artifactId>langfuse-java</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
 
     <name>langfuse-java</name>
@@ -11,7 +11,8 @@
 
     <scm>
         <connection>scm:git:https://github.com/langfuse/langfuse-java.git</connection>
-    </scm>
+      <tag>langfuse-java-0.0.1</tag>
+  </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
