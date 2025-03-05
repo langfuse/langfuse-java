@@ -60,6 +60,11 @@ try {
 }
 ```
 
+## Drafting a Release
+
+Run `./mvnw release:prepare -DreleaseVersion=` with the version you want to create.
+Push the changes including the tag.
+
 ## Updating
 
 1. Ensure that langfuse-java is placed in the same directory as the main [langfuse](https://github.com/langfuse/langfuse) repository.
