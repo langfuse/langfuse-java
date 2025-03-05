@@ -10,9 +10,8 @@
     <url>https://langfuse.com</url>
 
     <scm>
-        <connection>scm:git:git@github.com/langfuse/langfuse-java.git</connection>
-      <tag>0.0.1</tag>
-  </scm>
+        <connection>scm:git:https://github.com/langfuse/langfuse-java.git</connection>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
