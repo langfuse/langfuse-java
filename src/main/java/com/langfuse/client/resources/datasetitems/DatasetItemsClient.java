@@ -30,6 +30,7 @@ import com.langfuse.client.resources.commons.errors.UnauthorizedError;
 import com.langfuse.client.resources.commons.types.DatasetItem;
 import com.langfuse.client.resources.datasetitems.requests.GetDatasetItemsRequest;
 import com.langfuse.client.resources.datasetitems.types.CreateDatasetItemRequest;
+import com.langfuse.client.resources.datasetitems.types.DeleteDatasetItemResponse;
 import com.langfuse.client.resources.datasetitems.types.PaginatedDatasetItems;
 
 public class DatasetItemsClient {
@@ -199,6 +200,58 @@ public class DatasetItemsClient {
         ResponseBody responseBody = response.body();
         if (response.isSuccessful()) {
           return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), PaginatedDatasetItems.class);
+        }
+        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+        try {
+          switch (response.code()) {
+            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          }
+        }
+        catch (JsonProcessingException ignored) {
+          // unable to map error response, throwing generic error
+        }
+        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+      }
+      catch (IOException e) {
+        throw new LangfuseClientException("Network error executing HTTP request", e);
+      }
+    }
+
+    /**
+     * Delete a dataset item and all its run items. This action is irreversible.
+     */
+    public DeleteDatasetItemResponse delete(String id) {
+      return delete(id,null);
+    }
+
+    /**
+     * Delete a dataset item and all its run items. This action is irreversible.
+     */
+    public DeleteDatasetItemResponse delete(String id, RequestOptions requestOptions) {
+      HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+        .addPathSegments("api/public")
+        .addPathSegments("dataset-items")
+        .addPathSegment(id)
+        .build();
+      Request okhttpRequest = new Request.Builder()
+        .url(httpUrl)
+        .method("DELETE", null)
+        .headers(Headers.of(clientOptions.headers(requestOptions)))
+        .addHeader("Content-Type", "application/json")
+        .addHeader("Accept", "application/json")
+        .build();
+      OkHttpClient client = clientOptions.httpClient();
+      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+        client = clientOptions.httpClientWithTimeout(requestOptions);
+      }
+      try (Response response = client.newCall(okhttpRequest).execute()) {
+        ResponseBody responseBody = response.body();
+        if (response.isSuccessful()) {
+          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), DeleteDatasetItemResponse.class);
         }
         String responseBodyString = responseBody != null ? responseBody.string() : "{}";
         try {
