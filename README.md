@@ -9,27 +9,15 @@ Check out our [Spring AI Example](https://langfuse.com/docs/integrations/spring-
 
 ## Installation
 
-Add the langfuse-java API client as a dependency using 
+The recommended way to install the langfuse-java API client is via Maven Central:
+
 ```xml
 <dependency>
     <groupId>com.langfuse</groupId>
     <artifactId>langfuse-java</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.4</version>
 </dependency>
 ```
-to fetch our [GitHub package](https://github.com/langfuse/langfuse-java/packages/2423464).
-
-If you're not scanning the GitHub Package Registry by default, you'll have to add
-```xml
-<repositories>
-    <repository>
-        <id>github</id>
-        <name>GitHub Package Registry</name>
-        <url>https://maven.pkg.github.com/langfuse/langfuse-java</url>
-    </repository>
-</repositories>
-```
-as well.
 
 ## Usage
 
@@ -64,6 +52,16 @@ try {
 
 Run `./mvnw release:prepare -DreleaseVersion=` with the version you want to create.
 Push the changes including the tag.
+
+## Publishing to Maven Central
+
+This project is configured to publish to Maven Central.
+To publish to Maven Central, you need to configure the following secrets in your GitHub repository:
+
+- `OSSRH_USERNAME`: Your Sonatype OSSRH username
+- `OSSRH_PASSWORD`: Your Sonatype OSSRH password
+- `GPG_PRIVATE_KEY`: Your GPG private key for signing artifacts
+- `GPG_PASSPHRASE`: The passphrase for your GPG private key
 
 ## Updating
 
