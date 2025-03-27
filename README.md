@@ -9,8 +9,6 @@ Check out our [Spring AI Example](https://langfuse.com/docs/integrations/spring-
 
 ## Installation
 
-### Maven Central
-
 The recommended way to install the langfuse-java API client is via Maven Central:
 
 ```xml
@@ -19,30 +17,6 @@ The recommended way to install the langfuse-java API client is via Maven Central
     <artifactId>langfuse-java</artifactId>
     <version>0.0.4</version>
 </dependency>
-```
-
-### GitHub Packages
-
-Alternatively, you can use GitHub Packages:
-
-```xml
-<dependency>
-    <groupId>com.langfuse</groupId>
-    <artifactId>langfuse-java</artifactId>
-    <version>0.0.4</version>
-</dependency>
-```
-
-If you're not scanning the GitHub Package Registry by default, you'll have to add:
-
-```xml
-<repositories>
-    <repository>
-        <id>github</id>
-        <name>GitHub Package Registry</name>
-        <url>https://maven.pkg.github.com/langfuse/langfuse-java</url>
-    </repository>
-</repositories>
 ```
 
 ## Usage
@@ -81,10 +55,7 @@ Push the changes including the tag.
 
 ## Publishing to Maven Central
 
-This project is configured to publish to both Maven Central.
-
-### Required Secrets
-
+This project is configured to publish to Maven Central.
 To publish to Maven Central, you need to configure the following secrets in your GitHub repository:
 
 - `OSSRH_USERNAME`: Your Sonatype OSSRH username
