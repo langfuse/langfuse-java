@@ -79,9 +79,9 @@ try {
 Run `./mvnw release:prepare -DreleaseVersion=` with the version you want to create.
 Push the changes including the tag.
 
-## Publishing to Maven Central and GitHub Packages
+## Publishing to Maven Central
 
-This project is configured to publish to both Maven Central and GitHub Packages. The GitHub Actions workflow will automatically publish to both repositories when a new tag is pushed.
+This project is configured to publish to both Maven Central.
 
 ### Required Secrets
 
@@ -91,41 +91,6 @@ To publish to Maven Central, you need to configure the following secrets in your
 - `OSSRH_PASSWORD`: Your Sonatype OSSRH password
 - `GPG_PRIVATE_KEY`: Your GPG private key for signing artifacts
 - `GPG_PASSPHRASE`: The passphrase for your GPG private key
-
-### Setting up GPG for Signing
-
-1. Install GPG if you don't have it already:
-   ```bash
-   # macOS
-   brew install gnupg
-
-   # Ubuntu
-   sudo apt-get install gnupg
-   ```
-
-2. Generate a GPG key pair:
-   ```bash
-   gpg --full-generate-key
-   ```
-
-3. List your keys:
-   ```bash
-   gpg --list-secret-keys --keyid-format LONG
-   ```
-
-4. Export your private key (replace `KEY_ID` with your key ID):
-   ```bash
-   gpg --export-secret-keys --armor KEY_ID
-   ```
-
-5. Add the exported key to your GitHub repository secrets as `GPG_PRIVATE_KEY`
-6. Add your GPG passphrase to your GitHub repository secrets as `GPG_PASSPHRASE`
-
-### Setting up Sonatype OSSRH
-
-1. Create an account on [Sonatype OSSRH](https://s01.oss.sonatype.org/)
-2. Create a new project ticket in the [Sonatype JIRA](https://issues.sonatype.org/)
-3. Add your Sonatype username and password to your GitHub repository secrets as `OSSRH_USERNAME` and `OSSRH_PASSWORD`
 
 ## Updating
 

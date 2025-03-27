@@ -43,19 +43,6 @@
 
     <profiles>
         <profile>
-            <id>github</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <distributionManagement>
-                <repository>
-                    <id>github</id>
-                    <name>GitHub Packages</name>
-                    <url>https://maven.pkg.github.com/langfuse/langfuse-java</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-        <profile>
             <id>ossrh</id>
             <distributionManagement>
                 <snapshotRepository>
