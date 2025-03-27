@@ -43,7 +43,7 @@
 
     <profiles>
         <profile>
-            <id>ossrh</id>
+            <id>central</id>
             <build>
                 <plugins>
                     <!-- GPG Signing -->

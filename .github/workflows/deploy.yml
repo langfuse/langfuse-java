@@ -19,7 +19,7 @@ jobs:
         with:
           java-version: '23'
           distribution: 'temurin'
-          server-id: ossrh
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -29,7 +29,7 @@ jobs:
         run: mvn -B clean package
 
       - name: Publish to Maven Central
-        run: mvn -B deploy -P ossrh
+        run: mvn -B deploy -P central
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
