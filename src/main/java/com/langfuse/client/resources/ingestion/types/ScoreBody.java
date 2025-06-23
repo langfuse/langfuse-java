@@ -30,7 +30,13 @@ import com.langfuse.client.resources.commons.types.ScoreDataType;
 public final class ScoreBody {
   private final Optional<String> id;
 
-  private final String traceId;
+  private final Optional<String> traceId;
+
+  private final Optional<String> sessionId;
+
+  private final Optional<String> observationId;
+
+  private final Optional<String> datasetRunId;
 
   private final String name;
 
@@ -38,9 +44,9 @@ public final class ScoreBody {
 
   private final CreateScoreValue value;
 
-  private final Optional<String> observationId;
-
   private final Optional<String> comment;
+
+  private final Optional<Object> metadata;
 
   private final Optional<ScoreDataType> dataType;
 
@@ -48,17 +54,21 @@ public final class ScoreBody {
 
   private final Map<String, Object> additionalProperties;
 
-  private ScoreBody(Optional<String> id, String traceId, String name, Optional<String> environment,
-      CreateScoreValue value, Optional<String> observationId, Optional<String> comment,
-      Optional<ScoreDataType> dataType, Optional<String> configId,
+  private ScoreBody(Optional<String> id, Optional<String> traceId, Optional<String> sessionId,
+      Optional<String> observationId, Optional<String> datasetRunId, String name,
+      Optional<String> environment, CreateScoreValue value, Optional<String> comment,
+      Optional<Object> metadata, Optional<ScoreDataType> dataType, Optional<String> configId,
       Map<String, Object> additionalProperties) {
     this.id = id;
     this.traceId = traceId;
+    this.sessionId = sessionId;
+    this.observationId = observationId;
+    this.datasetRunId = datasetRunId;
     this.name = name;
     this.environment = environment;
     this.value = value;
-    this.observationId = observationId;
     this.comment = comment;
+    this.metadata = metadata;
     this.dataType = dataType;
     this.configId = configId;
     this.additionalProperties = additionalProperties;
@@ -70,8 +80,23 @@ public final class ScoreBody {
   }
 
   @JsonProperty("traceId")
-  public String getTraceId() {
+  public Optional<String> getTraceId() {
     return traceId;
+  }
+
+  @JsonProperty("sessionId")
+  public Optional<String> getSessionId() {
+    return sessionId;
+  }
+
+  @JsonProperty("observationId")
+  public Optional<String> getObservationId() {
+    return observationId;
+  }
+
+  @JsonProperty("datasetRunId")
+  public Optional<String> getDatasetRunId() {
+    return datasetRunId;
   }
 
   @JsonProperty("name")
@@ -92,14 +117,14 @@ public final class ScoreBody {
     return value;
   }
 
-  @JsonProperty("observationId")
-  public Optional<String> getObservationId() {
-    return observationId;
-  }
-
   @JsonProperty("comment")
   public Optional<String> getComment() {
     return comment;
+  }
+
+  @JsonProperty("metadata")
+  public Optional<Object> getMetadata() {
+    return metadata;
   }
 
   /**
@@ -130,12 +155,12 @@ public final class ScoreBody {
   }
 
   private boolean equalTo(ScoreBody other) {
-    return id.equals(other.id) && traceId.equals(other.traceId) && name.equals(other.name) && environment.equals(other.environment) && value.equals(other.value) && observationId.equals(other.observationId) && comment.equals(other.comment) && dataType.equals(other.dataType) && configId.equals(other.configId);
+    return id.equals(other.id) && traceId.equals(other.traceId) && sessionId.equals(other.sessionId) && observationId.equals(other.observationId) && datasetRunId.equals(other.datasetRunId) && name.equals(other.name) && environment.equals(other.environment) && value.equals(other.value) && comment.equals(other.comment) && metadata.equals(other.metadata) && dataType.equals(other.dataType) && configId.equals(other.configId);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.traceId, this.name, this.environment, this.value, this.observationId, this.comment, this.dataType, this.configId);
+    return Objects.hash(this.id, this.traceId, this.sessionId, this.observationId, this.datasetRunId, this.name, this.environment, this.value, this.comment, this.metadata, this.dataType, this.configId);
   }
 
   @java.lang.Override
@@ -143,18 +168,14 @@ public final class ScoreBody {
     return ObjectMappers.stringify(this);
   }
 
-  public static TraceIdStage builder() {
+  public static NameStage builder() {
     return new Builder();
-  }
-
-  public interface TraceIdStage {
-    NameStage traceId(@NotNull String traceId);
-
-    Builder from(ScoreBody other);
   }
 
   public interface NameStage {
     ValueStage name(@NotNull String name);
+
+    Builder from(ScoreBody other);
   }
 
   public interface ValueStage {
@@ -168,17 +189,33 @@ public final class ScoreBody {
 
     _FinalStage id(String id);
 
-    _FinalStage environment(Optional<String> environment);
+    _FinalStage traceId(Optional<String> traceId);
 
-    _FinalStage environment(String environment);
+    _FinalStage traceId(String traceId);
+
+    _FinalStage sessionId(Optional<String> sessionId);
+
+    _FinalStage sessionId(String sessionId);
 
     _FinalStage observationId(Optional<String> observationId);
 
     _FinalStage observationId(String observationId);
 
+    _FinalStage datasetRunId(Optional<String> datasetRunId);
+
+    _FinalStage datasetRunId(String datasetRunId);
+
+    _FinalStage environment(Optional<String> environment);
+
+    _FinalStage environment(String environment);
+
     _FinalStage comment(Optional<String> comment);
 
     _FinalStage comment(String comment);
+
+    _FinalStage metadata(Optional<Object> metadata);
+
+    _FinalStage metadata(Object metadata);
 
     _FinalStage dataType(Optional<ScoreDataType> dataType);
 
@@ -192,9 +229,7 @@ public final class ScoreBody {
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements TraceIdStage, NameStage, ValueStage, _FinalStage {
-    private String traceId;
-
+  public static final class Builder implements NameStage, ValueStage, _FinalStage {
     private String name;
 
     private CreateScoreValue value;
@@ -203,11 +238,19 @@ public final class ScoreBody {
 
     private Optional<ScoreDataType> dataType = Optional.empty();
 
+    private Optional<Object> metadata = Optional.empty();
+
     private Optional<String> comment = Optional.empty();
+
+    private Optional<String> environment = Optional.empty();
+
+    private Optional<String> datasetRunId = Optional.empty();
 
     private Optional<String> observationId = Optional.empty();
 
-    private Optional<String> environment = Optional.empty();
+    private Optional<String> sessionId = Optional.empty();
+
+    private Optional<String> traceId = Optional.empty();
 
     private Optional<String> id = Optional.empty();
 
@@ -221,20 +264,16 @@ public final class ScoreBody {
     public Builder from(ScoreBody other) {
       id(other.getId());
       traceId(other.getTraceId());
+      sessionId(other.getSessionId());
+      observationId(other.getObservationId());
+      datasetRunId(other.getDatasetRunId());
       name(other.getName());
       environment(other.getEnvironment());
       value(other.getValue());
-      observationId(other.getObservationId());
       comment(other.getComment());
+      metadata(other.getMetadata());
       dataType(other.getDataType());
       configId(other.getConfigId());
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter("traceId")
-    public NameStage traceId(@NotNull String traceId) {
-      this.traceId = Objects.requireNonNull(traceId, "traceId must not be null");
       return this;
     }
 
@@ -297,6 +336,22 @@ public final class ScoreBody {
     }
 
     @java.lang.Override
+    public _FinalStage metadata(Object metadata) {
+      this.metadata = Optional.ofNullable(metadata);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "metadata",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage metadata(Optional<Object> metadata) {
+      this.metadata = metadata;
+      return this;
+    }
+
+    @java.lang.Override
     public _FinalStage comment(String comment) {
       this.comment = Optional.ofNullable(comment);
       return this;
@@ -309,6 +364,38 @@ public final class ScoreBody {
     )
     public _FinalStage comment(Optional<String> comment) {
       this.comment = comment;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage environment(String environment) {
+      this.environment = Optional.ofNullable(environment);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "environment",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage environment(Optional<String> environment) {
+      this.environment = environment;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage datasetRunId(String datasetRunId) {
+      this.datasetRunId = Optional.ofNullable(datasetRunId);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "datasetRunId",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage datasetRunId(Optional<String> datasetRunId) {
+      this.datasetRunId = datasetRunId;
       return this;
     }
 
@@ -329,18 +416,34 @@ public final class ScoreBody {
     }
 
     @java.lang.Override
-    public _FinalStage environment(String environment) {
-      this.environment = Optional.ofNullable(environment);
+    public _FinalStage sessionId(String sessionId) {
+      this.sessionId = Optional.ofNullable(sessionId);
       return this;
     }
 
     @java.lang.Override
     @JsonSetter(
-        value = "environment",
+        value = "sessionId",
         nulls = Nulls.SKIP
     )
-    public _FinalStage environment(Optional<String> environment) {
-      this.environment = environment;
+    public _FinalStage sessionId(Optional<String> sessionId) {
+      this.sessionId = sessionId;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage traceId(String traceId) {
+      this.traceId = Optional.ofNullable(traceId);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "traceId",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage traceId(Optional<String> traceId) {
+      this.traceId = traceId;
       return this;
     }
 
@@ -362,7 +465,7 @@ public final class ScoreBody {
 
     @java.lang.Override
     public ScoreBody build() {
-      return new ScoreBody(id, traceId, name, environment, value, observationId, comment, dataType, configId, additionalProperties);
+      return new ScoreBody(id, traceId, sessionId, observationId, datasetRunId, name, environment, value, comment, metadata, dataType, configId, additionalProperties);
     }
   }
 }

@@ -31,13 +31,17 @@ public final class NumericScore implements INumericScore, IBaseScore {
 
   private final String id;
 
-  private final String traceId;
+  private final Optional<String> traceId;
+
+  private final Optional<String> sessionId;
+
+  private final Optional<String> observationId;
+
+  private final Optional<String> datasetRunId;
 
   private final String name;
 
   private final ScoreSource source;
-
-  private final Optional<String> observationId;
 
   private final OffsetDateTime timestamp;
 
@@ -49,6 +53,8 @@ public final class NumericScore implements INumericScore, IBaseScore {
 
   private final Optional<String> comment;
 
+  private final Optional<Object> metadata;
+
   private final Optional<String> configId;
 
   private final Optional<String> queueId;
@@ -57,22 +63,26 @@ public final class NumericScore implements INumericScore, IBaseScore {
 
   private final Map<String, Object> additionalProperties;
 
-  private NumericScore(double value, String id, String traceId, String name, ScoreSource source,
-      Optional<String> observationId, OffsetDateTime timestamp, OffsetDateTime createdAt,
+  private NumericScore(double value, String id, Optional<String> traceId,
+      Optional<String> sessionId, Optional<String> observationId, Optional<String> datasetRunId,
+      String name, ScoreSource source, OffsetDateTime timestamp, OffsetDateTime createdAt,
       OffsetDateTime updatedAt, Optional<String> authorUserId, Optional<String> comment,
-      Optional<String> configId, Optional<String> queueId, Optional<String> environment,
-      Map<String, Object> additionalProperties) {
+      Optional<Object> metadata, Optional<String> configId, Optional<String> queueId,
+      Optional<String> environment, Map<String, Object> additionalProperties) {
     this.value = value;
     this.id = id;
     this.traceId = traceId;
+    this.sessionId = sessionId;
+    this.observationId = observationId;
+    this.datasetRunId = datasetRunId;
     this.name = name;
     this.source = source;
-    this.observationId = observationId;
     this.timestamp = timestamp;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.authorUserId = authorUserId;
     this.comment = comment;
+    this.metadata = metadata;
     this.configId = configId;
     this.queueId = queueId;
     this.environment = environment;
@@ -96,8 +106,26 @@ public final class NumericScore implements INumericScore, IBaseScore {
 
   @JsonProperty("traceId")
   @java.lang.Override
-  public String getTraceId() {
+  public Optional<String> getTraceId() {
     return traceId;
+  }
+
+  @JsonProperty("sessionId")
+  @java.lang.Override
+  public Optional<String> getSessionId() {
+    return sessionId;
+  }
+
+  @JsonProperty("observationId")
+  @java.lang.Override
+  public Optional<String> getObservationId() {
+    return observationId;
+  }
+
+  @JsonProperty("datasetRunId")
+  @java.lang.Override
+  public Optional<String> getDatasetRunId() {
+    return datasetRunId;
   }
 
   @JsonProperty("name")
@@ -110,12 +138,6 @@ public final class NumericScore implements INumericScore, IBaseScore {
   @java.lang.Override
   public ScoreSource getSource() {
     return source;
-  }
-
-  @JsonProperty("observationId")
-  @java.lang.Override
-  public Optional<String> getObservationId() {
-    return observationId;
   }
 
   @JsonProperty("timestamp")
@@ -146,6 +168,12 @@ public final class NumericScore implements INumericScore, IBaseScore {
   @java.lang.Override
   public Optional<String> getComment() {
     return comment;
+  }
+
+  @JsonProperty("metadata")
+  @java.lang.Override
+  public Optional<Object> getMetadata() {
+    return metadata;
   }
 
   /**
@@ -187,12 +215,12 @@ public final class NumericScore implements INumericScore, IBaseScore {
   }
 
   private boolean equalTo(NumericScore other) {
-    return value == other.value && id.equals(other.id) && traceId.equals(other.traceId) && name.equals(other.name) && source.equals(other.source) && observationId.equals(other.observationId) && timestamp.equals(other.timestamp) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt) && authorUserId.equals(other.authorUserId) && comment.equals(other.comment) && configId.equals(other.configId) && queueId.equals(other.queueId) && environment.equals(other.environment);
+    return value == other.value && id.equals(other.id) && traceId.equals(other.traceId) && sessionId.equals(other.sessionId) && observationId.equals(other.observationId) && datasetRunId.equals(other.datasetRunId) && name.equals(other.name) && source.equals(other.source) && timestamp.equals(other.timestamp) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt) && authorUserId.equals(other.authorUserId) && comment.equals(other.comment) && metadata.equals(other.metadata) && configId.equals(other.configId) && queueId.equals(other.queueId) && environment.equals(other.environment);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.value, this.id, this.traceId, this.name, this.source, this.observationId, this.timestamp, this.createdAt, this.updatedAt, this.authorUserId, this.comment, this.configId, this.queueId, this.environment);
+    return Objects.hash(this.value, this.id, this.traceId, this.sessionId, this.observationId, this.datasetRunId, this.name, this.source, this.timestamp, this.createdAt, this.updatedAt, this.authorUserId, this.comment, this.metadata, this.configId, this.queueId, this.environment);
   }
 
   @java.lang.Override
@@ -211,11 +239,7 @@ public final class NumericScore implements INumericScore, IBaseScore {
   }
 
   public interface IdStage {
-    TraceIdStage id(@NotNull String id);
-  }
-
-  public interface TraceIdStage {
-    NameStage traceId(@NotNull String traceId);
+    NameStage id(@NotNull String id);
   }
 
   public interface NameStage {
@@ -241,9 +265,21 @@ public final class NumericScore implements INumericScore, IBaseScore {
   public interface _FinalStage {
     NumericScore build();
 
+    _FinalStage traceId(Optional<String> traceId);
+
+    _FinalStage traceId(String traceId);
+
+    _FinalStage sessionId(Optional<String> sessionId);
+
+    _FinalStage sessionId(String sessionId);
+
     _FinalStage observationId(Optional<String> observationId);
 
     _FinalStage observationId(String observationId);
+
+    _FinalStage datasetRunId(Optional<String> datasetRunId);
+
+    _FinalStage datasetRunId(String datasetRunId);
 
     _FinalStage authorUserId(Optional<String> authorUserId);
 
@@ -252,6 +288,10 @@ public final class NumericScore implements INumericScore, IBaseScore {
     _FinalStage comment(Optional<String> comment);
 
     _FinalStage comment(String comment);
+
+    _FinalStage metadata(Optional<Object> metadata);
+
+    _FinalStage metadata(Object metadata);
 
     _FinalStage configId(Optional<String> configId);
 
@@ -269,12 +309,10 @@ public final class NumericScore implements INumericScore, IBaseScore {
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements ValueStage, IdStage, TraceIdStage, NameStage, SourceStage, TimestampStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
+  public static final class Builder implements ValueStage, IdStage, NameStage, SourceStage, TimestampStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
     private double value;
 
     private String id;
-
-    private String traceId;
 
     private String name;
 
@@ -292,11 +330,19 @@ public final class NumericScore implements INumericScore, IBaseScore {
 
     private Optional<String> configId = Optional.empty();
 
+    private Optional<Object> metadata = Optional.empty();
+
     private Optional<String> comment = Optional.empty();
 
     private Optional<String> authorUserId = Optional.empty();
 
+    private Optional<String> datasetRunId = Optional.empty();
+
     private Optional<String> observationId = Optional.empty();
+
+    private Optional<String> sessionId = Optional.empty();
+
+    private Optional<String> traceId = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -309,14 +355,17 @@ public final class NumericScore implements INumericScore, IBaseScore {
       value(other.getValue());
       id(other.getId());
       traceId(other.getTraceId());
+      sessionId(other.getSessionId());
+      observationId(other.getObservationId());
+      datasetRunId(other.getDatasetRunId());
       name(other.getName());
       source(other.getSource());
-      observationId(other.getObservationId());
       timestamp(other.getTimestamp());
       createdAt(other.getCreatedAt());
       updatedAt(other.getUpdatedAt());
       authorUserId(other.getAuthorUserId());
       comment(other.getComment());
+      metadata(other.getMetadata());
       configId(other.getConfigId());
       queueId(other.getQueueId());
       environment(other.getEnvironment());
@@ -336,15 +385,8 @@ public final class NumericScore implements INumericScore, IBaseScore {
 
     @java.lang.Override
     @JsonSetter("id")
-    public TraceIdStage id(@NotNull String id) {
+    public NameStage id(@NotNull String id) {
       this.id = Objects.requireNonNull(id, "id must not be null");
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter("traceId")
-    public NameStage traceId(@NotNull String traceId) {
-      this.traceId = Objects.requireNonNull(traceId, "traceId must not be null");
       return this;
     }
 
@@ -444,6 +486,22 @@ public final class NumericScore implements INumericScore, IBaseScore {
     }
 
     @java.lang.Override
+    public _FinalStage metadata(Object metadata) {
+      this.metadata = Optional.ofNullable(metadata);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "metadata",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage metadata(Optional<Object> metadata) {
+      this.metadata = metadata;
+      return this;
+    }
+
+    @java.lang.Override
     public _FinalStage comment(String comment) {
       this.comment = Optional.ofNullable(comment);
       return this;
@@ -476,6 +534,22 @@ public final class NumericScore implements INumericScore, IBaseScore {
     }
 
     @java.lang.Override
+    public _FinalStage datasetRunId(String datasetRunId) {
+      this.datasetRunId = Optional.ofNullable(datasetRunId);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "datasetRunId",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage datasetRunId(Optional<String> datasetRunId) {
+      this.datasetRunId = datasetRunId;
+      return this;
+    }
+
+    @java.lang.Override
     public _FinalStage observationId(String observationId) {
       this.observationId = Optional.ofNullable(observationId);
       return this;
@@ -492,8 +566,40 @@ public final class NumericScore implements INumericScore, IBaseScore {
     }
 
     @java.lang.Override
+    public _FinalStage sessionId(String sessionId) {
+      this.sessionId = Optional.ofNullable(sessionId);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "sessionId",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage sessionId(Optional<String> sessionId) {
+      this.sessionId = sessionId;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage traceId(String traceId) {
+      this.traceId = Optional.ofNullable(traceId);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "traceId",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage traceId(Optional<String> traceId) {
+      this.traceId = traceId;
+      return this;
+    }
+
+    @java.lang.Override
     public NumericScore build() {
-      return new NumericScore(value, id, traceId, name, source, observationId, timestamp, createdAt, updatedAt, authorUserId, comment, configId, queueId, environment, additionalProperties);
+      return new NumericScore(value, id, traceId, sessionId, observationId, datasetRunId, name, source, timestamp, createdAt, updatedAt, authorUserId, comment, metadata, configId, queueId, environment, additionalProperties);
     }
   }
 }

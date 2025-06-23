@@ -120,7 +120,7 @@ public final class GetObservationsRequest {
   }
 
   /**
-   * @return Retrieve only observations with a start_time or or after this datetime (ISO 8601).
+   * @return Retrieve only observations with a start_time on or after this datetime (ISO 8601).
    */
   @JsonProperty("fromStartTime")
   public Optional<OffsetDateTime> getFromStartTime() {

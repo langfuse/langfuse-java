@@ -64,7 +64,7 @@ public final class TraceWithFullDetails implements ITrace {
 
   private final List<ObservationsView> observations;
 
-  private final List<Score> scores;
+  private final List<ScoreV1> scores;
 
   private final Map<String, Object> additionalProperties;
 
@@ -73,7 +73,7 @@ public final class TraceWithFullDetails implements ITrace {
       Optional<String> release, Optional<String> version, Optional<String> userId,
       Optional<Object> metadata, Optional<List<String>> tags, Optional<Boolean> public_,
       Optional<String> environment, String htmlPath, double latency, double totalCost,
-      List<ObservationsView> observations, List<Score> scores,
+      List<ObservationsView> observations, List<ScoreV1> scores,
       Map<String, Object> additionalProperties) {
     this.id = id;
     this.timestamp = timestamp;
@@ -249,7 +249,7 @@ public final class TraceWithFullDetails implements ITrace {
    * @return List of scores
    */
   @JsonProperty("scores")
-  public List<Score> getScores() {
+  public List<ScoreV1> getScores() {
     return scores;
   }
 
@@ -357,11 +357,11 @@ public final class TraceWithFullDetails implements ITrace {
 
     _FinalStage addAllObservations(List<ObservationsView> observations);
 
-    _FinalStage scores(List<Score> scores);
+    _FinalStage scores(List<ScoreV1> scores);
 
-    _FinalStage addScores(Score scores);
+    _FinalStage addScores(ScoreV1 scores);
 
-    _FinalStage addAllScores(List<Score> scores);
+    _FinalStage addAllScores(List<ScoreV1> scores);
   }
 
   @JsonIgnoreProperties(
@@ -378,7 +378,7 @@ public final class TraceWithFullDetails implements ITrace {
 
     private double totalCost;
 
-    private List<Score> scores = new ArrayList<>();
+    private List<ScoreV1> scores = new ArrayList<>();
 
     private List<ObservationsView> observations = new ArrayList<>();
 
@@ -493,7 +493,7 @@ public final class TraceWithFullDetails implements ITrace {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage addAllScores(List<Score> scores) {
+    public _FinalStage addAllScores(List<ScoreV1> scores) {
       this.scores.addAll(scores);
       return this;
     }
@@ -503,7 +503,7 @@ public final class TraceWithFullDetails implements ITrace {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage addScores(Score scores) {
+    public _FinalStage addScores(ScoreV1 scores) {
       this.scores.add(scores);
       return this;
     }
@@ -513,7 +513,7 @@ public final class TraceWithFullDetails implements ITrace {
         value = "scores",
         nulls = Nulls.SKIP
     )
-    public _FinalStage scores(List<Score> scores) {
+    public _FinalStage scores(List<ScoreV1> scores) {
       this.scores.clear();
       this.scores.addAll(scores);
       return this;

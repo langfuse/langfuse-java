@@ -40,16 +40,20 @@ public final class BasePrompt implements IBasePrompt {
 
   private final Optional<String> commitMessage;
 
+  private final Optional<Map<String, Object>> resolutionGraph;
+
   private final Map<String, Object> additionalProperties;
 
   private BasePrompt(String name, int version, Object config, List<String> labels,
-      List<String> tags, Optional<String> commitMessage, Map<String, Object> additionalProperties) {
+      List<String> tags, Optional<String> commitMessage,
+      Optional<Map<String, Object>> resolutionGraph, Map<String, Object> additionalProperties) {
     this.name = name;
     this.version = version;
     this.config = config;
     this.labels = labels;
     this.tags = tags;
     this.commitMessage = commitMessage;
+    this.resolutionGraph = resolutionGraph;
     this.additionalProperties = additionalProperties;
   }
 
@@ -98,6 +102,15 @@ public final class BasePrompt implements IBasePrompt {
     return commitMessage;
   }
 
+  /**
+   * @return The dependency resolution graph for the current prompt. Null if prompt has no dependencies.
+   */
+  @JsonProperty("resolutionGraph")
+  @java.lang.Override
+  public Optional<Map<String, Object>> getResolutionGraph() {
+    return resolutionGraph;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -110,12 +123,12 @@ public final class BasePrompt implements IBasePrompt {
   }
 
   private boolean equalTo(BasePrompt other) {
-    return name.equals(other.name) && version == other.version && config.equals(other.config) && labels.equals(other.labels) && tags.equals(other.tags) && commitMessage.equals(other.commitMessage);
+    return name.equals(other.name) && version == other.version && config.equals(other.config) && labels.equals(other.labels) && tags.equals(other.tags) && commitMessage.equals(other.commitMessage) && resolutionGraph.equals(other.resolutionGraph);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.version, this.config, this.labels, this.tags, this.commitMessage);
+    return Objects.hash(this.name, this.version, this.config, this.labels, this.tags, this.commitMessage, this.resolutionGraph);
   }
 
   @java.lang.Override
@@ -159,6 +172,10 @@ public final class BasePrompt implements IBasePrompt {
     _FinalStage commitMessage(Optional<String> commitMessage);
 
     _FinalStage commitMessage(String commitMessage);
+
+    _FinalStage resolutionGraph(Optional<Map<String, Object>> resolutionGraph);
+
+    _FinalStage resolutionGraph(Map<String, Object> resolutionGraph);
   }
 
   @JsonIgnoreProperties(
@@ -170,6 +187,8 @@ public final class BasePrompt implements IBasePrompt {
     private int version;
 
     private Object config;
+
+    private Optional<Map<String, Object>> resolutionGraph = Optional.empty();
 
     private Optional<String> commitMessage = Optional.empty();
 
@@ -191,6 +210,7 @@ public final class BasePrompt implements IBasePrompt {
       labels(other.getLabels());
       tags(other.getTags());
       commitMessage(other.getCommitMessage());
+      resolutionGraph(other.getResolutionGraph());
       return this;
     }
 
@@ -212,6 +232,26 @@ public final class BasePrompt implements IBasePrompt {
     @JsonSetter("config")
     public _FinalStage config(Object config) {
       this.config = config;
+      return this;
+    }
+
+    /**
+     * <p>The dependency resolution graph for the current prompt. Null if prompt has no dependencies.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage resolutionGraph(Map<String, Object> resolutionGraph) {
+      this.resolutionGraph = Optional.ofNullable(resolutionGraph);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "resolutionGraph",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage resolutionGraph(Optional<Map<String, Object>> resolutionGraph) {
+      this.resolutionGraph = resolutionGraph;
       return this;
     }
 
@@ -299,7 +339,7 @@ public final class BasePrompt implements IBasePrompt {
 
     @java.lang.Override
     public BasePrompt build() {
-      return new BasePrompt(name, version, config, labels, tags, commitMessage, additionalProperties);
+      return new BasePrompt(name, version, config, labels, tags, commitMessage, resolutionGraph, additionalProperties);
     }
   }
 }

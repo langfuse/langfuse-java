@@ -7,6 +7,7 @@ package com.langfuse.client.resources.prompts.types;
 import java.lang.Object;
 import java.lang.String;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface IBasePrompt {
@@ -21,4 +22,6 @@ public interface IBasePrompt {
   List<String> getTags();
 
   Optional<String> getCommitMessage();
+
+  Optional<Map<String, Object>> getResolutionGraph();
 }

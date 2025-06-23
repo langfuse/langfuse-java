@@ -7,6 +7,7 @@ package com.langfuse.client;
 import com.langfuse.client.core.ClientOptions;
 import com.langfuse.client.core.Suppliers;
 import java.util.function.Supplier;
+import com.langfuse.client.resources.annotationqueues.AnnotationQueuesClient;
 import com.langfuse.client.resources.comments.CommentsClient;
 import com.langfuse.client.resources.datasetitems.DatasetItemsClient;
 import com.langfuse.client.resources.datasetrunitems.DatasetRunItemsClient;
@@ -17,16 +18,21 @@ import com.langfuse.client.resources.media.MediaClient;
 import com.langfuse.client.resources.metrics.MetricsClient;
 import com.langfuse.client.resources.models.ModelsClient;
 import com.langfuse.client.resources.observations.ObservationsClient;
+import com.langfuse.client.resources.organizations.OrganizationsClient;
 import com.langfuse.client.resources.projects.ProjectsClient;
 import com.langfuse.client.resources.prompts.PromptsClient;
 import com.langfuse.client.resources.promptversion.PromptVersionClient;
+import com.langfuse.client.resources.scim.ScimClient;
 import com.langfuse.client.resources.score.ScoreClient;
 import com.langfuse.client.resources.scoreconfigs.ScoreConfigsClient;
+import com.langfuse.client.resources.scorev2.ScoreV2Client;
 import com.langfuse.client.resources.sessions.SessionsClient;
 import com.langfuse.client.resources.trace.TraceClient;
 
 public class LangfuseClient {
   protected final ClientOptions clientOptions;
+
+  protected final Supplier<AnnotationQueuesClient> annotationQueuesClient;
 
   protected final Supplier<CommentsClient> commentsClient;
 
@@ -48,13 +54,19 @@ public class LangfuseClient {
 
   protected final Supplier<ObservationsClient> observationsClient;
 
+  protected final Supplier<OrganizationsClient> organizationsClient;
+
   protected final Supplier<ProjectsClient> projectsClient;
 
   protected final Supplier<PromptVersionClient> promptVersionClient;
 
   protected final Supplier<PromptsClient> promptsClient;
 
+  protected final Supplier<ScimClient> scimClient;
+
   protected final Supplier<ScoreConfigsClient> scoreConfigsClient;
+
+  protected final Supplier<ScoreV2Client> scoreV2Client;
 
   protected final Supplier<ScoreClient> scoreClient;
 
@@ -64,6 +76,7 @@ public class LangfuseClient {
 
   public LangfuseClient(ClientOptions clientOptions) {
     this.clientOptions = clientOptions;
+    this.annotationQueuesClient = Suppliers.memoize(() -> new AnnotationQueuesClient(clientOptions));
     this.commentsClient = Suppliers.memoize(() -> new CommentsClient(clientOptions));
     this.datasetItemsClient = Suppliers.memoize(() -> new DatasetItemsClient(clientOptions));
     this.datasetRunItemsClient = Suppliers.memoize(() -> new DatasetRunItemsClient(clientOptions));
@@ -74,13 +87,20 @@ public class LangfuseClient {
     this.metricsClient = Suppliers.memoize(() -> new MetricsClient(clientOptions));
     this.modelsClient = Suppliers.memoize(() -> new ModelsClient(clientOptions));
     this.observationsClient = Suppliers.memoize(() -> new ObservationsClient(clientOptions));
+    this.organizationsClient = Suppliers.memoize(() -> new OrganizationsClient(clientOptions));
     this.projectsClient = Suppliers.memoize(() -> new ProjectsClient(clientOptions));
     this.promptVersionClient = Suppliers.memoize(() -> new PromptVersionClient(clientOptions));
     this.promptsClient = Suppliers.memoize(() -> new PromptsClient(clientOptions));
+    this.scimClient = Suppliers.memoize(() -> new ScimClient(clientOptions));
     this.scoreConfigsClient = Suppliers.memoize(() -> new ScoreConfigsClient(clientOptions));
+    this.scoreV2Client = Suppliers.memoize(() -> new ScoreV2Client(clientOptions));
     this.scoreClient = Suppliers.memoize(() -> new ScoreClient(clientOptions));
     this.sessionsClient = Suppliers.memoize(() -> new SessionsClient(clientOptions));
     this.traceClient = Suppliers.memoize(() -> new TraceClient(clientOptions));
+  }
+
+  public AnnotationQueuesClient annotationQueues() {
+    return this.annotationQueuesClient.get();
   }
 
   public CommentsClient comments() {
@@ -123,6 +143,10 @@ public class LangfuseClient {
     return this.observationsClient.get();
   }
 
+  public OrganizationsClient organizations() {
+    return this.organizationsClient.get();
+  }
+
   public ProjectsClient projects() {
     return this.projectsClient.get();
   }
@@ -135,8 +159,16 @@ public class LangfuseClient {
     return this.promptsClient.get();
   }
 
+  public ScimClient scim() {
+    return this.scimClient.get();
+  }
+
   public ScoreConfigsClient scoreConfigs() {
     return this.scoreConfigsClient.get();
+  }
+
+  public ScoreV2Client scoreV2() {
+    return this.scoreV2Client.get();
   }
 
   public ScoreClient score() {

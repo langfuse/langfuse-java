@@ -25,8 +25,8 @@ import com.langfuse.client.resources.commons.errors.Error;
 import com.langfuse.client.resources.commons.errors.MethodNotAllowedError;
 import com.langfuse.client.resources.commons.errors.NotFoundError;
 import com.langfuse.client.resources.commons.errors.UnauthorizedError;
-import com.langfuse.client.resources.metrics.requests.GetDailyMetricsRequest;
-import com.langfuse.client.resources.metrics.types.DailyMetrics;
+import com.langfuse.client.resources.metrics.requests.GetMetricsRequest;
+import com.langfuse.client.resources.metrics.types.MetricsResponse;
 
 public class MetricsClient {
   protected final ClientOptions clientOptions;
@@ -36,49 +36,19 @@ public class MetricsClient {
   }
 
   /**
-   * Get daily metrics of the Langfuse project
+   * Get metrics from the Langfuse project using a query object
    */
-  public DailyMetrics daily() {
-    return daily(GetDailyMetricsRequest.builder().build());
+  public MetricsResponse metrics(GetMetricsRequest request) {
+    return metrics(request,null);
   }
 
   /**
-   * Get daily metrics of the Langfuse project
+   * Get metrics from the Langfuse project using a query object
    */
-  public DailyMetrics daily(GetDailyMetricsRequest request) {
-    return daily(request,null);
-  }
-
-  /**
-   * Get daily metrics of the Langfuse project
-   */
-  public DailyMetrics daily(GetDailyMetricsRequest request, RequestOptions requestOptions) {
+  public MetricsResponse metrics(GetMetricsRequest request, RequestOptions requestOptions) {
     HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
       .addPathSegments("api/public")
-      .addPathSegments("metrics/daily");if (request.getPage().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get().toString(), false);
-      }
-      if (request.getLimit().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get().toString(), false);
-      }
-      if (request.getTraceName().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "traceName", request.getTraceName().get(), false);
-      }
-      if (request.getUserId().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "userId", request.getUserId().get(), false);
-      }
-      if (request.getTags().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "tags", request.getTags().get(), false);
-      }
-      if (request.getEnvironment().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "environment", request.getEnvironment().get(), false);
-      }
-      if (request.getFromTimestamp().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "fromTimestamp", request.getFromTimestamp().get().toString(), false);
-      }
-      if (request.getToTimestamp().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "toTimestamp", request.getToTimestamp().get().toString(), false);
-      }
+      .addPathSegments("metrics");QueryStringMapper.addQueryParameter(httpUrl, "query", request.getQuery(), false);
       Request.Builder _requestBuilder = new Request.Builder()
         .url(httpUrl.build())
         .method("GET", null)
@@ -93,7 +63,7 @@ public class MetricsClient {
       try (Response response = client.newCall(okhttpRequest).execute()) {
         ResponseBody responseBody = response.body();
         if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), DailyMetrics.class);
+          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), MetricsResponse.class);
         }
         String responseBodyString = responseBody != null ? responseBody.string() : "{}";
         try {
