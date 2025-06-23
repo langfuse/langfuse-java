@@ -40,12 +40,15 @@ public final class ChatPrompt implements IBasePrompt {
 
   private final Optional<String> commitMessage;
 
+  private final Optional<Map<String, Object>> resolutionGraph;
+
   private final List<ChatMessage> prompt;
 
   private final Map<String, Object> additionalProperties;
 
   private ChatPrompt(String name, int version, Object config, List<String> labels,
-      List<String> tags, Optional<String> commitMessage, List<ChatMessage> prompt,
+      List<String> tags, Optional<String> commitMessage,
+      Optional<Map<String, Object>> resolutionGraph, List<ChatMessage> prompt,
       Map<String, Object> additionalProperties) {
     this.name = name;
     this.version = version;
@@ -53,6 +56,7 @@ public final class ChatPrompt implements IBasePrompt {
     this.labels = labels;
     this.tags = tags;
     this.commitMessage = commitMessage;
+    this.resolutionGraph = resolutionGraph;
     this.prompt = prompt;
     this.additionalProperties = additionalProperties;
   }
@@ -102,6 +106,15 @@ public final class ChatPrompt implements IBasePrompt {
     return commitMessage;
   }
 
+  /**
+   * @return The dependency resolution graph for the current prompt. Null if prompt has no dependencies.
+   */
+  @JsonProperty("resolutionGraph")
+  @java.lang.Override
+  public Optional<Map<String, Object>> getResolutionGraph() {
+    return resolutionGraph;
+  }
+
   @JsonProperty("prompt")
   public List<ChatMessage> getPrompt() {
     return prompt;
@@ -119,12 +132,12 @@ public final class ChatPrompt implements IBasePrompt {
   }
 
   private boolean equalTo(ChatPrompt other) {
-    return name.equals(other.name) && version == other.version && config.equals(other.config) && labels.equals(other.labels) && tags.equals(other.tags) && commitMessage.equals(other.commitMessage) && prompt.equals(other.prompt);
+    return name.equals(other.name) && version == other.version && config.equals(other.config) && labels.equals(other.labels) && tags.equals(other.tags) && commitMessage.equals(other.commitMessage) && resolutionGraph.equals(other.resolutionGraph) && prompt.equals(other.prompt);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.version, this.config, this.labels, this.tags, this.commitMessage, this.prompt);
+    return Objects.hash(this.name, this.version, this.config, this.labels, this.tags, this.commitMessage, this.resolutionGraph, this.prompt);
   }
 
   @java.lang.Override
@@ -169,6 +182,10 @@ public final class ChatPrompt implements IBasePrompt {
 
     _FinalStage commitMessage(String commitMessage);
 
+    _FinalStage resolutionGraph(Optional<Map<String, Object>> resolutionGraph);
+
+    _FinalStage resolutionGraph(Map<String, Object> resolutionGraph);
+
     _FinalStage prompt(List<ChatMessage> prompt);
 
     _FinalStage addPrompt(ChatMessage prompt);
@@ -187,6 +204,8 @@ public final class ChatPrompt implements IBasePrompt {
     private Object config;
 
     private List<ChatMessage> prompt = new ArrayList<>();
+
+    private Optional<Map<String, Object>> resolutionGraph = Optional.empty();
 
     private Optional<String> commitMessage = Optional.empty();
 
@@ -208,6 +227,7 @@ public final class ChatPrompt implements IBasePrompt {
       labels(other.getLabels());
       tags(other.getTags());
       commitMessage(other.getCommitMessage());
+      resolutionGraph(other.getResolutionGraph());
       prompt(other.getPrompt());
       return this;
     }
@@ -253,6 +273,26 @@ public final class ChatPrompt implements IBasePrompt {
     public _FinalStage prompt(List<ChatMessage> prompt) {
       this.prompt.clear();
       this.prompt.addAll(prompt);
+      return this;
+    }
+
+    /**
+     * <p>The dependency resolution graph for the current prompt. Null if prompt has no dependencies.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage resolutionGraph(Map<String, Object> resolutionGraph) {
+      this.resolutionGraph = Optional.ofNullable(resolutionGraph);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "resolutionGraph",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage resolutionGraph(Optional<Map<String, Object>> resolutionGraph) {
+      this.resolutionGraph = resolutionGraph;
       return this;
     }
 
@@ -340,7 +380,7 @@ public final class ChatPrompt implements IBasePrompt {
 
     @java.lang.Override
     public ChatPrompt build() {
-      return new ChatPrompt(name, version, config, labels, tags, commitMessage, prompt, additionalProperties);
+      return new ChatPrompt(name, version, config, labels, tags, commitMessage, resolutionGraph, prompt, additionalProperties);
     }
   }
 }

@@ -10,6 +10,7 @@ import com.langfuse.client.core.LangfuseClientApiException;
 import com.langfuse.client.core.LangfuseClientException;
 import com.langfuse.client.core.MediaTypes;
 import com.langfuse.client.core.ObjectMappers;
+import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
 import java.io.IOException;
 import java.lang.Object;
@@ -27,6 +28,7 @@ import com.langfuse.client.resources.commons.errors.MethodNotAllowedError;
 import com.langfuse.client.resources.commons.errors.NotFoundError;
 import com.langfuse.client.resources.commons.errors.UnauthorizedError;
 import com.langfuse.client.resources.commons.types.DatasetRunItem;
+import com.langfuse.client.resources.datasetrunitems.requests.ListDatasetRunItemsRequest;
 import com.langfuse.client.resources.datasetrunitems.types.CreateDatasetRunItemRequest;
 
 public class DatasetRunItemsClient {
@@ -93,4 +95,61 @@ public class DatasetRunItemsClient {
       throw new LangfuseClientException("Network error executing HTTP request", e);
     }
   }
-}
+
+  /**
+   * List dataset run items
+   */
+  public void list(ListDatasetRunItemsRequest request) {
+    list(request,null);
+  }
+
+  /**
+   * List dataset run items
+   */
+  public void list(ListDatasetRunItemsRequest request, RequestOptions requestOptions) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+      .addPathSegments("api/public")
+      .addPathSegments("dataset-run-items");QueryStringMapper.addQueryParameter(httpUrl, "datasetId", request.getDatasetId(), false);
+      QueryStringMapper.addQueryParameter(httpUrl, "runName", request.getRunName(), false);
+      if (request.getPage().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get().toString(), false);
+      }
+      if (request.getLimit().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get().toString(), false);
+      }
+      QueryStringMapper.addQueryParameter(httpUrl, "response", request.getResponse().toString(), false);
+      Request.Builder _requestBuilder = new Request.Builder()
+        .url(httpUrl.build())
+        .method("GET", null)
+        .headers(Headers.of(clientOptions.headers(requestOptions)))
+        .addHeader("Accept", "application/json");
+      Request okhttpRequest = _requestBuilder.build();
+      OkHttpClient client = clientOptions.httpClient();
+      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+        client = clientOptions.httpClientWithTimeout(requestOptions);
+      }
+      try (Response response = client.newCall(okhttpRequest).execute()) {
+        ResponseBody responseBody = response.body();
+        if (response.isSuccessful()) {
+          return;
+        }
+        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+        try {
+          switch (response.code()) {
+            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          }
+        }
+        catch (JsonProcessingException ignored) {
+          // unable to map error response, throwing generic error
+        }
+        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+      }
+      catch (IOException e) {
+        throw new LangfuseClientException("Network error executing HTTP request", e);
+      }
+    }
+  }

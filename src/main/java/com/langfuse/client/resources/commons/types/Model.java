@@ -18,6 +18,7 @@ import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,13 +51,15 @@ public final class Model {
 
   private final boolean isLangfuseManaged;
 
+  private final Map<String, ModelPrice> prices;
+
   private final Map<String, Object> additionalProperties;
 
   private Model(String id, String modelName, String matchPattern,
       Optional<OffsetDateTime> startDate, Optional<ModelUsageUnit> unit,
       Optional<Double> inputPrice, Optional<Double> outputPrice, Optional<Double> totalPrice,
       Optional<String> tokenizerId, Optional<Object> tokenizerConfig, boolean isLangfuseManaged,
-      Map<String, Object> additionalProperties) {
+      Map<String, ModelPrice> prices, Map<String, Object> additionalProperties) {
     this.id = id;
     this.modelName = modelName;
     this.matchPattern = matchPattern;
@@ -68,6 +71,7 @@ public final class Model {
     this.tokenizerId = tokenizerId;
     this.tokenizerConfig = tokenizerConfig;
     this.isLangfuseManaged = isLangfuseManaged;
+    this.prices = prices;
     this.additionalProperties = additionalProperties;
   }
 
@@ -109,7 +113,7 @@ public final class Model {
   }
 
   /**
-   * @return Price (USD) per input unit
+   * @return Deprecated. See 'prices' instead. Price (USD) per input unit
    */
   @JsonProperty("inputPrice")
   public Optional<Double> getInputPrice() {
@@ -117,7 +121,7 @@ public final class Model {
   }
 
   /**
-   * @return Price (USD) per output unit
+   * @return Deprecated. See 'prices' instead. Price (USD) per output unit
    */
   @JsonProperty("outputPrice")
   public Optional<Double> getOutputPrice() {
@@ -125,7 +129,7 @@ public final class Model {
   }
 
   /**
-   * @return Price (USD) per total unit. Cannot be set if input or output price is set.
+   * @return Deprecated. See 'prices' instead. Price (USD) per total unit. Cannot be set if input or output price is set.
    */
   @JsonProperty("totalPrice")
   public Optional<Double> getTotalPrice() {
@@ -153,6 +157,14 @@ public final class Model {
     return isLangfuseManaged;
   }
 
+  /**
+   * @return Price (USD) by usage type
+   */
+  @JsonProperty("prices")
+  public Map<String, ModelPrice> getPrices() {
+    return prices;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -165,12 +177,12 @@ public final class Model {
   }
 
   private boolean equalTo(Model other) {
-    return id.equals(other.id) && modelName.equals(other.modelName) && matchPattern.equals(other.matchPattern) && startDate.equals(other.startDate) && unit.equals(other.unit) && inputPrice.equals(other.inputPrice) && outputPrice.equals(other.outputPrice) && totalPrice.equals(other.totalPrice) && tokenizerId.equals(other.tokenizerId) && tokenizerConfig.equals(other.tokenizerConfig) && isLangfuseManaged == other.isLangfuseManaged;
+    return id.equals(other.id) && modelName.equals(other.modelName) && matchPattern.equals(other.matchPattern) && startDate.equals(other.startDate) && unit.equals(other.unit) && inputPrice.equals(other.inputPrice) && outputPrice.equals(other.outputPrice) && totalPrice.equals(other.totalPrice) && tokenizerId.equals(other.tokenizerId) && tokenizerConfig.equals(other.tokenizerConfig) && isLangfuseManaged == other.isLangfuseManaged && prices.equals(other.prices);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.modelName, this.matchPattern, this.startDate, this.unit, this.inputPrice, this.outputPrice, this.totalPrice, this.tokenizerId, this.tokenizerConfig, this.isLangfuseManaged);
+    return Objects.hash(this.id, this.modelName, this.matchPattern, this.startDate, this.unit, this.inputPrice, this.outputPrice, this.totalPrice, this.tokenizerId, this.tokenizerConfig, this.isLangfuseManaged, this.prices);
   }
 
   @java.lang.Override
@@ -230,6 +242,12 @@ public final class Model {
     _FinalStage tokenizerConfig(Optional<Object> tokenizerConfig);
 
     _FinalStage tokenizerConfig(Object tokenizerConfig);
+
+    _FinalStage prices(Map<String, ModelPrice> prices);
+
+    _FinalStage putAllPrices(Map<String, ModelPrice> prices);
+
+    _FinalStage prices(String key, ModelPrice value);
   }
 
   @JsonIgnoreProperties(
@@ -243,6 +261,8 @@ public final class Model {
     private String matchPattern;
 
     private boolean isLangfuseManaged;
+
+    private Map<String, ModelPrice> prices = new LinkedHashMap<>();
 
     private Optional<Object> tokenizerConfig = Optional.empty();
 
@@ -277,6 +297,7 @@ public final class Model {
       tokenizerId(other.getTokenizerId());
       tokenizerConfig(other.getTokenizerConfig());
       isLangfuseManaged(other.getIsLangfuseManaged());
+      prices(other.getPrices());
       return this;
     }
 
@@ -313,6 +334,37 @@ public final class Model {
     @JsonSetter("isLangfuseManaged")
     public _FinalStage isLangfuseManaged(boolean isLangfuseManaged) {
       this.isLangfuseManaged = isLangfuseManaged;
+      return this;
+    }
+
+    /**
+     * <p>Price (USD) by usage type</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage prices(String key, ModelPrice value) {
+      this.prices.put(key, value);
+      return this;
+    }
+
+    /**
+     * <p>Price (USD) by usage type</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage putAllPrices(Map<String, ModelPrice> prices) {
+      this.prices.putAll(prices);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "prices",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage prices(Map<String, ModelPrice> prices) {
+      this.prices.clear();
+      this.prices.putAll(prices);
       return this;
     }
 
@@ -357,7 +409,7 @@ public final class Model {
     }
 
     /**
-     * <p>Price (USD) per total unit. Cannot be set if input or output price is set.</p>
+     * <p>Deprecated. See 'prices' instead. Price (USD) per total unit. Cannot be set if input or output price is set.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -377,7 +429,7 @@ public final class Model {
     }
 
     /**
-     * <p>Price (USD) per output unit</p>
+     * <p>Deprecated. See 'prices' instead. Price (USD) per output unit</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -397,7 +449,7 @@ public final class Model {
     }
 
     /**
-     * <p>Price (USD) per input unit</p>
+     * <p>Deprecated. See 'prices' instead. Price (USD) per input unit</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -458,7 +510,7 @@ public final class Model {
 
     @java.lang.Override
     public Model build() {
-      return new Model(id, modelName, matchPattern, startDate, unit, inputPrice, outputPrice, totalPrice, tokenizerId, tokenizerConfig, isLangfuseManaged, additionalProperties);
+      return new Model(id, modelName, matchPattern, startDate, unit, inputPrice, outputPrice, totalPrice, tokenizerId, tokenizerConfig, isLangfuseManaged, prices, additionalProperties);
     }
   }
 }

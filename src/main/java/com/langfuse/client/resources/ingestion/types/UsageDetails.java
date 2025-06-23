@@ -43,7 +43,9 @@ public final class UsageDetails {
     if(this.type == 0) {
       return visitor.visit((Map<String, Integer>) this.value);
     } else if(this.type == 1) {
-      return visitor.visit((OpenAiUsageSchema) this.value);
+      return visitor.visit((OpenAiCompletionUsageSchema) this.value);
+    } else if(this.type == 2) {
+      return visitor.visit((OpenAiResponseUsageSchema) this.value);
     }
     throw new IllegalStateException("Failed to visit value. This should never happen.");
   }
@@ -72,14 +74,20 @@ public final class UsageDetails {
     return new UsageDetails(value, 0);
   }
 
-  public static UsageDetails of(OpenAiUsageSchema value) {
+  public static UsageDetails of(OpenAiCompletionUsageSchema value) {
     return new UsageDetails(value, 1);
+  }
+
+  public static UsageDetails of(OpenAiResponseUsageSchema value) {
+    return new UsageDetails(value, 2);
   }
 
   public interface Visitor<T> {
     T visit(Map<String, Integer> value);
 
-    T visit(OpenAiUsageSchema value);
+    T visit(OpenAiCompletionUsageSchema value);
+
+    T visit(OpenAiResponseUsageSchema value);
   }
 
   static final class Deserializer extends StdDeserializer<UsageDetails> {
@@ -96,7 +104,11 @@ public final class UsageDetails {
       } catch(IllegalArgumentException e) {
       }
       try {
-        return of(ObjectMappers.JSON_MAPPER.convertValue(value, OpenAiUsageSchema.class));
+        return of(ObjectMappers.JSON_MAPPER.convertValue(value, OpenAiCompletionUsageSchema.class));
+      } catch(IllegalArgumentException e) {
+      }
+      try {
+        return of(ObjectMappers.JSON_MAPPER.convertValue(value, OpenAiResponseUsageSchema.class));
       } catch(IllegalArgumentException e) {
       }
       throw new JsonParseException(p, "Failed to deserialize");

@@ -51,13 +51,15 @@ public final class GetTracesRequest {
 
   private final Optional<String> environment;
 
+  private final Optional<String> fields;
+
   private final Map<String, Object> additionalProperties;
 
   private GetTracesRequest(Optional<Integer> page, Optional<Integer> limit, Optional<String> userId,
       Optional<String> name, Optional<String> sessionId, Optional<OffsetDateTime> fromTimestamp,
       Optional<OffsetDateTime> toTimestamp, Optional<String> orderBy, Optional<String> tags,
       Optional<String> version, Optional<String> release, Optional<String> environment,
-      Map<String, Object> additionalProperties) {
+      Optional<String> fields, Map<String, Object> additionalProperties) {
     this.page = page;
     this.limit = limit;
     this.userId = userId;
@@ -70,6 +72,7 @@ public final class GetTracesRequest {
     this.version = version;
     this.release = release;
     this.environment = environment;
+    this.fields = fields;
     this.additionalProperties = additionalProperties;
   }
 
@@ -160,6 +163,14 @@ public final class GetTracesRequest {
     return environment;
   }
 
+  /**
+   * @return Comma-separated list of fields to include in the response. Available field groups are 'core' (always included), 'io' (input, output, metadata), 'scores', 'observations', 'metrics'. If not provided, all fields are included. Example: 'core,scores,metrics'
+   */
+  @JsonProperty("fields")
+  public Optional<String> getFields() {
+    return fields;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -172,12 +183,12 @@ public final class GetTracesRequest {
   }
 
   private boolean equalTo(GetTracesRequest other) {
-    return page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && sessionId.equals(other.sessionId) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && orderBy.equals(other.orderBy) && tags.equals(other.tags) && version.equals(other.version) && release.equals(other.release) && environment.equals(other.environment);
+    return page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && sessionId.equals(other.sessionId) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && orderBy.equals(other.orderBy) && tags.equals(other.tags) && version.equals(other.version) && release.equals(other.release) && environment.equals(other.environment) && fields.equals(other.fields);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.page, this.limit, this.userId, this.name, this.sessionId, this.fromTimestamp, this.toTimestamp, this.orderBy, this.tags, this.version, this.release, this.environment);
+    return Objects.hash(this.page, this.limit, this.userId, this.name, this.sessionId, this.fromTimestamp, this.toTimestamp, this.orderBy, this.tags, this.version, this.release, this.environment, this.fields);
   }
 
   @java.lang.Override
@@ -217,6 +228,8 @@ public final class GetTracesRequest {
 
     private Optional<String> environment = Optional.empty();
 
+    private Optional<String> fields = Optional.empty();
+
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -236,6 +249,7 @@ public final class GetTracesRequest {
       version(other.getVersion());
       release(other.getRelease());
       environment(other.getEnvironment());
+      fields(other.getFields());
       return this;
     }
 
@@ -407,8 +421,22 @@ public final class GetTracesRequest {
       return this;
     }
 
+    @JsonSetter(
+        value = "fields",
+        nulls = Nulls.SKIP
+    )
+    public Builder fields(Optional<String> fields) {
+      this.fields = fields;
+      return this;
+    }
+
+    public Builder fields(String fields) {
+      this.fields = Optional.ofNullable(fields);
+      return this;
+    }
+
     public GetTracesRequest build() {
-      return new GetTracesRequest(page, limit, userId, name, sessionId, fromTimestamp, toTimestamp, orderBy, tags, version, release, environment, additionalProperties);
+      return new GetTracesRequest(page, limit, userId, name, sessionId, fromTimestamp, toTimestamp, orderBy, tags, version, release, environment, fields, additionalProperties);
     }
   }
 }

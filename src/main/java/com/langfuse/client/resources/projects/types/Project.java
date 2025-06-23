@@ -10,13 +10,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.langfuse.client.core.ObjectMappers;
+import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -28,11 +32,18 @@ public final class Project {
 
   private final String name;
 
+  private final Map<String, Object> metadata;
+
+  private final Optional<Integer> retentionDays;
+
   private final Map<String, Object> additionalProperties;
 
-  private Project(String id, String name, Map<String, Object> additionalProperties) {
+  private Project(String id, String name, Map<String, Object> metadata,
+      Optional<Integer> retentionDays, Map<String, Object> additionalProperties) {
     this.id = id;
     this.name = name;
+    this.metadata = metadata;
+    this.retentionDays = retentionDays;
     this.additionalProperties = additionalProperties;
   }
 
@@ -44,6 +55,22 @@ public final class Project {
   @JsonProperty("name")
   public String getName() {
     return name;
+  }
+
+  /**
+   * @return Metadata for the project
+   */
+  @JsonProperty("metadata")
+  public Map<String, Object> getMetadata() {
+    return metadata;
+  }
+
+  /**
+   * @return Number of days to retain data. Null or 0 means no retention. Omitted if no retention is configured.
+   */
+  @JsonProperty("retentionDays")
+  public Optional<Integer> getRetentionDays() {
+    return retentionDays;
   }
 
   @java.lang.Override
@@ -58,12 +85,12 @@ public final class Project {
   }
 
   private boolean equalTo(Project other) {
-    return id.equals(other.id) && name.equals(other.name);
+    return id.equals(other.id) && name.equals(other.name) && metadata.equals(other.metadata) && retentionDays.equals(other.retentionDays);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.name);
+    return Objects.hash(this.id, this.name, this.metadata, this.retentionDays);
   }
 
   @java.lang.Override
@@ -87,6 +114,16 @@ public final class Project {
 
   public interface _FinalStage {
     Project build();
+
+    _FinalStage metadata(Map<String, Object> metadata);
+
+    _FinalStage putAllMetadata(Map<String, Object> metadata);
+
+    _FinalStage metadata(String key, Object value);
+
+    _FinalStage retentionDays(Optional<Integer> retentionDays);
+
+    _FinalStage retentionDays(Integer retentionDays);
   }
 
   @JsonIgnoreProperties(
@@ -96,6 +133,10 @@ public final class Project {
     private String id;
 
     private String name;
+
+    private Optional<Integer> retentionDays = Optional.empty();
+
+    private Map<String, Object> metadata = new LinkedHashMap<>();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -107,6 +148,8 @@ public final class Project {
     public Builder from(Project other) {
       id(other.getId());
       name(other.getName());
+      metadata(other.getMetadata());
+      retentionDays(other.getRetentionDays());
       return this;
     }
 
@@ -124,9 +167,60 @@ public final class Project {
       return this;
     }
 
+    /**
+     * <p>Number of days to retain data. Null or 0 means no retention. Omitted if no retention is configured.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage retentionDays(Integer retentionDays) {
+      this.retentionDays = Optional.ofNullable(retentionDays);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "retentionDays",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage retentionDays(Optional<Integer> retentionDays) {
+      this.retentionDays = retentionDays;
+      return this;
+    }
+
+    /**
+     * <p>Metadata for the project</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage metadata(String key, Object value) {
+      this.metadata.put(key, value);
+      return this;
+    }
+
+    /**
+     * <p>Metadata for the project</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage putAllMetadata(Map<String, Object> metadata) {
+      this.metadata.putAll(metadata);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "metadata",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage metadata(Map<String, Object> metadata) {
+      this.metadata.clear();
+      this.metadata.putAll(metadata);
+      return this;
+    }
+
     @java.lang.Override
     public Project build() {
-      return new Project(id, name, additionalProperties);
+      return new Project(id, name, metadata, retentionDays, additionalProperties);
     }
   }
 }

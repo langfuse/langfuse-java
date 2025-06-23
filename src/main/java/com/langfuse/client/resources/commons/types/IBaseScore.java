@@ -4,6 +4,7 @@
 
 package com.langfuse.client.resources.commons.types;
 
+import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -11,13 +12,17 @@ import java.util.Optional;
 public interface IBaseScore {
   String getId();
 
-  String getTraceId();
+  Optional<String> getTraceId();
+
+  Optional<String> getSessionId();
+
+  Optional<String> getObservationId();
+
+  Optional<String> getDatasetRunId();
 
   String getName();
 
   ScoreSource getSource();
-
-  Optional<String> getObservationId();
 
   OffsetDateTime getTimestamp();
 
@@ -28,6 +33,8 @@ public interface IBaseScore {
   Optional<String> getAuthorUserId();
 
   Optional<String> getComment();
+
+  Optional<Object> getMetadata();
 
   Optional<String> getConfigId();
 

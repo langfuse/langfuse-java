@@ -40,12 +40,15 @@ public final class TextPrompt implements IBasePrompt {
 
   private final Optional<String> commitMessage;
 
+  private final Optional<Map<String, Object>> resolutionGraph;
+
   private final String prompt;
 
   private final Map<String, Object> additionalProperties;
 
   private TextPrompt(String name, int version, Object config, List<String> labels,
-      List<String> tags, Optional<String> commitMessage, String prompt,
+      List<String> tags, Optional<String> commitMessage,
+      Optional<Map<String, Object>> resolutionGraph, String prompt,
       Map<String, Object> additionalProperties) {
     this.name = name;
     this.version = version;
@@ -53,6 +56,7 @@ public final class TextPrompt implements IBasePrompt {
     this.labels = labels;
     this.tags = tags;
     this.commitMessage = commitMessage;
+    this.resolutionGraph = resolutionGraph;
     this.prompt = prompt;
     this.additionalProperties = additionalProperties;
   }
@@ -102,6 +106,15 @@ public final class TextPrompt implements IBasePrompt {
     return commitMessage;
   }
 
+  /**
+   * @return The dependency resolution graph for the current prompt. Null if prompt has no dependencies.
+   */
+  @JsonProperty("resolutionGraph")
+  @java.lang.Override
+  public Optional<Map<String, Object>> getResolutionGraph() {
+    return resolutionGraph;
+  }
+
   @JsonProperty("prompt")
   public String getPrompt() {
     return prompt;
@@ -119,12 +132,12 @@ public final class TextPrompt implements IBasePrompt {
   }
 
   private boolean equalTo(TextPrompt other) {
-    return name.equals(other.name) && version == other.version && config.equals(other.config) && labels.equals(other.labels) && tags.equals(other.tags) && commitMessage.equals(other.commitMessage) && prompt.equals(other.prompt);
+    return name.equals(other.name) && version == other.version && config.equals(other.config) && labels.equals(other.labels) && tags.equals(other.tags) && commitMessage.equals(other.commitMessage) && resolutionGraph.equals(other.resolutionGraph) && prompt.equals(other.prompt);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.version, this.config, this.labels, this.tags, this.commitMessage, this.prompt);
+    return Objects.hash(this.name, this.version, this.config, this.labels, this.tags, this.commitMessage, this.resolutionGraph, this.prompt);
   }
 
   @java.lang.Override
@@ -172,6 +185,10 @@ public final class TextPrompt implements IBasePrompt {
     _FinalStage commitMessage(Optional<String> commitMessage);
 
     _FinalStage commitMessage(String commitMessage);
+
+    _FinalStage resolutionGraph(Optional<Map<String, Object>> resolutionGraph);
+
+    _FinalStage resolutionGraph(Map<String, Object> resolutionGraph);
   }
 
   @JsonIgnoreProperties(
@@ -185,6 +202,8 @@ public final class TextPrompt implements IBasePrompt {
     private Object config;
 
     private String prompt;
+
+    private Optional<Map<String, Object>> resolutionGraph = Optional.empty();
 
     private Optional<String> commitMessage = Optional.empty();
 
@@ -206,6 +225,7 @@ public final class TextPrompt implements IBasePrompt {
       labels(other.getLabels());
       tags(other.getTags());
       commitMessage(other.getCommitMessage());
+      resolutionGraph(other.getResolutionGraph());
       prompt(other.getPrompt());
       return this;
     }
@@ -235,6 +255,26 @@ public final class TextPrompt implements IBasePrompt {
     @JsonSetter("prompt")
     public _FinalStage prompt(@NotNull String prompt) {
       this.prompt = Objects.requireNonNull(prompt, "prompt must not be null");
+      return this;
+    }
+
+    /**
+     * <p>The dependency resolution graph for the current prompt. Null if prompt has no dependencies.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage resolutionGraph(Map<String, Object> resolutionGraph) {
+      this.resolutionGraph = Optional.ofNullable(resolutionGraph);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "resolutionGraph",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage resolutionGraph(Optional<Map<String, Object>> resolutionGraph) {
+      this.resolutionGraph = resolutionGraph;
       return this;
     }
 
@@ -322,7 +362,7 @@ public final class TextPrompt implements IBasePrompt {
 
     @java.lang.Override
     public TextPrompt build() {
-      return new TextPrompt(name, version, config, labels, tags, commitMessage, prompt, additionalProperties);
+      return new TextPrompt(name, version, config, labels, tags, commitMessage, resolutionGraph, prompt, additionalProperties);
     }
   }
 }
