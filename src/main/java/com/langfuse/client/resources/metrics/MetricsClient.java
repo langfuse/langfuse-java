@@ -36,14 +36,16 @@ public class MetricsClient {
   }
 
   /**
-   * Get metrics from the Langfuse project using a query object
+   * Get metrics from the Langfuse project using a query object.
+   * <p>For more details, see the <a href="https://langfuse.com/docs/metrics/features/metrics-api">Metrics API documentation</a>.</p>
    */
   public MetricsResponse metrics(GetMetricsRequest request) {
     return metrics(request,null);
   }
 
   /**
-   * Get metrics from the Langfuse project using a query object
+   * Get metrics from the Langfuse project using a query object.
+   * <p>For more details, see the <a href="https://langfuse.com/docs/metrics/features/metrics-api">Metrics API documentation</a>.</p>
    */
   public MetricsResponse metrics(GetMetricsRequest request, RequestOptions requestOptions) {
     HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()

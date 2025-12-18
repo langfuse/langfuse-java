@@ -37,8 +37,8 @@ public class IngestionClient {
   }
 
   /**
-   * Batched ingestion for Langfuse Tracing.
-   * If you want to use tracing via the API, such as to build your own Langfuse client implementation, this is the only API route you need to implement.
+   * <strong>Legacy endpoint for batch ingestion for Langfuse Observability.</strong>
+   * <p>-&gt; Please use the OpenTelemetry endpoint (<code>/api/public/otel/v1/traces</code>). Learn more: https://langfuse.com/integrations/native/opentelemetry</p>
    * <p>Within each batch, there can be multiple events.
    * Each event has a type, an id, a timestamp, metadata and a body.
    * Internally, we refer to this as the &quot;event envelope&quot; as it tells us something about the event but not the trace.
@@ -47,7 +47,7 @@ public class IngestionClient {
    * I.e. if you want to update a trace, you'd use the same body id, but separate event IDs.</p>
    * <p>Notes:</p>
    * <ul>
-   * <li>Introduction to data model: https://langfuse.com/docs/tracing-data-model</li>
+   * <li>Introduction to data model: https://langfuse.com/docs/observability/data-model</li>
    * <li>Batch sizes are limited to 3.5 MB in total. You need to adjust the number of events per batch accordingly.</li>
    * <li>The API does not return a 4xx status code for input errors. Instead, it responds with a 207 status code, which includes a list of the encountered errors.</li>
    * </ul>
@@ -57,8 +57,8 @@ public class IngestionClient {
   }
 
   /**
-   * Batched ingestion for Langfuse Tracing.
-   * If you want to use tracing via the API, such as to build your own Langfuse client implementation, this is the only API route you need to implement.
+   * <strong>Legacy endpoint for batch ingestion for Langfuse Observability.</strong>
+   * <p>-&gt; Please use the OpenTelemetry endpoint (<code>/api/public/otel/v1/traces</code>). Learn more: https://langfuse.com/integrations/native/opentelemetry</p>
    * <p>Within each batch, there can be multiple events.
    * Each event has a type, an id, a timestamp, metadata and a body.
    * Internally, we refer to this as the &quot;event envelope&quot; as it tells us something about the event but not the trace.
@@ -67,7 +67,7 @@ public class IngestionClient {
    * I.e. if you want to update a trace, you'd use the same body id, but separate event IDs.</p>
    * <p>Notes:</p>
    * <ul>
-   * <li>Introduction to data model: https://langfuse.com/docs/tracing-data-model</li>
+   * <li>Introduction to data model: https://langfuse.com/docs/observability/data-model</li>
    * <li>Batch sizes are limited to 3.5 MB in total. You need to adjust the number of events per batch accordingly.</li>
    * <li>The API does not return a 4xx status code for input errors. Instead, it responds with a 207 status code, which includes a list of the encountered errors.</li>
    * </ul>

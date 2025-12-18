@@ -54,6 +54,12 @@ public final class GetScoresRequest {
 
   private final Optional<String> configId;
 
+  private final Optional<String> sessionId;
+
+  private final Optional<String> datasetRunId;
+
+  private final Optional<String> traceId;
+
   private final Optional<String> queueId;
 
   private final Optional<ScoreDataType> dataType;
@@ -66,7 +72,8 @@ public final class GetScoresRequest {
       Optional<String> name, Optional<OffsetDateTime> fromTimestamp,
       Optional<OffsetDateTime> toTimestamp, Optional<String> environment,
       Optional<ScoreSource> source, Optional<String> operator, Optional<Double> value,
-      Optional<String> scoreIds, Optional<String> configId, Optional<String> queueId,
+      Optional<String> scoreIds, Optional<String> configId, Optional<String> sessionId,
+      Optional<String> datasetRunId, Optional<String> traceId, Optional<String> queueId,
       Optional<ScoreDataType> dataType, Optional<String> traceTags,
       Map<String, Object> additionalProperties) {
     this.page = page;
@@ -81,6 +88,9 @@ public final class GetScoresRequest {
     this.value = value;
     this.scoreIds = scoreIds;
     this.configId = configId;
+    this.sessionId = sessionId;
+    this.datasetRunId = datasetRunId;
+    this.traceId = traceId;
     this.queueId = queueId;
     this.dataType = dataType;
     this.traceTags = traceTags;
@@ -184,6 +194,30 @@ public final class GetScoresRequest {
   }
 
   /**
+   * @return Retrieve only scores with a specific sessionId.
+   */
+  @JsonProperty("sessionId")
+  public Optional<String> getSessionId() {
+    return sessionId;
+  }
+
+  /**
+   * @return Retrieve only scores with a specific datasetRunId.
+   */
+  @JsonProperty("datasetRunId")
+  public Optional<String> getDatasetRunId() {
+    return datasetRunId;
+  }
+
+  /**
+   * @return Retrieve only scores with a specific traceId.
+   */
+  @JsonProperty("traceId")
+  public Optional<String> getTraceId() {
+    return traceId;
+  }
+
+  /**
    * @return Retrieve only scores with a specific annotation queueId.
    */
   @JsonProperty("queueId")
@@ -219,12 +253,12 @@ public final class GetScoresRequest {
   }
 
   private boolean equalTo(GetScoresRequest other) {
-    return page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && environment.equals(other.environment) && source.equals(other.source) && operator.equals(other.operator) && value.equals(other.value) && scoreIds.equals(other.scoreIds) && configId.equals(other.configId) && queueId.equals(other.queueId) && dataType.equals(other.dataType) && traceTags.equals(other.traceTags);
+    return page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && environment.equals(other.environment) && source.equals(other.source) && operator.equals(other.operator) && value.equals(other.value) && scoreIds.equals(other.scoreIds) && configId.equals(other.configId) && sessionId.equals(other.sessionId) && datasetRunId.equals(other.datasetRunId) && traceId.equals(other.traceId) && queueId.equals(other.queueId) && dataType.equals(other.dataType) && traceTags.equals(other.traceTags);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.page, this.limit, this.userId, this.name, this.fromTimestamp, this.toTimestamp, this.environment, this.source, this.operator, this.value, this.scoreIds, this.configId, this.queueId, this.dataType, this.traceTags);
+    return Objects.hash(this.page, this.limit, this.userId, this.name, this.fromTimestamp, this.toTimestamp, this.environment, this.source, this.operator, this.value, this.scoreIds, this.configId, this.sessionId, this.datasetRunId, this.traceId, this.queueId, this.dataType, this.traceTags);
   }
 
   @java.lang.Override
@@ -264,6 +298,12 @@ public final class GetScoresRequest {
 
     private Optional<String> configId = Optional.empty();
 
+    private Optional<String> sessionId = Optional.empty();
+
+    private Optional<String> datasetRunId = Optional.empty();
+
+    private Optional<String> traceId = Optional.empty();
+
     private Optional<String> queueId = Optional.empty();
 
     private Optional<ScoreDataType> dataType = Optional.empty();
@@ -289,6 +329,9 @@ public final class GetScoresRequest {
       value(other.getValue());
       scoreIds(other.getScoreIds());
       configId(other.getConfigId());
+      sessionId(other.getSessionId());
+      datasetRunId(other.getDatasetRunId());
+      traceId(other.getTraceId());
       queueId(other.getQueueId());
       dataType(other.getDataType());
       traceTags(other.getTraceTags());
@@ -464,6 +507,48 @@ public final class GetScoresRequest {
     }
 
     @JsonSetter(
+        value = "sessionId",
+        nulls = Nulls.SKIP
+    )
+    public Builder sessionId(Optional<String> sessionId) {
+      this.sessionId = sessionId;
+      return this;
+    }
+
+    public Builder sessionId(String sessionId) {
+      this.sessionId = Optional.ofNullable(sessionId);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "datasetRunId",
+        nulls = Nulls.SKIP
+    )
+    public Builder datasetRunId(Optional<String> datasetRunId) {
+      this.datasetRunId = datasetRunId;
+      return this;
+    }
+
+    public Builder datasetRunId(String datasetRunId) {
+      this.datasetRunId = Optional.ofNullable(datasetRunId);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "traceId",
+        nulls = Nulls.SKIP
+    )
+    public Builder traceId(Optional<String> traceId) {
+      this.traceId = traceId;
+      return this;
+    }
+
+    public Builder traceId(String traceId) {
+      this.traceId = Optional.ofNullable(traceId);
+      return this;
+    }
+
+    @JsonSetter(
         value = "queueId",
         nulls = Nulls.SKIP
     )
@@ -506,7 +591,7 @@ public final class GetScoresRequest {
     }
 
     public GetScoresRequest build() {
-      return new GetScoresRequest(page, limit, userId, name, fromTimestamp, toTimestamp, environment, source, operator, value, scoreIds, configId, queueId, dataType, traceTags, additionalProperties);
+      return new GetScoresRequest(page, limit, userId, name, fromTimestamp, toTimestamp, environment, source, operator, value, scoreIds, configId, sessionId, datasetRunId, traceId, queueId, dataType, traceTags, additionalProperties);
     }
   }
 }

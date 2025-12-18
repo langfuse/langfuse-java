@@ -10,7 +10,9 @@ import java.lang.String;
 public enum AnnotationQueueObjectType {
   TRACE("TRACE"),
 
-  OBSERVATION("OBSERVATION");
+  OBSERVATION("OBSERVATION"),
+
+  SESSION("SESSION");
 
   private final String value;
 

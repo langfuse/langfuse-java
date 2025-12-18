@@ -30,6 +30,7 @@ import com.langfuse.client.resources.commons.errors.UnauthorizedError;
 import com.langfuse.client.resources.commons.types.DatasetRunItem;
 import com.langfuse.client.resources.datasetrunitems.requests.ListDatasetRunItemsRequest;
 import com.langfuse.client.resources.datasetrunitems.types.CreateDatasetRunItemRequest;
+import com.langfuse.client.resources.datasetrunitems.types.PaginatedDatasetRunItems;
 
 public class DatasetRunItemsClient {
   protected final ClientOptions clientOptions;
@@ -99,14 +100,15 @@ public class DatasetRunItemsClient {
   /**
    * List dataset run items
    */
-  public void list(ListDatasetRunItemsRequest request) {
-    list(request,null);
+  public PaginatedDatasetRunItems list(ListDatasetRunItemsRequest request) {
+    return list(request,null);
   }
 
   /**
    * List dataset run items
    */
-  public void list(ListDatasetRunItemsRequest request, RequestOptions requestOptions) {
+  public PaginatedDatasetRunItems list(ListDatasetRunItemsRequest request,
+      RequestOptions requestOptions) {
     HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
       .addPathSegments("api/public")
       .addPathSegments("dataset-run-items");QueryStringMapper.addQueryParameter(httpUrl, "datasetId", request.getDatasetId(), false);
@@ -117,11 +119,11 @@ public class DatasetRunItemsClient {
       if (request.getLimit().isPresent()) {
         QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get().toString(), false);
       }
-      QueryStringMapper.addQueryParameter(httpUrl, "response", request.getResponse().toString(), false);
       Request.Builder _requestBuilder = new Request.Builder()
         .url(httpUrl.build())
         .method("GET", null)
         .headers(Headers.of(clientOptions.headers(requestOptions)))
+        .addHeader("Content-Type", "application/json")
         .addHeader("Accept", "application/json");
       Request okhttpRequest = _requestBuilder.build();
       OkHttpClient client = clientOptions.httpClient();
@@ -131,7 +133,7 @@ public class DatasetRunItemsClient {
       try (Response response = client.newCall(okhttpRequest).execute()) {
         ResponseBody responseBody = response.body();
         if (response.isSuccessful()) {
-          return;
+          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), PaginatedDatasetRunItems.class);
         }
         String responseBodyString = responseBody != null ? responseBody.string() : "{}";
         try {

@@ -32,13 +32,20 @@ public final class CreateDatasetRequest {
 
   private final Optional<Object> metadata;
 
+  private final Optional<Object> inputSchema;
+
+  private final Optional<Object> expectedOutputSchema;
+
   private final Map<String, Object> additionalProperties;
 
   private CreateDatasetRequest(String name, Optional<String> description, Optional<Object> metadata,
+      Optional<Object> inputSchema, Optional<Object> expectedOutputSchema,
       Map<String, Object> additionalProperties) {
     this.name = name;
     this.description = description;
     this.metadata = metadata;
+    this.inputSchema = inputSchema;
+    this.expectedOutputSchema = expectedOutputSchema;
     this.additionalProperties = additionalProperties;
   }
 
@@ -57,6 +64,22 @@ public final class CreateDatasetRequest {
     return metadata;
   }
 
+  /**
+   * @return JSON Schema for validating dataset item inputs. When set, all new and existing dataset items will be validated against this schema.
+   */
+  @JsonProperty("inputSchema")
+  public Optional<Object> getInputSchema() {
+    return inputSchema;
+  }
+
+  /**
+   * @return JSON Schema for validating dataset item expected outputs. When set, all new and existing dataset items will be validated against this schema.
+   */
+  @JsonProperty("expectedOutputSchema")
+  public Optional<Object> getExpectedOutputSchema() {
+    return expectedOutputSchema;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -69,12 +92,12 @@ public final class CreateDatasetRequest {
   }
 
   private boolean equalTo(CreateDatasetRequest other) {
-    return name.equals(other.name) && description.equals(other.description) && metadata.equals(other.metadata);
+    return name.equals(other.name) && description.equals(other.description) && metadata.equals(other.metadata) && inputSchema.equals(other.inputSchema) && expectedOutputSchema.equals(other.expectedOutputSchema);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.description, this.metadata);
+    return Objects.hash(this.name, this.description, this.metadata, this.inputSchema, this.expectedOutputSchema);
   }
 
   @java.lang.Override
@@ -102,6 +125,14 @@ public final class CreateDatasetRequest {
     _FinalStage metadata(Optional<Object> metadata);
 
     _FinalStage metadata(Object metadata);
+
+    _FinalStage inputSchema(Optional<Object> inputSchema);
+
+    _FinalStage inputSchema(Object inputSchema);
+
+    _FinalStage expectedOutputSchema(Optional<Object> expectedOutputSchema);
+
+    _FinalStage expectedOutputSchema(Object expectedOutputSchema);
   }
 
   @JsonIgnoreProperties(
@@ -109,6 +140,10 @@ public final class CreateDatasetRequest {
   )
   public static final class Builder implements NameStage, _FinalStage {
     private String name;
+
+    private Optional<Object> expectedOutputSchema = Optional.empty();
+
+    private Optional<Object> inputSchema = Optional.empty();
 
     private Optional<Object> metadata = Optional.empty();
 
@@ -125,6 +160,8 @@ public final class CreateDatasetRequest {
       name(other.getName());
       description(other.getDescription());
       metadata(other.getMetadata());
+      inputSchema(other.getInputSchema());
+      expectedOutputSchema(other.getExpectedOutputSchema());
       return this;
     }
 
@@ -132,6 +169,46 @@ public final class CreateDatasetRequest {
     @JsonSetter("name")
     public _FinalStage name(@NotNull String name) {
       this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
+    }
+
+    /**
+     * <p>JSON Schema for validating dataset item expected outputs. When set, all new and existing dataset items will be validated against this schema.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage expectedOutputSchema(Object expectedOutputSchema) {
+      this.expectedOutputSchema = Optional.ofNullable(expectedOutputSchema);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "expectedOutputSchema",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage expectedOutputSchema(Optional<Object> expectedOutputSchema) {
+      this.expectedOutputSchema = expectedOutputSchema;
+      return this;
+    }
+
+    /**
+     * <p>JSON Schema for validating dataset item inputs. When set, all new and existing dataset items will be validated against this schema.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage inputSchema(Object inputSchema) {
+      this.inputSchema = Optional.ofNullable(inputSchema);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "inputSchema",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage inputSchema(Optional<Object> inputSchema) {
+      this.inputSchema = inputSchema;
       return this;
     }
 
@@ -169,7 +246,7 @@ public final class CreateDatasetRequest {
 
     @java.lang.Override
     public CreateDatasetRequest build() {
-      return new CreateDatasetRequest(name, description, metadata, additionalProperties);
+      return new CreateDatasetRequest(name, description, metadata, inputSchema, expectedOutputSchema, additionalProperties);
     }
   }
 }

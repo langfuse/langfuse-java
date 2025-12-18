@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 public final class CreateChatPromptRequest {
   private final String name;
 
-  private final List<ChatMessage> prompt;
+  private final List<ChatMessageWithPlaceholders> prompt;
 
   private final Optional<Object> config;
 
@@ -42,9 +42,9 @@ public final class CreateChatPromptRequest {
 
   private final Map<String, Object> additionalProperties;
 
-  private CreateChatPromptRequest(String name, List<ChatMessage> prompt, Optional<Object> config,
-      Optional<List<String>> labels, Optional<List<String>> tags, Optional<String> commitMessage,
-      Map<String, Object> additionalProperties) {
+  private CreateChatPromptRequest(String name, List<ChatMessageWithPlaceholders> prompt,
+      Optional<Object> config, Optional<List<String>> labels, Optional<List<String>> tags,
+      Optional<String> commitMessage, Map<String, Object> additionalProperties) {
     this.name = name;
     this.prompt = prompt;
     this.config = config;
@@ -60,7 +60,7 @@ public final class CreateChatPromptRequest {
   }
 
   @JsonProperty("prompt")
-  public List<ChatMessage> getPrompt() {
+  public List<ChatMessageWithPlaceholders> getPrompt() {
     return prompt;
   }
 
@@ -131,11 +131,11 @@ public final class CreateChatPromptRequest {
   public interface _FinalStage {
     CreateChatPromptRequest build();
 
-    _FinalStage prompt(List<ChatMessage> prompt);
+    _FinalStage prompt(List<ChatMessageWithPlaceholders> prompt);
 
-    _FinalStage addPrompt(ChatMessage prompt);
+    _FinalStage addPrompt(ChatMessageWithPlaceholders prompt);
 
-    _FinalStage addAllPrompt(List<ChatMessage> prompt);
+    _FinalStage addAllPrompt(List<ChatMessageWithPlaceholders> prompt);
 
     _FinalStage config(Optional<Object> config);
 
@@ -168,7 +168,7 @@ public final class CreateChatPromptRequest {
 
     private Optional<Object> config = Optional.empty();
 
-    private List<ChatMessage> prompt = new ArrayList<>();
+    private List<ChatMessageWithPlaceholders> prompt = new ArrayList<>();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -271,13 +271,13 @@ public final class CreateChatPromptRequest {
     }
 
     @java.lang.Override
-    public _FinalStage addAllPrompt(List<ChatMessage> prompt) {
+    public _FinalStage addAllPrompt(List<ChatMessageWithPlaceholders> prompt) {
       this.prompt.addAll(prompt);
       return this;
     }
 
     @java.lang.Override
-    public _FinalStage addPrompt(ChatMessage prompt) {
+    public _FinalStage addPrompt(ChatMessageWithPlaceholders prompt) {
       this.prompt.add(prompt);
       return this;
     }
@@ -287,7 +287,7 @@ public final class CreateChatPromptRequest {
         value = "prompt",
         nulls = Nulls.SKIP
     )
-    public _FinalStage prompt(List<ChatMessage> prompt) {
+    public _FinalStage prompt(List<ChatMessageWithPlaceholders> prompt) {
       this.prompt.clear();
       this.prompt.addAll(prompt);
       return this;

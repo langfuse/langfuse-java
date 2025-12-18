@@ -53,13 +53,15 @@ public final class GetTracesRequest {
 
   private final Optional<String> fields;
 
+  private final Optional<String> filter;
+
   private final Map<String, Object> additionalProperties;
 
   private GetTracesRequest(Optional<Integer> page, Optional<Integer> limit, Optional<String> userId,
       Optional<String> name, Optional<String> sessionId, Optional<OffsetDateTime> fromTimestamp,
       Optional<OffsetDateTime> toTimestamp, Optional<String> orderBy, Optional<String> tags,
       Optional<String> version, Optional<String> release, Optional<String> environment,
-      Optional<String> fields, Map<String, Object> additionalProperties) {
+      Optional<String> fields, Optional<String> filter, Map<String, Object> additionalProperties) {
     this.page = page;
     this.limit = limit;
     this.userId = userId;
@@ -73,6 +75,7 @@ public final class GetTracesRequest {
     this.release = release;
     this.environment = environment;
     this.fields = fields;
+    this.filter = filter;
     this.additionalProperties = additionalProperties;
   }
 
@@ -164,11 +167,19 @@ public final class GetTracesRequest {
   }
 
   /**
-   * @return Comma-separated list of fields to include in the response. Available field groups are 'core' (always included), 'io' (input, output, metadata), 'scores', 'observations', 'metrics'. If not provided, all fields are included. Example: 'core,scores,metrics'
+   * @return Comma-separated list of fields to include in the response. Available field groups: 'core' (always included), 'io' (input, output, metadata), 'scores', 'observations', 'metrics'. If not specified, all fields are returned. Example: 'core,scores,metrics'. Note: Excluded 'observations' or 'scores' fields return empty arrays; excluded 'metrics' returns -1 for 'totalCost' and 'latency'.
    */
   @JsonProperty("fields")
   public Optional<String> getFields() {
     return fields;
+  }
+
+  /**
+   * @return JSON string containing an array of filter conditions. When provided, this takes precedence over query parameter filters (userId, name, sessionId, tags, version, release, environment, fromTimestamp, toTimestamp).
+   */
+  @JsonProperty("filter")
+  public Optional<String> getFilter() {
+    return filter;
   }
 
   @java.lang.Override
@@ -183,12 +194,12 @@ public final class GetTracesRequest {
   }
 
   private boolean equalTo(GetTracesRequest other) {
-    return page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && sessionId.equals(other.sessionId) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && orderBy.equals(other.orderBy) && tags.equals(other.tags) && version.equals(other.version) && release.equals(other.release) && environment.equals(other.environment) && fields.equals(other.fields);
+    return page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && sessionId.equals(other.sessionId) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && orderBy.equals(other.orderBy) && tags.equals(other.tags) && version.equals(other.version) && release.equals(other.release) && environment.equals(other.environment) && fields.equals(other.fields) && filter.equals(other.filter);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.page, this.limit, this.userId, this.name, this.sessionId, this.fromTimestamp, this.toTimestamp, this.orderBy, this.tags, this.version, this.release, this.environment, this.fields);
+    return Objects.hash(this.page, this.limit, this.userId, this.name, this.sessionId, this.fromTimestamp, this.toTimestamp, this.orderBy, this.tags, this.version, this.release, this.environment, this.fields, this.filter);
   }
 
   @java.lang.Override
@@ -230,6 +241,8 @@ public final class GetTracesRequest {
 
     private Optional<String> fields = Optional.empty();
 
+    private Optional<String> filter = Optional.empty();
+
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -250,6 +263,7 @@ public final class GetTracesRequest {
       release(other.getRelease());
       environment(other.getEnvironment());
       fields(other.getFields());
+      filter(other.getFilter());
       return this;
     }
 
@@ -435,8 +449,22 @@ public final class GetTracesRequest {
       return this;
     }
 
+    @JsonSetter(
+        value = "filter",
+        nulls = Nulls.SKIP
+    )
+    public Builder filter(Optional<String> filter) {
+      this.filter = filter;
+      return this;
+    }
+
+    public Builder filter(String filter) {
+      this.filter = Optional.ofNullable(filter);
+      return this;
+    }
+
     public GetTracesRequest build() {
-      return new GetTracesRequest(page, limit, userId, name, sessionId, fromTimestamp, toTimestamp, orderBy, tags, version, release, environment, fields, additionalProperties);
+      return new GetTracesRequest(page, limit, userId, name, sessionId, fromTimestamp, toTimestamp, orderBy, tags, version, release, environment, fields, filter, additionalProperties);
     }
   }
 }

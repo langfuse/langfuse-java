@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.langfuse.client.core.ObjectMappers;
-import java.lang.Double;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
@@ -28,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
     builder = CategoricalScore.Builder.class
 )
 public final class CategoricalScore implements ICategoricalScore, IBaseScore {
-  private final Optional<Double> value;
+  private final double value;
 
   private final String stringValue;
 
@@ -66,13 +65,12 @@ public final class CategoricalScore implements ICategoricalScore, IBaseScore {
 
   private final Map<String, Object> additionalProperties;
 
-  private CategoricalScore(Optional<Double> value, String stringValue, String id,
-      Optional<String> traceId, Optional<String> sessionId, Optional<String> observationId,
-      Optional<String> datasetRunId, String name, ScoreSource source, OffsetDateTime timestamp,
-      OffsetDateTime createdAt, OffsetDateTime updatedAt, Optional<String> authorUserId,
-      Optional<String> comment, Optional<Object> metadata, Optional<String> configId,
-      Optional<String> queueId, Optional<String> environment,
-      Map<String, Object> additionalProperties) {
+  private CategoricalScore(double value, String stringValue, String id, Optional<String> traceId,
+      Optional<String> sessionId, Optional<String> observationId, Optional<String> datasetRunId,
+      String name, ScoreSource source, OffsetDateTime timestamp, OffsetDateTime createdAt,
+      OffsetDateTime updatedAt, Optional<String> authorUserId, Optional<String> comment,
+      Optional<Object> metadata, Optional<String> configId, Optional<String> queueId,
+      Optional<String> environment, Map<String, Object> additionalProperties) {
     this.value = value;
     this.stringValue = stringValue;
     this.id = id;
@@ -95,11 +93,11 @@ public final class CategoricalScore implements ICategoricalScore, IBaseScore {
   }
 
   /**
-   * @return Only defined if a config is linked. Represents the numeric category mapping of the stringValue
+   * @return Represents the numeric category mapping of the stringValue. If no config is linked, defaults to 0.
    */
   @JsonProperty("value")
   @java.lang.Override
-  public Optional<Double> getValue() {
+  public double getValue() {
     return value;
   }
 
@@ -200,7 +198,7 @@ public final class CategoricalScore implements ICategoricalScore, IBaseScore {
   }
 
   /**
-   * @return Reference an annotation queue on a score. Populated if the score was initially created in an annotation queue.
+   * @return The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.
    */
   @JsonProperty("queueId")
   @java.lang.Override
@@ -229,7 +227,7 @@ public final class CategoricalScore implements ICategoricalScore, IBaseScore {
   }
 
   private boolean equalTo(CategoricalScore other) {
-    return value.equals(other.value) && stringValue.equals(other.stringValue) && id.equals(other.id) && traceId.equals(other.traceId) && sessionId.equals(other.sessionId) && observationId.equals(other.observationId) && datasetRunId.equals(other.datasetRunId) && name.equals(other.name) && source.equals(other.source) && timestamp.equals(other.timestamp) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt) && authorUserId.equals(other.authorUserId) && comment.equals(other.comment) && metadata.equals(other.metadata) && configId.equals(other.configId) && queueId.equals(other.queueId) && environment.equals(other.environment);
+    return value == other.value && stringValue.equals(other.stringValue) && id.equals(other.id) && traceId.equals(other.traceId) && sessionId.equals(other.sessionId) && observationId.equals(other.observationId) && datasetRunId.equals(other.datasetRunId) && name.equals(other.name) && source.equals(other.source) && timestamp.equals(other.timestamp) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt) && authorUserId.equals(other.authorUserId) && comment.equals(other.comment) && metadata.equals(other.metadata) && configId.equals(other.configId) && queueId.equals(other.queueId) && environment.equals(other.environment);
   }
 
   @java.lang.Override
@@ -242,14 +240,18 @@ public final class CategoricalScore implements ICategoricalScore, IBaseScore {
     return ObjectMappers.stringify(this);
   }
 
-  public static StringValueStage builder() {
+  public static ValueStage builder() {
     return new Builder();
+  }
+
+  public interface ValueStage {
+    StringValueStage value(double value);
+
+    Builder from(CategoricalScore other);
   }
 
   public interface StringValueStage {
     IdStage stringValue(@NotNull String stringValue);
-
-    Builder from(CategoricalScore other);
   }
 
   public interface IdStage {
@@ -278,10 +280,6 @@ public final class CategoricalScore implements ICategoricalScore, IBaseScore {
 
   public interface _FinalStage {
     CategoricalScore build();
-
-    _FinalStage value(Optional<Double> value);
-
-    _FinalStage value(Double value);
 
     _FinalStage traceId(Optional<String> traceId);
 
@@ -327,7 +325,9 @@ public final class CategoricalScore implements ICategoricalScore, IBaseScore {
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements StringValueStage, IdStage, NameStage, SourceStage, TimestampStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
+  public static final class Builder implements ValueStage, StringValueStage, IdStage, NameStage, SourceStage, TimestampStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
+    private double value;
+
     private String stringValue;
 
     private String id;
@@ -362,8 +362,6 @@ public final class CategoricalScore implements ICategoricalScore, IBaseScore {
 
     private Optional<String> traceId = Optional.empty();
 
-    private Optional<Double> value = Optional.empty();
-
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -390,6 +388,17 @@ public final class CategoricalScore implements ICategoricalScore, IBaseScore {
       configId(other.getConfigId());
       queueId(other.getQueueId());
       environment(other.getEnvironment());
+      return this;
+    }
+
+    /**
+     * <p>Represents the numeric category mapping of the stringValue. If no config is linked, defaults to 0.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("value")
+    public StringValueStage value(double value) {
+      this.value = value;
       return this;
     }
 
@@ -467,7 +476,7 @@ public final class CategoricalScore implements ICategoricalScore, IBaseScore {
     }
 
     /**
-     * <p>Reference an annotation queue on a score. Populated if the score was initially created in an annotation queue.</p>
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -615,26 +624,6 @@ public final class CategoricalScore implements ICategoricalScore, IBaseScore {
     )
     public _FinalStage traceId(Optional<String> traceId) {
       this.traceId = traceId;
-      return this;
-    }
-
-    /**
-     * <p>Only defined if a config is linked. Represents the numeric category mapping of the stringValue</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    public _FinalStage value(Double value) {
-      this.value = Optional.ofNullable(value);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "value",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage value(Optional<Double> value) {
-      this.value = value;
       return this;
     }
 

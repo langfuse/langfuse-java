@@ -42,6 +42,8 @@ public final class ScoreBody {
 
   private final Optional<String> environment;
 
+  private final Optional<String> queueId;
+
   private final CreateScoreValue value;
 
   private final Optional<String> comment;
@@ -56,9 +58,9 @@ public final class ScoreBody {
 
   private ScoreBody(Optional<String> id, Optional<String> traceId, Optional<String> sessionId,
       Optional<String> observationId, Optional<String> datasetRunId, String name,
-      Optional<String> environment, CreateScoreValue value, Optional<String> comment,
-      Optional<Object> metadata, Optional<ScoreDataType> dataType, Optional<String> configId,
-      Map<String, Object> additionalProperties) {
+      Optional<String> environment, Optional<String> queueId, CreateScoreValue value,
+      Optional<String> comment, Optional<Object> metadata, Optional<ScoreDataType> dataType,
+      Optional<String> configId, Map<String, Object> additionalProperties) {
     this.id = id;
     this.traceId = traceId;
     this.sessionId = sessionId;
@@ -66,6 +68,7 @@ public final class ScoreBody {
     this.datasetRunId = datasetRunId;
     this.name = name;
     this.environment = environment;
+    this.queueId = queueId;
     this.value = value;
     this.comment = comment;
     this.metadata = metadata;
@@ -107,6 +110,14 @@ public final class ScoreBody {
   @JsonProperty("environment")
   public Optional<String> getEnvironment() {
     return environment;
+  }
+
+  /**
+   * @return The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.
+   */
+  @JsonProperty("queueId")
+  public Optional<String> getQueueId() {
+    return queueId;
   }
 
   /**
@@ -155,12 +166,12 @@ public final class ScoreBody {
   }
 
   private boolean equalTo(ScoreBody other) {
-    return id.equals(other.id) && traceId.equals(other.traceId) && sessionId.equals(other.sessionId) && observationId.equals(other.observationId) && datasetRunId.equals(other.datasetRunId) && name.equals(other.name) && environment.equals(other.environment) && value.equals(other.value) && comment.equals(other.comment) && metadata.equals(other.metadata) && dataType.equals(other.dataType) && configId.equals(other.configId);
+    return id.equals(other.id) && traceId.equals(other.traceId) && sessionId.equals(other.sessionId) && observationId.equals(other.observationId) && datasetRunId.equals(other.datasetRunId) && name.equals(other.name) && environment.equals(other.environment) && queueId.equals(other.queueId) && value.equals(other.value) && comment.equals(other.comment) && metadata.equals(other.metadata) && dataType.equals(other.dataType) && configId.equals(other.configId);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.traceId, this.sessionId, this.observationId, this.datasetRunId, this.name, this.environment, this.value, this.comment, this.metadata, this.dataType, this.configId);
+    return Objects.hash(this.id, this.traceId, this.sessionId, this.observationId, this.datasetRunId, this.name, this.environment, this.queueId, this.value, this.comment, this.metadata, this.dataType, this.configId);
   }
 
   @java.lang.Override
@@ -209,6 +220,10 @@ public final class ScoreBody {
 
     _FinalStage environment(String environment);
 
+    _FinalStage queueId(Optional<String> queueId);
+
+    _FinalStage queueId(String queueId);
+
     _FinalStage comment(Optional<String> comment);
 
     _FinalStage comment(String comment);
@@ -242,6 +257,8 @@ public final class ScoreBody {
 
     private Optional<String> comment = Optional.empty();
 
+    private Optional<String> queueId = Optional.empty();
+
     private Optional<String> environment = Optional.empty();
 
     private Optional<String> datasetRunId = Optional.empty();
@@ -269,6 +286,7 @@ public final class ScoreBody {
       datasetRunId(other.getDatasetRunId());
       name(other.getName());
       environment(other.getEnvironment());
+      queueId(other.getQueueId());
       value(other.getValue());
       comment(other.getComment());
       metadata(other.getMetadata());
@@ -364,6 +382,26 @@ public final class ScoreBody {
     )
     public _FinalStage comment(Optional<String> comment) {
       this.comment = comment;
+      return this;
+    }
+
+    /**
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage queueId(String queueId) {
+      this.queueId = Optional.ofNullable(queueId);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "queueId",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage queueId(Optional<String> queueId) {
+      this.queueId = queueId;
       return this;
     }
 
@@ -465,7 +503,7 @@ public final class ScoreBody {
 
     @java.lang.Override
     public ScoreBody build() {
-      return new ScoreBody(id, traceId, sessionId, observationId, datasetRunId, name, environment, value, comment, metadata, dataType, configId, additionalProperties);
+      return new ScoreBody(id, traceId, sessionId, observationId, datasetRunId, name, environment, queueId, value, comment, metadata, dataType, configId, additionalProperties);
     }
   }
 }

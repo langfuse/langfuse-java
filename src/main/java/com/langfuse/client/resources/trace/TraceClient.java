@@ -203,6 +203,9 @@ public class TraceClient {
       if (request.getFields().isPresent()) {
         QueryStringMapper.addQueryParameter(httpUrl, "fields", request.getFields().get(), false);
       }
+      if (request.getFilter().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "filter", request.getFilter().get(), false);
+      }
       Request.Builder _requestBuilder = new Request.Builder()
         .url(httpUrl.build())
         .method("GET", null)

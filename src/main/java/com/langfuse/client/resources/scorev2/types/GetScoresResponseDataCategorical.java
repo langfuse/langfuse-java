@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.langfuse.client.core.ObjectMappers;
-import java.lang.Double;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
@@ -31,7 +30,7 @@ import com.langfuse.client.resources.commons.types.ScoreSource;
     builder = GetScoresResponseDataCategorical.Builder.class
 )
 public final class GetScoresResponseDataCategorical implements ICategoricalScore, IBaseScore {
-  private final Optional<Double> value;
+  private final double value;
 
   private final String stringValue;
 
@@ -71,7 +70,7 @@ public final class GetScoresResponseDataCategorical implements ICategoricalScore
 
   private final Map<String, Object> additionalProperties;
 
-  private GetScoresResponseDataCategorical(Optional<Double> value, String stringValue, String id,
+  private GetScoresResponseDataCategorical(double value, String stringValue, String id,
       Optional<String> traceId, Optional<String> sessionId, Optional<String> observationId,
       Optional<String> datasetRunId, String name, ScoreSource source, OffsetDateTime timestamp,
       OffsetDateTime createdAt, OffsetDateTime updatedAt, Optional<String> authorUserId,
@@ -101,11 +100,11 @@ public final class GetScoresResponseDataCategorical implements ICategoricalScore
   }
 
   /**
-   * @return Only defined if a config is linked. Represents the numeric category mapping of the stringValue
+   * @return Represents the numeric category mapping of the stringValue. If no config is linked, defaults to 0.
    */
   @JsonProperty("value")
   @java.lang.Override
-  public Optional<Double> getValue() {
+  public double getValue() {
     return value;
   }
 
@@ -206,7 +205,7 @@ public final class GetScoresResponseDataCategorical implements ICategoricalScore
   }
 
   /**
-   * @return Reference an annotation queue on a score. Populated if the score was initially created in an annotation queue.
+   * @return The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.
    */
   @JsonProperty("queueId")
   @java.lang.Override
@@ -240,7 +239,7 @@ public final class GetScoresResponseDataCategorical implements ICategoricalScore
   }
 
   private boolean equalTo(GetScoresResponseDataCategorical other) {
-    return value.equals(other.value) && stringValue.equals(other.stringValue) && id.equals(other.id) && traceId.equals(other.traceId) && sessionId.equals(other.sessionId) && observationId.equals(other.observationId) && datasetRunId.equals(other.datasetRunId) && name.equals(other.name) && source.equals(other.source) && timestamp.equals(other.timestamp) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt) && authorUserId.equals(other.authorUserId) && comment.equals(other.comment) && metadata.equals(other.metadata) && configId.equals(other.configId) && queueId.equals(other.queueId) && environment.equals(other.environment) && trace.equals(other.trace);
+    return value == other.value && stringValue.equals(other.stringValue) && id.equals(other.id) && traceId.equals(other.traceId) && sessionId.equals(other.sessionId) && observationId.equals(other.observationId) && datasetRunId.equals(other.datasetRunId) && name.equals(other.name) && source.equals(other.source) && timestamp.equals(other.timestamp) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt) && authorUserId.equals(other.authorUserId) && comment.equals(other.comment) && metadata.equals(other.metadata) && configId.equals(other.configId) && queueId.equals(other.queueId) && environment.equals(other.environment) && trace.equals(other.trace);
   }
 
   @java.lang.Override
@@ -253,14 +252,18 @@ public final class GetScoresResponseDataCategorical implements ICategoricalScore
     return ObjectMappers.stringify(this);
   }
 
-  public static StringValueStage builder() {
+  public static ValueStage builder() {
     return new Builder();
+  }
+
+  public interface ValueStage {
+    StringValueStage value(double value);
+
+    Builder from(GetScoresResponseDataCategorical other);
   }
 
   public interface StringValueStage {
     IdStage stringValue(@NotNull String stringValue);
-
-    Builder from(GetScoresResponseDataCategorical other);
   }
 
   public interface IdStage {
@@ -289,10 +292,6 @@ public final class GetScoresResponseDataCategorical implements ICategoricalScore
 
   public interface _FinalStage {
     GetScoresResponseDataCategorical build();
-
-    _FinalStage value(Optional<Double> value);
-
-    _FinalStage value(Double value);
 
     _FinalStage traceId(Optional<String> traceId);
 
@@ -342,7 +341,9 @@ public final class GetScoresResponseDataCategorical implements ICategoricalScore
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements StringValueStage, IdStage, NameStage, SourceStage, TimestampStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
+  public static final class Builder implements ValueStage, StringValueStage, IdStage, NameStage, SourceStage, TimestampStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
+    private double value;
+
     private String stringValue;
 
     private String id;
@@ -379,8 +380,6 @@ public final class GetScoresResponseDataCategorical implements ICategoricalScore
 
     private Optional<String> traceId = Optional.empty();
 
-    private Optional<Double> value = Optional.empty();
-
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -408,6 +407,17 @@ public final class GetScoresResponseDataCategorical implements ICategoricalScore
       queueId(other.getQueueId());
       environment(other.getEnvironment());
       trace(other.getTrace());
+      return this;
+    }
+
+    /**
+     * <p>Represents the numeric category mapping of the stringValue. If no config is linked, defaults to 0.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("value")
+    public StringValueStage value(double value) {
+      this.value = value;
       return this;
     }
 
@@ -501,7 +511,7 @@ public final class GetScoresResponseDataCategorical implements ICategoricalScore
     }
 
     /**
-     * <p>Reference an annotation queue on a score. Populated if the score was initially created in an annotation queue.</p>
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -649,26 +659,6 @@ public final class GetScoresResponseDataCategorical implements ICategoricalScore
     )
     public _FinalStage traceId(Optional<String> traceId) {
       this.traceId = traceId;
-      return this;
-    }
-
-    /**
-     * <p>Only defined if a config is linked. Represents the numeric category mapping of the stringValue</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    public _FinalStage value(Double value) {
-      this.value = Optional.ofNullable(value);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "value",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage value(Optional<Double> value) {
-      this.value = value;
       return this;
     }
 

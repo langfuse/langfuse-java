@@ -8,16 +8,19 @@ import com.langfuse.client.core.ClientOptions;
 import com.langfuse.client.core.Suppliers;
 import java.util.function.Supplier;
 import com.langfuse.client.resources.annotationqueues.AnnotationQueuesClient;
+import com.langfuse.client.resources.blobstorageintegrations.BlobStorageIntegrationsClient;
 import com.langfuse.client.resources.comments.CommentsClient;
 import com.langfuse.client.resources.datasetitems.DatasetItemsClient;
 import com.langfuse.client.resources.datasetrunitems.DatasetRunItemsClient;
 import com.langfuse.client.resources.datasets.DatasetsClient;
 import com.langfuse.client.resources.health.HealthClient;
 import com.langfuse.client.resources.ingestion.IngestionClient;
+import com.langfuse.client.resources.llmconnections.LlmConnectionsClient;
 import com.langfuse.client.resources.media.MediaClient;
 import com.langfuse.client.resources.metrics.MetricsClient;
 import com.langfuse.client.resources.models.ModelsClient;
 import com.langfuse.client.resources.observations.ObservationsClient;
+import com.langfuse.client.resources.opentelemetry.OpentelemetryClient;
 import com.langfuse.client.resources.organizations.OrganizationsClient;
 import com.langfuse.client.resources.projects.ProjectsClient;
 import com.langfuse.client.resources.prompts.PromptsClient;
@@ -34,6 +37,8 @@ public class LangfuseClient {
 
   protected final Supplier<AnnotationQueuesClient> annotationQueuesClient;
 
+  protected final Supplier<BlobStorageIntegrationsClient> blobStorageIntegrationsClient;
+
   protected final Supplier<CommentsClient> commentsClient;
 
   protected final Supplier<DatasetItemsClient> datasetItemsClient;
@@ -46,6 +51,8 @@ public class LangfuseClient {
 
   protected final Supplier<IngestionClient> ingestionClient;
 
+  protected final Supplier<LlmConnectionsClient> llmConnectionsClient;
+
   protected final Supplier<MediaClient> mediaClient;
 
   protected final Supplier<MetricsClient> metricsClient;
@@ -53,6 +60,8 @@ public class LangfuseClient {
   protected final Supplier<ModelsClient> modelsClient;
 
   protected final Supplier<ObservationsClient> observationsClient;
+
+  protected final Supplier<OpentelemetryClient> opentelemetryClient;
 
   protected final Supplier<OrganizationsClient> organizationsClient;
 
@@ -77,16 +86,19 @@ public class LangfuseClient {
   public LangfuseClient(ClientOptions clientOptions) {
     this.clientOptions = clientOptions;
     this.annotationQueuesClient = Suppliers.memoize(() -> new AnnotationQueuesClient(clientOptions));
+    this.blobStorageIntegrationsClient = Suppliers.memoize(() -> new BlobStorageIntegrationsClient(clientOptions));
     this.commentsClient = Suppliers.memoize(() -> new CommentsClient(clientOptions));
     this.datasetItemsClient = Suppliers.memoize(() -> new DatasetItemsClient(clientOptions));
     this.datasetRunItemsClient = Suppliers.memoize(() -> new DatasetRunItemsClient(clientOptions));
     this.datasetsClient = Suppliers.memoize(() -> new DatasetsClient(clientOptions));
     this.healthClient = Suppliers.memoize(() -> new HealthClient(clientOptions));
     this.ingestionClient = Suppliers.memoize(() -> new IngestionClient(clientOptions));
+    this.llmConnectionsClient = Suppliers.memoize(() -> new LlmConnectionsClient(clientOptions));
     this.mediaClient = Suppliers.memoize(() -> new MediaClient(clientOptions));
     this.metricsClient = Suppliers.memoize(() -> new MetricsClient(clientOptions));
     this.modelsClient = Suppliers.memoize(() -> new ModelsClient(clientOptions));
     this.observationsClient = Suppliers.memoize(() -> new ObservationsClient(clientOptions));
+    this.opentelemetryClient = Suppliers.memoize(() -> new OpentelemetryClient(clientOptions));
     this.organizationsClient = Suppliers.memoize(() -> new OrganizationsClient(clientOptions));
     this.projectsClient = Suppliers.memoize(() -> new ProjectsClient(clientOptions));
     this.promptVersionClient = Suppliers.memoize(() -> new PromptVersionClient(clientOptions));
@@ -101,6 +113,10 @@ public class LangfuseClient {
 
   public AnnotationQueuesClient annotationQueues() {
     return this.annotationQueuesClient.get();
+  }
+
+  public BlobStorageIntegrationsClient blobStorageIntegrations() {
+    return this.blobStorageIntegrationsClient.get();
   }
 
   public CommentsClient comments() {
@@ -127,6 +143,10 @@ public class LangfuseClient {
     return this.ingestionClient.get();
   }
 
+  public LlmConnectionsClient llmConnections() {
+    return this.llmConnectionsClient.get();
+  }
+
   public MediaClient media() {
     return this.mediaClient.get();
   }
@@ -141,6 +161,10 @@ public class LangfuseClient {
 
   public ObservationsClient observations() {
     return this.observationsClient.get();
+  }
+
+  public OpentelemetryClient opentelemetry() {
+    return this.opentelemetryClient.get();
   }
 
   public OrganizationsClient organizations() {

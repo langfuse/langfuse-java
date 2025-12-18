@@ -18,11 +18,13 @@ import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import com.langfuse.client.resources.commons.types.ModelUsageUnit;
+import com.langfuse.client.resources.commons.types.PricingTierInput;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
@@ -43,6 +45,8 @@ public final class CreateModelRequest {
 
   private final Optional<Double> totalPrice;
 
+  private final Optional<List<PricingTierInput>> pricingTiers;
+
   private final Optional<String> tokenizerId;
 
   private final Optional<Object> tokenizerConfig;
@@ -52,8 +56,8 @@ public final class CreateModelRequest {
   private CreateModelRequest(String modelName, String matchPattern,
       Optional<OffsetDateTime> startDate, Optional<ModelUsageUnit> unit,
       Optional<Double> inputPrice, Optional<Double> outputPrice, Optional<Double> totalPrice,
-      Optional<String> tokenizerId, Optional<Object> tokenizerConfig,
-      Map<String, Object> additionalProperties) {
+      Optional<List<PricingTierInput>> pricingTiers, Optional<String> tokenizerId,
+      Optional<Object> tokenizerConfig, Map<String, Object> additionalProperties) {
     this.modelName = modelName;
     this.matchPattern = matchPattern;
     this.startDate = startDate;
@@ -61,6 +65,7 @@ public final class CreateModelRequest {
     this.inputPrice = inputPrice;
     this.outputPrice = outputPrice;
     this.totalPrice = totalPrice;
+    this.pricingTiers = pricingTiers;
     this.tokenizerId = tokenizerId;
     this.tokenizerConfig = tokenizerConfig;
     this.additionalProperties = additionalProperties;
@@ -99,7 +104,7 @@ public final class CreateModelRequest {
   }
 
   /**
-   * @return Price (USD) per input unit
+   * @return Deprecated. Use 'pricingTiers' instead. Price (USD) per input unit. Creates a default tier if pricingTiers not provided.
    */
   @JsonProperty("inputPrice")
   public Optional<Double> getInputPrice() {
@@ -107,7 +112,7 @@ public final class CreateModelRequest {
   }
 
   /**
-   * @return Price (USD) per output unit
+   * @return Deprecated. Use 'pricingTiers' instead. Price (USD) per output unit. Creates a default tier if pricingTiers not provided.
    */
   @JsonProperty("outputPrice")
   public Optional<Double> getOutputPrice() {
@@ -115,11 +120,39 @@ public final class CreateModelRequest {
   }
 
   /**
-   * @return Price (USD) per total units. Cannot be set if input or output price is set.
+   * @return Deprecated. Use 'pricingTiers' instead. Price (USD) per total units. Cannot be set if input or output price is set. Creates a default tier if pricingTiers not provided.
    */
   @JsonProperty("totalPrice")
   public Optional<Double> getTotalPrice() {
     return totalPrice;
+  }
+
+  /**
+   * @return Optional. Array of pricing tiers for this model.
+   * <p>Use pricing tiers for all models - both those with threshold-based pricing variations and those with simple flat pricing:</p>
+   * <ul>
+   * <li>
+   * <p>For models with standard flat pricing: Create a single default tier with your prices
+   * (e.g., one tier with isDefault=true, priority=0, conditions=[], and your standard prices)</p>
+   * </li>
+   * <li>
+   * <p>For models with threshold-based pricing: Create a default tier plus additional conditional tiers
+   * (e.g., default tier for standard usage + high-volume tier for usage above certain thresholds)</p>
+   * </li>
+   * </ul>
+   * <p>Requirements:</p>
+   * <ul>
+   * <li>Cannot be provided with flat prices (inputPrice/outputPrice/totalPrice) - use one approach or the other</li>
+   * <li>Must include exactly one default tier with isDefault=true, priority=0, and conditions=[]</li>
+   * <li>All tier names and priorities must be unique within the model</li>
+   * <li>Each tier must define at least one price</li>
+   * </ul>
+   * <p>If omitted, you must provide flat prices instead (inputPrice/outputPrice/totalPrice),
+   * which will automatically create a single default tier named &quot;Standard&quot;.</p>
+   */
+  @JsonProperty("pricingTiers")
+  public Optional<List<PricingTierInput>> getPricingTiers() {
+    return pricingTiers;
   }
 
   /**
@@ -150,12 +183,12 @@ public final class CreateModelRequest {
   }
 
   private boolean equalTo(CreateModelRequest other) {
-    return modelName.equals(other.modelName) && matchPattern.equals(other.matchPattern) && startDate.equals(other.startDate) && unit.equals(other.unit) && inputPrice.equals(other.inputPrice) && outputPrice.equals(other.outputPrice) && totalPrice.equals(other.totalPrice) && tokenizerId.equals(other.tokenizerId) && tokenizerConfig.equals(other.tokenizerConfig);
+    return modelName.equals(other.modelName) && matchPattern.equals(other.matchPattern) && startDate.equals(other.startDate) && unit.equals(other.unit) && inputPrice.equals(other.inputPrice) && outputPrice.equals(other.outputPrice) && totalPrice.equals(other.totalPrice) && pricingTiers.equals(other.pricingTiers) && tokenizerId.equals(other.tokenizerId) && tokenizerConfig.equals(other.tokenizerConfig);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.modelName, this.matchPattern, this.startDate, this.unit, this.inputPrice, this.outputPrice, this.totalPrice, this.tokenizerId, this.tokenizerConfig);
+    return Objects.hash(this.modelName, this.matchPattern, this.startDate, this.unit, this.inputPrice, this.outputPrice, this.totalPrice, this.pricingTiers, this.tokenizerId, this.tokenizerConfig);
   }
 
   @java.lang.Override
@@ -200,6 +233,10 @@ public final class CreateModelRequest {
 
     _FinalStage totalPrice(Double totalPrice);
 
+    _FinalStage pricingTiers(Optional<List<PricingTierInput>> pricingTiers);
+
+    _FinalStage pricingTiers(List<PricingTierInput> pricingTiers);
+
     _FinalStage tokenizerId(Optional<String> tokenizerId);
 
     _FinalStage tokenizerId(String tokenizerId);
@@ -220,6 +257,8 @@ public final class CreateModelRequest {
     private Optional<Object> tokenizerConfig = Optional.empty();
 
     private Optional<String> tokenizerId = Optional.empty();
+
+    private Optional<List<PricingTierInput>> pricingTiers = Optional.empty();
 
     private Optional<Double> totalPrice = Optional.empty();
 
@@ -246,6 +285,7 @@ public final class CreateModelRequest {
       inputPrice(other.getInputPrice());
       outputPrice(other.getOutputPrice());
       totalPrice(other.getTotalPrice());
+      pricingTiers(other.getPricingTiers());
       tokenizerId(other.getTokenizerId());
       tokenizerConfig(other.getTokenizerConfig());
       return this;
@@ -314,7 +354,47 @@ public final class CreateModelRequest {
     }
 
     /**
-     * <p>Price (USD) per total units. Cannot be set if input or output price is set.</p>
+     * <p>Optional. Array of pricing tiers for this model.</p>
+     * <p>Use pricing tiers for all models - both those with threshold-based pricing variations and those with simple flat pricing:</p>
+     * <ul>
+     * <li>
+     * <p>For models with standard flat pricing: Create a single default tier with your prices
+     * (e.g., one tier with isDefault=true, priority=0, conditions=[], and your standard prices)</p>
+     * </li>
+     * <li>
+     * <p>For models with threshold-based pricing: Create a default tier plus additional conditional tiers
+     * (e.g., default tier for standard usage + high-volume tier for usage above certain thresholds)</p>
+     * </li>
+     * </ul>
+     * <p>Requirements:</p>
+     * <ul>
+     * <li>Cannot be provided with flat prices (inputPrice/outputPrice/totalPrice) - use one approach or the other</li>
+     * <li>Must include exactly one default tier with isDefault=true, priority=0, and conditions=[]</li>
+     * <li>All tier names and priorities must be unique within the model</li>
+     * <li>Each tier must define at least one price</li>
+     * </ul>
+     * <p>If omitted, you must provide flat prices instead (inputPrice/outputPrice/totalPrice),
+     * which will automatically create a single default tier named &quot;Standard&quot;.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage pricingTiers(List<PricingTierInput> pricingTiers) {
+      this.pricingTiers = Optional.ofNullable(pricingTiers);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "pricingTiers",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage pricingTiers(Optional<List<PricingTierInput>> pricingTiers) {
+      this.pricingTiers = pricingTiers;
+      return this;
+    }
+
+    /**
+     * <p>Deprecated. Use 'pricingTiers' instead. Price (USD) per total units. Cannot be set if input or output price is set. Creates a default tier if pricingTiers not provided.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -334,7 +414,7 @@ public final class CreateModelRequest {
     }
 
     /**
-     * <p>Price (USD) per output unit</p>
+     * <p>Deprecated. Use 'pricingTiers' instead. Price (USD) per output unit. Creates a default tier if pricingTiers not provided.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -354,7 +434,7 @@ public final class CreateModelRequest {
     }
 
     /**
-     * <p>Price (USD) per input unit</p>
+     * <p>Deprecated. Use 'pricingTiers' instead. Price (USD) per input unit. Creates a default tier if pricingTiers not provided.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -415,7 +495,7 @@ public final class CreateModelRequest {
 
     @java.lang.Override
     public CreateModelRequest build() {
-      return new CreateModelRequest(modelName, matchPattern, startDate, unit, inputPrice, outputPrice, totalPrice, tokenizerId, tokenizerConfig, additionalProperties);
+      return new CreateModelRequest(modelName, matchPattern, startDate, unit, inputPrice, outputPrice, totalPrice, pricingTiers, tokenizerId, tokenizerConfig, additionalProperties);
     }
   }
 }

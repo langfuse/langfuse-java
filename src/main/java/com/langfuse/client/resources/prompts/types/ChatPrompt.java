@@ -42,13 +42,13 @@ public final class ChatPrompt implements IBasePrompt {
 
   private final Optional<Map<String, Object>> resolutionGraph;
 
-  private final List<ChatMessage> prompt;
+  private final List<ChatMessageWithPlaceholders> prompt;
 
   private final Map<String, Object> additionalProperties;
 
   private ChatPrompt(String name, int version, Object config, List<String> labels,
       List<String> tags, Optional<String> commitMessage,
-      Optional<Map<String, Object>> resolutionGraph, List<ChatMessage> prompt,
+      Optional<Map<String, Object>> resolutionGraph, List<ChatMessageWithPlaceholders> prompt,
       Map<String, Object> additionalProperties) {
     this.name = name;
     this.version = version;
@@ -116,7 +116,7 @@ public final class ChatPrompt implements IBasePrompt {
   }
 
   @JsonProperty("prompt")
-  public List<ChatMessage> getPrompt() {
+  public List<ChatMessageWithPlaceholders> getPrompt() {
     return prompt;
   }
 
@@ -186,11 +186,11 @@ public final class ChatPrompt implements IBasePrompt {
 
     _FinalStage resolutionGraph(Map<String, Object> resolutionGraph);
 
-    _FinalStage prompt(List<ChatMessage> prompt);
+    _FinalStage prompt(List<ChatMessageWithPlaceholders> prompt);
 
-    _FinalStage addPrompt(ChatMessage prompt);
+    _FinalStage addPrompt(ChatMessageWithPlaceholders prompt);
 
-    _FinalStage addAllPrompt(List<ChatMessage> prompt);
+    _FinalStage addAllPrompt(List<ChatMessageWithPlaceholders> prompt);
   }
 
   @JsonIgnoreProperties(
@@ -203,7 +203,7 @@ public final class ChatPrompt implements IBasePrompt {
 
     private Object config;
 
-    private List<ChatMessage> prompt = new ArrayList<>();
+    private List<ChatMessageWithPlaceholders> prompt = new ArrayList<>();
 
     private Optional<Map<String, Object>> resolutionGraph = Optional.empty();
 
@@ -254,13 +254,13 @@ public final class ChatPrompt implements IBasePrompt {
     }
 
     @java.lang.Override
-    public _FinalStage addAllPrompt(List<ChatMessage> prompt) {
+    public _FinalStage addAllPrompt(List<ChatMessageWithPlaceholders> prompt) {
       this.prompt.addAll(prompt);
       return this;
     }
 
     @java.lang.Override
-    public _FinalStage addPrompt(ChatMessage prompt) {
+    public _FinalStage addPrompt(ChatMessageWithPlaceholders prompt) {
       this.prompt.add(prompt);
       return this;
     }
@@ -270,7 +270,7 @@ public final class ChatPrompt implements IBasePrompt {
         value = "prompt",
         nulls = Nulls.SKIP
     )
-    public _FinalStage prompt(List<ChatMessage> prompt) {
+    public _FinalStage prompt(List<ChatMessageWithPlaceholders> prompt) {
       this.prompt.clear();
       this.prompt.addAll(prompt);
       return this;

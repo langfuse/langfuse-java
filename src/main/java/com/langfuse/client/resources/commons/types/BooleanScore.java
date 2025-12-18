@@ -198,7 +198,7 @@ public final class BooleanScore implements IBooleanScore, IBaseScore {
   }
 
   /**
-   * @return Reference an annotation queue on a score. Populated if the score was initially created in an annotation queue.
+   * @return The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.
    */
   @JsonProperty("queueId")
   @java.lang.Override
@@ -476,7 +476,7 @@ public final class BooleanScore implements IBooleanScore, IBaseScore {
     }
 
     /**
-     * <p>Reference an annotation queue on a score. Populated if the score was initially created in an annotation queue.</p>
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override

@@ -27,10 +27,17 @@ import java.util.Optional;
 public final class CreateApiKeyRequest {
   private final Optional<String> note;
 
+  private final Optional<String> publicKey;
+
+  private final Optional<String> secretKey;
+
   private final Map<String, Object> additionalProperties;
 
-  private CreateApiKeyRequest(Optional<String> note, Map<String, Object> additionalProperties) {
+  private CreateApiKeyRequest(Optional<String> note, Optional<String> publicKey,
+      Optional<String> secretKey, Map<String, Object> additionalProperties) {
     this.note = note;
+    this.publicKey = publicKey;
+    this.secretKey = secretKey;
     this.additionalProperties = additionalProperties;
   }
 
@@ -40,6 +47,22 @@ public final class CreateApiKeyRequest {
   @JsonProperty("note")
   public Optional<String> getNote() {
     return note;
+  }
+
+  /**
+   * @return Optional predefined public key. Must start with 'pk-lf-'. If provided, secretKey must also be provided.
+   */
+  @JsonProperty("publicKey")
+  public Optional<String> getPublicKey() {
+    return publicKey;
+  }
+
+  /**
+   * @return Optional predefined secret key. Must start with 'sk-lf-'. If provided, publicKey must also be provided.
+   */
+  @JsonProperty("secretKey")
+  public Optional<String> getSecretKey() {
+    return secretKey;
   }
 
   @java.lang.Override
@@ -54,12 +77,12 @@ public final class CreateApiKeyRequest {
   }
 
   private boolean equalTo(CreateApiKeyRequest other) {
-    return note.equals(other.note);
+    return note.equals(other.note) && publicKey.equals(other.publicKey) && secretKey.equals(other.secretKey);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.note);
+    return Objects.hash(this.note, this.publicKey, this.secretKey);
   }
 
   @java.lang.Override
@@ -77,6 +100,10 @@ public final class CreateApiKeyRequest {
   public static final class Builder {
     private Optional<String> note = Optional.empty();
 
+    private Optional<String> publicKey = Optional.empty();
+
+    private Optional<String> secretKey = Optional.empty();
+
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -85,6 +112,8 @@ public final class CreateApiKeyRequest {
 
     public Builder from(CreateApiKeyRequest other) {
       note(other.getNote());
+      publicKey(other.getPublicKey());
+      secretKey(other.getSecretKey());
       return this;
     }
 
@@ -102,8 +131,36 @@ public final class CreateApiKeyRequest {
       return this;
     }
 
+    @JsonSetter(
+        value = "publicKey",
+        nulls = Nulls.SKIP
+    )
+    public Builder publicKey(Optional<String> publicKey) {
+      this.publicKey = publicKey;
+      return this;
+    }
+
+    public Builder publicKey(String publicKey) {
+      this.publicKey = Optional.ofNullable(publicKey);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "secretKey",
+        nulls = Nulls.SKIP
+    )
+    public Builder secretKey(Optional<String> secretKey) {
+      this.secretKey = secretKey;
+      return this;
+    }
+
+    public Builder secretKey(String secretKey) {
+      this.secretKey = Optional.ofNullable(secretKey);
+      return this;
+    }
+
     public CreateApiKeyRequest build() {
-      return new CreateApiKeyRequest(note, additionalProperties);
+      return new CreateApiKeyRequest(note, publicKey, secretKey, additionalProperties);
     }
   }
 }

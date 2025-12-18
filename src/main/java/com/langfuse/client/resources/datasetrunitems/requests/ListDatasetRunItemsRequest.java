@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
-import com.langfuse.client.resources.datasetrunitems.types.PaginatedDatasetRunItems;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
@@ -36,18 +35,14 @@ public final class ListDatasetRunItemsRequest {
 
   private final Optional<Integer> limit;
 
-  private final PaginatedDatasetRunItems response;
-
   private final Map<String, Object> additionalProperties;
 
   private ListDatasetRunItemsRequest(String datasetId, String runName, Optional<Integer> page,
-      Optional<Integer> limit, PaginatedDatasetRunItems response,
-      Map<String, Object> additionalProperties) {
+      Optional<Integer> limit, Map<String, Object> additionalProperties) {
     this.datasetId = datasetId;
     this.runName = runName;
     this.page = page;
     this.limit = limit;
-    this.response = response;
     this.additionalProperties = additionalProperties;
   }
 
@@ -77,11 +72,6 @@ public final class ListDatasetRunItemsRequest {
     return limit;
   }
 
-  @JsonProperty("response")
-  public PaginatedDatasetRunItems getResponse() {
-    return response;
-  }
-
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -94,12 +84,12 @@ public final class ListDatasetRunItemsRequest {
   }
 
   private boolean equalTo(ListDatasetRunItemsRequest other) {
-    return datasetId.equals(other.datasetId) && runName.equals(other.runName) && page.equals(other.page) && limit.equals(other.limit) && response.equals(other.response);
+    return datasetId.equals(other.datasetId) && runName.equals(other.runName) && page.equals(other.page) && limit.equals(other.limit);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.datasetId, this.runName, this.page, this.limit, this.response);
+    return Objects.hash(this.datasetId, this.runName, this.page, this.limit);
   }
 
   @java.lang.Override
@@ -118,11 +108,7 @@ public final class ListDatasetRunItemsRequest {
   }
 
   public interface RunNameStage {
-    ResponseStage runName(@NotNull String runName);
-  }
-
-  public interface ResponseStage {
-    _FinalStage response(@NotNull PaginatedDatasetRunItems response);
+    _FinalStage runName(@NotNull String runName);
   }
 
   public interface _FinalStage {
@@ -140,12 +126,10 @@ public final class ListDatasetRunItemsRequest {
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements DatasetIdStage, RunNameStage, ResponseStage, _FinalStage {
+  public static final class Builder implements DatasetIdStage, RunNameStage, _FinalStage {
     private String datasetId;
 
     private String runName;
-
-    private PaginatedDatasetRunItems response;
 
     private Optional<Integer> limit = Optional.empty();
 
@@ -163,7 +147,6 @@ public final class ListDatasetRunItemsRequest {
       runName(other.getRunName());
       page(other.getPage());
       limit(other.getLimit());
-      response(other.getResponse());
       return this;
     }
 
@@ -176,15 +159,8 @@ public final class ListDatasetRunItemsRequest {
 
     @java.lang.Override
     @JsonSetter("runName")
-    public ResponseStage runName(@NotNull String runName) {
+    public _FinalStage runName(@NotNull String runName) {
       this.runName = Objects.requireNonNull(runName, "runName must not be null");
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter("response")
-    public _FinalStage response(@NotNull PaginatedDatasetRunItems response) {
-      this.response = Objects.requireNonNull(response, "response must not be null");
       return this;
     }
 
@@ -230,7 +206,7 @@ public final class ListDatasetRunItemsRequest {
 
     @java.lang.Override
     public ListDatasetRunItemsRequest build() {
-      return new ListDatasetRunItemsRequest(datasetId, runName, page, limit, response, additionalProperties);
+      return new ListDatasetRunItemsRequest(datasetId, runName, page, limit, additionalProperties);
     }
   }
 }

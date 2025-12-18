@@ -44,9 +44,11 @@ public final class CreateScoreRequest {
 
   private final Optional<String> comment;
 
-  private final Optional<Object> metadata;
+  private final Optional<Map<String, Object>> metadata;
 
   private final Optional<String> environment;
+
+  private final Optional<String> queueId;
 
   private final Optional<ScoreDataType> dataType;
 
@@ -56,8 +58,9 @@ public final class CreateScoreRequest {
 
   private CreateScoreRequest(Optional<String> id, Optional<String> traceId,
       Optional<String> sessionId, Optional<String> observationId, Optional<String> datasetRunId,
-      String name, CreateScoreValue value, Optional<String> comment, Optional<Object> metadata,
-      Optional<String> environment, Optional<ScoreDataType> dataType, Optional<String> configId,
+      String name, CreateScoreValue value, Optional<String> comment,
+      Optional<Map<String, Object>> metadata, Optional<String> environment,
+      Optional<String> queueId, Optional<ScoreDataType> dataType, Optional<String> configId,
       Map<String, Object> additionalProperties) {
     this.id = id;
     this.traceId = traceId;
@@ -69,6 +72,7 @@ public final class CreateScoreRequest {
     this.comment = comment;
     this.metadata = metadata;
     this.environment = environment;
+    this.queueId = queueId;
     this.dataType = dataType;
     this.configId = configId;
     this.additionalProperties = additionalProperties;
@@ -118,7 +122,7 @@ public final class CreateScoreRequest {
   }
 
   @JsonProperty("metadata")
-  public Optional<Object> getMetadata() {
+  public Optional<Map<String, Object>> getMetadata() {
     return metadata;
   }
 
@@ -128,6 +132,14 @@ public final class CreateScoreRequest {
   @JsonProperty("environment")
   public Optional<String> getEnvironment() {
     return environment;
+  }
+
+  /**
+   * @return The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.
+   */
+  @JsonProperty("queueId")
+  public Optional<String> getQueueId() {
+    return queueId;
   }
 
   /**
@@ -158,12 +170,12 @@ public final class CreateScoreRequest {
   }
 
   private boolean equalTo(CreateScoreRequest other) {
-    return id.equals(other.id) && traceId.equals(other.traceId) && sessionId.equals(other.sessionId) && observationId.equals(other.observationId) && datasetRunId.equals(other.datasetRunId) && name.equals(other.name) && value.equals(other.value) && comment.equals(other.comment) && metadata.equals(other.metadata) && environment.equals(other.environment) && dataType.equals(other.dataType) && configId.equals(other.configId);
+    return id.equals(other.id) && traceId.equals(other.traceId) && sessionId.equals(other.sessionId) && observationId.equals(other.observationId) && datasetRunId.equals(other.datasetRunId) && name.equals(other.name) && value.equals(other.value) && comment.equals(other.comment) && metadata.equals(other.metadata) && environment.equals(other.environment) && queueId.equals(other.queueId) && dataType.equals(other.dataType) && configId.equals(other.configId);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.traceId, this.sessionId, this.observationId, this.datasetRunId, this.name, this.value, this.comment, this.metadata, this.environment, this.dataType, this.configId);
+    return Objects.hash(this.id, this.traceId, this.sessionId, this.observationId, this.datasetRunId, this.name, this.value, this.comment, this.metadata, this.environment, this.queueId, this.dataType, this.configId);
   }
 
   @java.lang.Override
@@ -212,13 +224,17 @@ public final class CreateScoreRequest {
 
     _FinalStage comment(String comment);
 
-    _FinalStage metadata(Optional<Object> metadata);
+    _FinalStage metadata(Optional<Map<String, Object>> metadata);
 
-    _FinalStage metadata(Object metadata);
+    _FinalStage metadata(Map<String, Object> metadata);
 
     _FinalStage environment(Optional<String> environment);
 
     _FinalStage environment(String environment);
+
+    _FinalStage queueId(Optional<String> queueId);
+
+    _FinalStage queueId(String queueId);
 
     _FinalStage dataType(Optional<ScoreDataType> dataType);
 
@@ -241,9 +257,11 @@ public final class CreateScoreRequest {
 
     private Optional<ScoreDataType> dataType = Optional.empty();
 
+    private Optional<String> queueId = Optional.empty();
+
     private Optional<String> environment = Optional.empty();
 
-    private Optional<Object> metadata = Optional.empty();
+    private Optional<Map<String, Object>> metadata = Optional.empty();
 
     private Optional<String> comment = Optional.empty();
 
@@ -275,6 +293,7 @@ public final class CreateScoreRequest {
       comment(other.getComment());
       metadata(other.getMetadata());
       environment(other.getEnvironment());
+      queueId(other.getQueueId());
       dataType(other.getDataType());
       configId(other.getConfigId());
       return this;
@@ -339,6 +358,26 @@ public final class CreateScoreRequest {
     }
 
     /**
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage queueId(String queueId) {
+      this.queueId = Optional.ofNullable(queueId);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "queueId",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage queueId(Optional<String> queueId) {
+      this.queueId = queueId;
+      return this;
+    }
+
+    /**
      * <p>The environment of the score. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -359,7 +398,7 @@ public final class CreateScoreRequest {
     }
 
     @java.lang.Override
-    public _FinalStage metadata(Object metadata) {
+    public _FinalStage metadata(Map<String, Object> metadata) {
       this.metadata = Optional.ofNullable(metadata);
       return this;
     }
@@ -369,7 +408,7 @@ public final class CreateScoreRequest {
         value = "metadata",
         nulls = Nulls.SKIP
     )
-    public _FinalStage metadata(Optional<Object> metadata) {
+    public _FinalStage metadata(Optional<Map<String, Object>> metadata) {
       this.metadata = metadata;
       return this;
     }
@@ -472,7 +511,7 @@ public final class CreateScoreRequest {
 
     @java.lang.Override
     public CreateScoreRequest build() {
-      return new CreateScoreRequest(id, traceId, sessionId, observationId, datasetRunId, name, value, comment, metadata, environment, dataType, configId, additionalProperties);
+      return new CreateScoreRequest(id, traceId, sessionId, observationId, datasetRunId, name, value, comment, metadata, environment, queueId, dataType, configId, additionalProperties);
     }
   }
 }

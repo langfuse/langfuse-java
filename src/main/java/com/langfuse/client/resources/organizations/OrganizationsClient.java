@@ -26,9 +26,12 @@ import com.langfuse.client.resources.commons.errors.Error;
 import com.langfuse.client.resources.commons.errors.MethodNotAllowedError;
 import com.langfuse.client.resources.commons.errors.NotFoundError;
 import com.langfuse.client.resources.commons.errors.UnauthorizedError;
+import com.langfuse.client.resources.organizations.types.DeleteMembershipRequest;
+import com.langfuse.client.resources.organizations.types.MembershipDeletionResponse;
 import com.langfuse.client.resources.organizations.types.MembershipRequest;
 import com.langfuse.client.resources.organizations.types.MembershipResponse;
 import com.langfuse.client.resources.organizations.types.MembershipsResponse;
+import com.langfuse.client.resources.organizations.types.OrganizationApiKeysResponse;
 import com.langfuse.client.resources.organizations.types.OrganizationProjectsResponse;
 
 public class OrganizationsClient {
@@ -127,6 +130,65 @@ public class OrganizationsClient {
       ResponseBody responseBody = response.body();
       if (response.isSuccessful()) {
         return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), MembershipResponse.class);
+      }
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      try {
+        switch (response.code()) {
+          case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+        }
+      }
+      catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+    }
+    catch (IOException e) {
+      throw new LangfuseClientException("Network error executing HTTP request", e);
+    }
+  }
+
+  /**
+   * Delete a membership from the organization associated with the API key (requires organization-scoped API key)
+   */
+  public MembershipDeletionResponse deleteOrganizationMembership(DeleteMembershipRequest request) {
+    return deleteOrganizationMembership(request,null);
+  }
+
+  /**
+   * Delete a membership from the organization associated with the API key (requires organization-scoped API key)
+   */
+  public MembershipDeletionResponse deleteOrganizationMembership(DeleteMembershipRequest request,
+      RequestOptions requestOptions) {
+    HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+      .addPathSegments("api/public")
+      .addPathSegments("organizations/memberships")
+      .build();
+    RequestBody body;
+    try {
+      body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+    }
+    catch(JsonProcessingException e) {
+      throw new LangfuseClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl)
+      .method("DELETE", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      if (response.isSuccessful()) {
+        return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), MembershipDeletionResponse.class);
       }
       String responseBodyString = responseBody != null ? responseBody.string() : "{}";
       try {
@@ -264,6 +326,68 @@ public class OrganizationsClient {
   }
 
   /**
+   * Delete a membership from a specific project (requires organization-scoped API key). The user must be a member of the organization.
+   */
+  public MembershipDeletionResponse deleteProjectMembership(String projectId,
+      DeleteMembershipRequest request) {
+    return deleteProjectMembership(projectId,request,null);
+  }
+
+  /**
+   * Delete a membership from a specific project (requires organization-scoped API key). The user must be a member of the organization.
+   */
+  public MembershipDeletionResponse deleteProjectMembership(String projectId,
+      DeleteMembershipRequest request, RequestOptions requestOptions) {
+    HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+      .addPathSegments("api/public")
+      .addPathSegments("projects")
+      .addPathSegment(projectId)
+      .addPathSegments("memberships")
+      .build();
+    RequestBody body;
+    try {
+      body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+    }
+    catch(JsonProcessingException e) {
+      throw new LangfuseClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl)
+      .method("DELETE", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      if (response.isSuccessful()) {
+        return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), MembershipDeletionResponse.class);
+      }
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      try {
+        switch (response.code()) {
+          case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+        }
+      }
+      catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+    }
+    catch (IOException e) {
+      throw new LangfuseClientException("Network error executing HTTP request", e);
+    }
+  }
+
+  /**
    * Get all projects for the organization associated with the API key (requires organization-scoped API key)
    */
   public OrganizationProjectsResponse getOrganizationProjects() {
@@ -293,6 +417,57 @@ public class OrganizationsClient {
       ResponseBody responseBody = response.body();
       if (response.isSuccessful()) {
         return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), OrganizationProjectsResponse.class);
+      }
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      try {
+        switch (response.code()) {
+          case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+        }
+      }
+      catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+    }
+    catch (IOException e) {
+      throw new LangfuseClientException("Network error executing HTTP request", e);
+    }
+  }
+
+  /**
+   * Get all API keys for the organization associated with the API key (requires organization-scoped API key)
+   */
+  public OrganizationApiKeysResponse getOrganizationApiKeys() {
+    return getOrganizationApiKeys(null);
+  }
+
+  /**
+   * Get all API keys for the organization associated with the API key (requires organization-scoped API key)
+   */
+  public OrganizationApiKeysResponse getOrganizationApiKeys(RequestOptions requestOptions) {
+    HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+      .addPathSegments("api/public")
+      .addPathSegments("organizations/apiKeys")
+      .build();
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl)
+      .method("GET", null)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      if (response.isSuccessful()) {
+        return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), OrganizationApiKeysResponse.class);
       }
       String responseBodyString = responseBody != null ? responseBody.string() : "{}";
       try {

@@ -31,6 +31,8 @@ import org.jetbrains.annotations.NotNull;
 public final class PromptMeta {
   private final String name;
 
+  private final PromptType type;
+
   private final List<Integer> versions;
 
   private final List<String> labels;
@@ -43,9 +45,11 @@ public final class PromptMeta {
 
   private final Map<String, Object> additionalProperties;
 
-  private PromptMeta(String name, List<Integer> versions, List<String> labels, List<String> tags,
-      OffsetDateTime lastUpdatedAt, Object lastConfig, Map<String, Object> additionalProperties) {
+  private PromptMeta(String name, PromptType type, List<Integer> versions, List<String> labels,
+      List<String> tags, OffsetDateTime lastUpdatedAt, Object lastConfig,
+      Map<String, Object> additionalProperties) {
     this.name = name;
+    this.type = type;
     this.versions = versions;
     this.labels = labels;
     this.tags = tags;
@@ -57,6 +61,14 @@ public final class PromptMeta {
   @JsonProperty("name")
   public String getName() {
     return name;
+  }
+
+  /**
+   * @return Indicates whether the prompt is a text or chat prompt.
+   */
+  @JsonProperty("type")
+  public PromptType getType() {
+    return type;
   }
 
   @JsonProperty("versions")
@@ -99,12 +111,12 @@ public final class PromptMeta {
   }
 
   private boolean equalTo(PromptMeta other) {
-    return name.equals(other.name) && versions.equals(other.versions) && labels.equals(other.labels) && tags.equals(other.tags) && lastUpdatedAt.equals(other.lastUpdatedAt) && lastConfig.equals(other.lastConfig);
+    return name.equals(other.name) && type.equals(other.type) && versions.equals(other.versions) && labels.equals(other.labels) && tags.equals(other.tags) && lastUpdatedAt.equals(other.lastUpdatedAt) && lastConfig.equals(other.lastConfig);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.versions, this.labels, this.tags, this.lastUpdatedAt, this.lastConfig);
+    return Objects.hash(this.name, this.type, this.versions, this.labels, this.tags, this.lastUpdatedAt, this.lastConfig);
   }
 
   @java.lang.Override
@@ -117,9 +129,13 @@ public final class PromptMeta {
   }
 
   public interface NameStage {
-    LastUpdatedAtStage name(@NotNull String name);
+    TypeStage name(@NotNull String name);
 
     Builder from(PromptMeta other);
+  }
+
+  public interface TypeStage {
+    LastUpdatedAtStage type(@NotNull PromptType type);
   }
 
   public interface LastUpdatedAtStage {
@@ -155,8 +171,10 @@ public final class PromptMeta {
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements NameStage, LastUpdatedAtStage, LastConfigStage, _FinalStage {
+  public static final class Builder implements NameStage, TypeStage, LastUpdatedAtStage, LastConfigStage, _FinalStage {
     private String name;
+
+    private PromptType type;
 
     private OffsetDateTime lastUpdatedAt;
 
@@ -177,6 +195,7 @@ public final class PromptMeta {
     @java.lang.Override
     public Builder from(PromptMeta other) {
       name(other.getName());
+      type(other.getType());
       versions(other.getVersions());
       labels(other.getLabels());
       tags(other.getTags());
@@ -187,8 +206,19 @@ public final class PromptMeta {
 
     @java.lang.Override
     @JsonSetter("name")
-    public LastUpdatedAtStage name(@NotNull String name) {
+    public TypeStage name(@NotNull String name) {
       this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Indicates whether the prompt is a text or chat prompt.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("type")
+    public LastUpdatedAtStage type(@NotNull PromptType type) {
+      this.type = Objects.requireNonNull(type, "type must not be null");
       return this;
     }
 
@@ -281,7 +311,7 @@ public final class PromptMeta {
 
     @java.lang.Override
     public PromptMeta build() {
-      return new PromptMeta(name, versions, labels, tags, lastUpdatedAt, lastConfig, additionalProperties);
+      return new PromptMeta(name, type, versions, labels, tags, lastUpdatedAt, lastConfig, additionalProperties);
     }
   }
 }

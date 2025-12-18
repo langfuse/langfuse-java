@@ -35,6 +35,10 @@ public final class Dataset {
 
   private final Optional<Object> metadata;
 
+  private final Optional<Object> inputSchema;
+
+  private final Optional<Object> expectedOutputSchema;
+
   private final String projectId;
 
   private final OffsetDateTime createdAt;
@@ -44,12 +48,15 @@ public final class Dataset {
   private final Map<String, Object> additionalProperties;
 
   private Dataset(String id, String name, Optional<String> description, Optional<Object> metadata,
-      String projectId, OffsetDateTime createdAt, OffsetDateTime updatedAt,
+      Optional<Object> inputSchema, Optional<Object> expectedOutputSchema, String projectId,
+      OffsetDateTime createdAt, OffsetDateTime updatedAt,
       Map<String, Object> additionalProperties) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.metadata = metadata;
+    this.inputSchema = inputSchema;
+    this.expectedOutputSchema = expectedOutputSchema;
     this.projectId = projectId;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
@@ -74,6 +81,22 @@ public final class Dataset {
   @JsonProperty("metadata")
   public Optional<Object> getMetadata() {
     return metadata;
+  }
+
+  /**
+   * @return JSON Schema for validating dataset item inputs
+   */
+  @JsonProperty("inputSchema")
+  public Optional<Object> getInputSchema() {
+    return inputSchema;
+  }
+
+  /**
+   * @return JSON Schema for validating dataset item expected outputs
+   */
+  @JsonProperty("expectedOutputSchema")
+  public Optional<Object> getExpectedOutputSchema() {
+    return expectedOutputSchema;
   }
 
   @JsonProperty("projectId")
@@ -103,12 +126,12 @@ public final class Dataset {
   }
 
   private boolean equalTo(Dataset other) {
-    return id.equals(other.id) && name.equals(other.name) && description.equals(other.description) && metadata.equals(other.metadata) && projectId.equals(other.projectId) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt);
+    return id.equals(other.id) && name.equals(other.name) && description.equals(other.description) && metadata.equals(other.metadata) && inputSchema.equals(other.inputSchema) && expectedOutputSchema.equals(other.expectedOutputSchema) && projectId.equals(other.projectId) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.name, this.description, this.metadata, this.projectId, this.createdAt, this.updatedAt);
+    return Objects.hash(this.id, this.name, this.description, this.metadata, this.inputSchema, this.expectedOutputSchema, this.projectId, this.createdAt, this.updatedAt);
   }
 
   @java.lang.Override
@@ -152,6 +175,14 @@ public final class Dataset {
     _FinalStage metadata(Optional<Object> metadata);
 
     _FinalStage metadata(Object metadata);
+
+    _FinalStage inputSchema(Optional<Object> inputSchema);
+
+    _FinalStage inputSchema(Object inputSchema);
+
+    _FinalStage expectedOutputSchema(Optional<Object> expectedOutputSchema);
+
+    _FinalStage expectedOutputSchema(Object expectedOutputSchema);
   }
 
   @JsonIgnoreProperties(
@@ -167,6 +198,10 @@ public final class Dataset {
     private OffsetDateTime createdAt;
 
     private OffsetDateTime updatedAt;
+
+    private Optional<Object> expectedOutputSchema = Optional.empty();
+
+    private Optional<Object> inputSchema = Optional.empty();
 
     private Optional<Object> metadata = Optional.empty();
 
@@ -184,6 +219,8 @@ public final class Dataset {
       name(other.getName());
       description(other.getDescription());
       metadata(other.getMetadata());
+      inputSchema(other.getInputSchema());
+      expectedOutputSchema(other.getExpectedOutputSchema());
       projectId(other.getProjectId());
       createdAt(other.getCreatedAt());
       updatedAt(other.getUpdatedAt());
@@ -225,6 +262,46 @@ public final class Dataset {
       return this;
     }
 
+    /**
+     * <p>JSON Schema for validating dataset item expected outputs</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage expectedOutputSchema(Object expectedOutputSchema) {
+      this.expectedOutputSchema = Optional.ofNullable(expectedOutputSchema);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "expectedOutputSchema",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage expectedOutputSchema(Optional<Object> expectedOutputSchema) {
+      this.expectedOutputSchema = expectedOutputSchema;
+      return this;
+    }
+
+    /**
+     * <p>JSON Schema for validating dataset item inputs</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage inputSchema(Object inputSchema) {
+      this.inputSchema = Optional.ofNullable(inputSchema);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "inputSchema",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage inputSchema(Optional<Object> inputSchema) {
+      this.inputSchema = inputSchema;
+      return this;
+    }
+
     @java.lang.Override
     public _FinalStage metadata(Object metadata) {
       this.metadata = Optional.ofNullable(metadata);
@@ -259,7 +336,7 @@ public final class Dataset {
 
     @java.lang.Override
     public Dataset build() {
-      return new Dataset(id, name, description, metadata, projectId, createdAt, updatedAt, additionalProperties);
+      return new Dataset(id, name, description, metadata, inputSchema, expectedOutputSchema, projectId, createdAt, updatedAt, additionalProperties);
     }
   }
 }

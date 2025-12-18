@@ -126,6 +126,9 @@ public class ObservationsClient {
       if (request.getTraceId().isPresent()) {
         QueryStringMapper.addQueryParameter(httpUrl, "traceId", request.getTraceId().get(), false);
       }
+      if (request.getLevel().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "level", request.getLevel().get().toString(), false);
+      }
       if (request.getParentObservationId().isPresent()) {
         QueryStringMapper.addQueryParameter(httpUrl, "parentObservationId", request.getParentObservationId().get(), false);
       }
@@ -140,6 +143,9 @@ public class ObservationsClient {
       }
       if (request.getVersion().isPresent()) {
         QueryStringMapper.addQueryParameter(httpUrl, "version", request.getVersion().get(), false);
+      }
+      if (request.getFilter().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "filter", request.getFilter().get(), false);
       }
       Request.Builder _requestBuilder = new Request.Builder()
         .url(httpUrl.build())

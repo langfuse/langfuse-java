@@ -73,7 +73,7 @@ public final class CreateCommentRequest {
   }
 
   /**
-   * @return The content of the comment. May include markdown. Currently limited to 3000 characters.
+   * @return The content of the comment. May include markdown. Currently limited to 5000 characters.
    */
   @JsonProperty("content")
   public String getContent() {
@@ -207,7 +207,7 @@ public final class CreateCommentRequest {
     }
 
     /**
-     * <p>The content of the comment. May include markdown. Currently limited to 3000 characters.</p>
+     * <p>The content of the comment. May include markdown. Currently limited to 5000 characters.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override

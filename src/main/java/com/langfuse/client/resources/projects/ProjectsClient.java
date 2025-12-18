@@ -44,14 +44,14 @@ public class ProjectsClient {
   }
 
   /**
-   * Get Project associated with API key
+   * Get Project associated with API key (requires project-scoped API key). You can use GET /api/public/organizations/projects to get all projects with an organization-scoped key.
    */
   public Projects get() {
     return get(null);
   }
 
   /**
-   * Get Project associated with API key
+   * Get Project associated with API key (requires project-scoped API key). You can use GET /api/public/organizations/projects to get all projects with an organization-scoped key.
    */
   public Projects get(RequestOptions requestOptions) {
     HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()

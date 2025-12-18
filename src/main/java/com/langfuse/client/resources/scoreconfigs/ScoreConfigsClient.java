@@ -31,6 +31,7 @@ import com.langfuse.client.resources.commons.types.ScoreConfig;
 import com.langfuse.client.resources.scoreconfigs.requests.GetScoreConfigsRequest;
 import com.langfuse.client.resources.scoreconfigs.types.CreateScoreConfigRequest;
 import com.langfuse.client.resources.scoreconfigs.types.ScoreConfigs;
+import com.langfuse.client.resources.scoreconfigs.types.UpdateScoreConfigRequest;
 
 public class ScoreConfigsClient {
   protected final ClientOptions clientOptions;
@@ -178,6 +179,73 @@ public class ScoreConfigsClient {
       Request okhttpRequest = new Request.Builder()
         .url(httpUrl)
         .method("GET", null)
+        .headers(Headers.of(clientOptions.headers(requestOptions)))
+        .addHeader("Content-Type", "application/json")
+        .addHeader("Accept", "application/json")
+        .build();
+      OkHttpClient client = clientOptions.httpClient();
+      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+        client = clientOptions.httpClientWithTimeout(requestOptions);
+      }
+      try (Response response = client.newCall(okhttpRequest).execute()) {
+        ResponseBody responseBody = response.body();
+        if (response.isSuccessful()) {
+          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ScoreConfig.class);
+        }
+        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+        try {
+          switch (response.code()) {
+            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+          }
+        }
+        catch (JsonProcessingException ignored) {
+          // unable to map error response, throwing generic error
+        }
+        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
+      }
+      catch (IOException e) {
+        throw new LangfuseClientException("Network error executing HTTP request", e);
+      }
+    }
+
+    /**
+     * Update a score config
+     */
+    public ScoreConfig update(String configId) {
+      return update(configId,UpdateScoreConfigRequest.builder().build());
+    }
+
+    /**
+     * Update a score config
+     */
+    public ScoreConfig update(String configId, UpdateScoreConfigRequest request) {
+      return update(configId,request,null);
+    }
+
+    /**
+     * Update a score config
+     */
+    public ScoreConfig update(String configId, UpdateScoreConfigRequest request,
+        RequestOptions requestOptions) {
+      HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+        .addPathSegments("api/public")
+        .addPathSegments("score-configs")
+        .addPathSegment(configId)
+        .build();
+      RequestBody body;
+      try {
+        body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+      }
+      catch(JsonProcessingException e) {
+        throw new LangfuseClientException("Failed to serialize request", e);
+      }
+      Request okhttpRequest = new Request.Builder()
+        .url(httpUrl)
+        .method("PATCH", body)
         .headers(Headers.of(clientOptions.headers(requestOptions)))
         .addHeader("Content-Type", "application/json")
         .addHeader("Accept", "application/json")

@@ -92,6 +92,15 @@ public class ScoreV2Client {
       if (request.getConfigId().isPresent()) {
         QueryStringMapper.addQueryParameter(httpUrl, "configId", request.getConfigId().get(), false);
       }
+      if (request.getSessionId().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "sessionId", request.getSessionId().get(), false);
+      }
+      if (request.getDatasetRunId().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "datasetRunId", request.getDatasetRunId().get(), false);
+      }
+      if (request.getTraceId().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "traceId", request.getTraceId().get(), false);
+      }
       if (request.getQueueId().isPresent()) {
         QueryStringMapper.addQueryParameter(httpUrl, "queueId", request.getQueueId().get(), false);
       }

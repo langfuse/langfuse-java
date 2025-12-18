@@ -12,7 +12,21 @@ public enum ObservationType {
 
   GENERATION("GENERATION"),
 
-  EVENT("EVENT");
+  EVENT("EVENT"),
+
+  AGENT("AGENT"),
+
+  TOOL("TOOL"),
+
+  CHAIN("CHAIN"),
+
+  RETRIEVER("RETRIEVER"),
+
+  EVALUATOR("EVALUATOR"),
+
+  EMBEDDING("EMBEDDING"),
+
+  GUARDRAIL("GUARDRAIL");
 
   private final String value;
 

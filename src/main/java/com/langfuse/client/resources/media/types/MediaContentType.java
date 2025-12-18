@@ -24,6 +24,10 @@ public enum MediaContentType {
 
   IMAGE_BMP("image/bmp"),
 
+  IMAGE_AVIF("image/avif"),
+
+  IMAGE_HEIC("image/heic"),
+
   AUDIO_MPEG("audio/mpeg"),
 
   AUDIO_MP_3("audio/mp3"),
@@ -40,9 +44,23 @@ public enum MediaContentType {
 
   AUDIO_FLAC("audio/flac"),
 
+  AUDIO_OPUS("audio/opus"),
+
+  AUDIO_WEBM("audio/webm"),
+
   VIDEO_MP_4("video/mp4"),
 
   VIDEO_WEBM("video/webm"),
+
+  VIDEO_OGG("video/ogg"),
+
+  VIDEO_MPEG("video/mpeg"),
+
+  VIDEO_QUICKTIME("video/quicktime"),
+
+  VIDEO_X_MSVIDEO("video/x-msvideo"),
+
+  VIDEO_X_MATROSKA("video/x-matroska"),
 
   TEXT_PLAIN("text/plain"),
 
@@ -52,11 +70,23 @@ public enum MediaContentType {
 
   TEXT_CSV("text/csv"),
 
+  TEXT_MARKDOWN("text/markdown"),
+
+  TEXT_X_PYTHON("text/x-python"),
+
+  APPLICATION_JAVASCRIPT("application/javascript"),
+
+  TEXT_X_TYPESCRIPT("text/x-typescript"),
+
+  APPLICATION_X_YAML("application/x-yaml"),
+
   APPLICATION_PDF("application/pdf"),
 
   APPLICATION_MSWORD("application/msword"),
 
   APPLICATION_MS_EXCEL("application/vnd.ms-excel"),
+
+  APPLICATION_OPENXML_SPREADSHEET("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
 
   APPLICATION_ZIP("application/zip"),
 
@@ -64,7 +94,23 @@ public enum MediaContentType {
 
   APPLICATION_XML("application/xml"),
 
-  APPLICATION_OCTET_STREAM("application/octet-stream");
+  APPLICATION_OCTET_STREAM("application/octet-stream"),
+
+  APPLICATION_OPENXML_WORD("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+
+  APPLICATION_OPENXML_PRESENTATION("application/vnd.openxmlformats-officedocument.presentationml.presentation"),
+
+  APPLICATION_RTF("application/rtf"),
+
+  APPLICATION_X_NDJSON("application/x-ndjson"),
+
+  APPLICATION_PARQUET("application/vnd.apache.parquet"),
+
+  APPLICATION_GZIP("application/gzip"),
+
+  APPLICATION_X_TAR("application/x-tar"),
+
+  APPLICATION_X_7_Z_COMPRESSED("application/x-7z-compressed");
 
   private final String value;
 

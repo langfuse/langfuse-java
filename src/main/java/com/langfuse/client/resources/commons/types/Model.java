@@ -17,8 +17,10 @@ import java.lang.Double;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,7 +53,11 @@ public final class Model {
 
   private final boolean isLangfuseManaged;
 
+  private final OffsetDateTime createdAt;
+
   private final Map<String, ModelPrice> prices;
+
+  private final List<PricingTier> pricingTiers;
 
   private final Map<String, Object> additionalProperties;
 
@@ -59,7 +65,8 @@ public final class Model {
       Optional<OffsetDateTime> startDate, Optional<ModelUsageUnit> unit,
       Optional<Double> inputPrice, Optional<Double> outputPrice, Optional<Double> totalPrice,
       Optional<String> tokenizerId, Optional<Object> tokenizerConfig, boolean isLangfuseManaged,
-      Map<String, ModelPrice> prices, Map<String, Object> additionalProperties) {
+      OffsetDateTime createdAt, Map<String, ModelPrice> prices, List<PricingTier> pricingTiers,
+      Map<String, Object> additionalProperties) {
     this.id = id;
     this.modelName = modelName;
     this.matchPattern = matchPattern;
@@ -71,7 +78,9 @@ public final class Model {
     this.tokenizerId = tokenizerId;
     this.tokenizerConfig = tokenizerConfig;
     this.isLangfuseManaged = isLangfuseManaged;
+    this.createdAt = createdAt;
     this.prices = prices;
+    this.pricingTiers = pricingTiers;
     this.additionalProperties = additionalProperties;
   }
 
@@ -158,11 +167,34 @@ public final class Model {
   }
 
   /**
-   * @return Price (USD) by usage type
+   * @return Timestamp when the model was created
+   */
+  @JsonProperty("createdAt")
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  /**
+   * @return Deprecated. Use 'pricingTiers' instead for models with usage-based pricing variations.
+   * <p>This field shows prices by usage type from the default pricing tier. Maintained for backward compatibility.
+   * If the model uses tiered pricing, this field will be populated from the default tier's prices.</p>
    */
   @JsonProperty("prices")
   public Map<String, ModelPrice> getPrices() {
     return prices;
+  }
+
+  /**
+   * @return Array of pricing tiers with conditional pricing based on usage thresholds.
+   * <p>Pricing tiers enable accurate cost tracking for models that charge different rates based on usage patterns
+   * (e.g., different rates for high-volume usage, large context windows, or cached tokens).</p>
+   * <p>Each model must have exactly one default tier (isDefault=true, priority=0) that serves as a fallback.
+   * Additional conditional tiers can be defined with specific matching criteria.</p>
+   * <p>If this array is empty, the model uses legacy flat pricing from the inputPrice/outputPrice/totalPrice fields.</p>
+   */
+  @JsonProperty("pricingTiers")
+  public List<PricingTier> getPricingTiers() {
+    return pricingTiers;
   }
 
   @java.lang.Override
@@ -177,12 +209,12 @@ public final class Model {
   }
 
   private boolean equalTo(Model other) {
-    return id.equals(other.id) && modelName.equals(other.modelName) && matchPattern.equals(other.matchPattern) && startDate.equals(other.startDate) && unit.equals(other.unit) && inputPrice.equals(other.inputPrice) && outputPrice.equals(other.outputPrice) && totalPrice.equals(other.totalPrice) && tokenizerId.equals(other.tokenizerId) && tokenizerConfig.equals(other.tokenizerConfig) && isLangfuseManaged == other.isLangfuseManaged && prices.equals(other.prices);
+    return id.equals(other.id) && modelName.equals(other.modelName) && matchPattern.equals(other.matchPattern) && startDate.equals(other.startDate) && unit.equals(other.unit) && inputPrice.equals(other.inputPrice) && outputPrice.equals(other.outputPrice) && totalPrice.equals(other.totalPrice) && tokenizerId.equals(other.tokenizerId) && tokenizerConfig.equals(other.tokenizerConfig) && isLangfuseManaged == other.isLangfuseManaged && createdAt.equals(other.createdAt) && prices.equals(other.prices) && pricingTiers.equals(other.pricingTiers);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.modelName, this.matchPattern, this.startDate, this.unit, this.inputPrice, this.outputPrice, this.totalPrice, this.tokenizerId, this.tokenizerConfig, this.isLangfuseManaged, this.prices);
+    return Objects.hash(this.id, this.modelName, this.matchPattern, this.startDate, this.unit, this.inputPrice, this.outputPrice, this.totalPrice, this.tokenizerId, this.tokenizerConfig, this.isLangfuseManaged, this.createdAt, this.prices, this.pricingTiers);
   }
 
   @java.lang.Override
@@ -209,7 +241,11 @@ public final class Model {
   }
 
   public interface IsLangfuseManagedStage {
-    _FinalStage isLangfuseManaged(boolean isLangfuseManaged);
+    CreatedAtStage isLangfuseManaged(boolean isLangfuseManaged);
+  }
+
+  public interface CreatedAtStage {
+    _FinalStage createdAt(@NotNull OffsetDateTime createdAt);
   }
 
   public interface _FinalStage {
@@ -248,12 +284,18 @@ public final class Model {
     _FinalStage putAllPrices(Map<String, ModelPrice> prices);
 
     _FinalStage prices(String key, ModelPrice value);
+
+    _FinalStage pricingTiers(List<PricingTier> pricingTiers);
+
+    _FinalStage addPricingTiers(PricingTier pricingTiers);
+
+    _FinalStage addAllPricingTiers(List<PricingTier> pricingTiers);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements IdStage, ModelNameStage, MatchPatternStage, IsLangfuseManagedStage, _FinalStage {
+  public static final class Builder implements IdStage, ModelNameStage, MatchPatternStage, IsLangfuseManagedStage, CreatedAtStage, _FinalStage {
     private String id;
 
     private String modelName;
@@ -261,6 +303,10 @@ public final class Model {
     private String matchPattern;
 
     private boolean isLangfuseManaged;
+
+    private OffsetDateTime createdAt;
+
+    private List<PricingTier> pricingTiers = new ArrayList<>();
 
     private Map<String, ModelPrice> prices = new LinkedHashMap<>();
 
@@ -297,7 +343,9 @@ public final class Model {
       tokenizerId(other.getTokenizerId());
       tokenizerConfig(other.getTokenizerConfig());
       isLangfuseManaged(other.getIsLangfuseManaged());
+      createdAt(other.getCreatedAt());
       prices(other.getPrices());
+      pricingTiers(other.getPricingTiers());
       return this;
     }
 
@@ -332,13 +380,67 @@ public final class Model {
 
     @java.lang.Override
     @JsonSetter("isLangfuseManaged")
-    public _FinalStage isLangfuseManaged(boolean isLangfuseManaged) {
+    public CreatedAtStage isLangfuseManaged(boolean isLangfuseManaged) {
       this.isLangfuseManaged = isLangfuseManaged;
       return this;
     }
 
     /**
-     * <p>Price (USD) by usage type</p>
+     * <p>Timestamp when the model was created</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("createdAt")
+    public _FinalStage createdAt(@NotNull OffsetDateTime createdAt) {
+      this.createdAt = Objects.requireNonNull(createdAt, "createdAt must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Array of pricing tiers with conditional pricing based on usage thresholds.</p>
+     * <p>Pricing tiers enable accurate cost tracking for models that charge different rates based on usage patterns
+     * (e.g., different rates for high-volume usage, large context windows, or cached tokens).</p>
+     * <p>Each model must have exactly one default tier (isDefault=true, priority=0) that serves as a fallback.
+     * Additional conditional tiers can be defined with specific matching criteria.</p>
+     * <p>If this array is empty, the model uses legacy flat pricing from the inputPrice/outputPrice/totalPrice fields.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addAllPricingTiers(List<PricingTier> pricingTiers) {
+      this.pricingTiers.addAll(pricingTiers);
+      return this;
+    }
+
+    /**
+     * <p>Array of pricing tiers with conditional pricing based on usage thresholds.</p>
+     * <p>Pricing tiers enable accurate cost tracking for models that charge different rates based on usage patterns
+     * (e.g., different rates for high-volume usage, large context windows, or cached tokens).</p>
+     * <p>Each model must have exactly one default tier (isDefault=true, priority=0) that serves as a fallback.
+     * Additional conditional tiers can be defined with specific matching criteria.</p>
+     * <p>If this array is empty, the model uses legacy flat pricing from the inputPrice/outputPrice/totalPrice fields.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addPricingTiers(PricingTier pricingTiers) {
+      this.pricingTiers.add(pricingTiers);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "pricingTiers",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage pricingTiers(List<PricingTier> pricingTiers) {
+      this.pricingTiers.clear();
+      this.pricingTiers.addAll(pricingTiers);
+      return this;
+    }
+
+    /**
+     * <p>Deprecated. Use 'pricingTiers' instead for models with usage-based pricing variations.</p>
+     * <p>This field shows prices by usage type from the default pricing tier. Maintained for backward compatibility.
+     * If the model uses tiered pricing, this field will be populated from the default tier's prices.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -348,7 +450,9 @@ public final class Model {
     }
 
     /**
-     * <p>Price (USD) by usage type</p>
+     * <p>Deprecated. Use 'pricingTiers' instead for models with usage-based pricing variations.</p>
+     * <p>This field shows prices by usage type from the default pricing tier. Maintained for backward compatibility.
+     * If the model uses tiered pricing, this field will be populated from the default tier's prices.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -510,7 +614,7 @@ public final class Model {
 
     @java.lang.Override
     public Model build() {
-      return new Model(id, modelName, matchPattern, startDate, unit, inputPrice, outputPrice, totalPrice, tokenizerId, tokenizerConfig, isLangfuseManaged, prices, additionalProperties);
+      return new Model(id, modelName, matchPattern, startDate, unit, inputPrice, outputPrice, totalPrice, tokenizerId, tokenizerConfig, isLangfuseManaged, createdAt, prices, pricingTiers, additionalProperties);
     }
   }
 }

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import com.langfuse.client.resources.commons.types.ObservationLevel;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
@@ -39,6 +40,8 @@ public final class GetObservationsRequest {
 
   private final Optional<String> traceId;
 
+  private final Optional<ObservationLevel> level;
+
   private final Optional<String> parentObservationId;
 
   private final Optional<String> environment;
@@ -49,24 +52,29 @@ public final class GetObservationsRequest {
 
   private final Optional<String> version;
 
+  private final Optional<String> filter;
+
   private final Map<String, Object> additionalProperties;
 
   private GetObservationsRequest(Optional<Integer> page, Optional<Integer> limit,
       Optional<String> name, Optional<String> userId, Optional<String> type,
-      Optional<String> traceId, Optional<String> parentObservationId, Optional<String> environment,
+      Optional<String> traceId, Optional<ObservationLevel> level,
+      Optional<String> parentObservationId, Optional<String> environment,
       Optional<OffsetDateTime> fromStartTime, Optional<OffsetDateTime> toStartTime,
-      Optional<String> version, Map<String, Object> additionalProperties) {
+      Optional<String> version, Optional<String> filter, Map<String, Object> additionalProperties) {
     this.page = page;
     this.limit = limit;
     this.name = name;
     this.userId = userId;
     this.type = type;
     this.traceId = traceId;
+    this.level = level;
     this.parentObservationId = parentObservationId;
     this.environment = environment;
     this.fromStartTime = fromStartTime;
     this.toStartTime = toStartTime;
     this.version = version;
+    this.filter = filter;
     this.additionalProperties = additionalProperties;
   }
 
@@ -106,6 +114,14 @@ public final class GetObservationsRequest {
     return traceId;
   }
 
+  /**
+   * @return Optional filter for observations with a specific level (e.g. &quot;DEBUG&quot;, &quot;DEFAULT&quot;, &quot;WARNING&quot;, &quot;ERROR&quot;).
+   */
+  @JsonProperty("level")
+  public Optional<ObservationLevel> getLevel() {
+    return level;
+  }
+
   @JsonProperty("parentObservationId")
   public Optional<String> getParentObservationId() {
     return parentObservationId;
@@ -143,6 +159,14 @@ public final class GetObservationsRequest {
     return version;
   }
 
+  /**
+   * @return JSON string containing an array of filter conditions. When provided, this takes precedence over query parameter filters (userId, name, type, level, environment, fromStartTime, ...).
+   */
+  @JsonProperty("filter")
+  public Optional<String> getFilter() {
+    return filter;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -155,12 +179,12 @@ public final class GetObservationsRequest {
   }
 
   private boolean equalTo(GetObservationsRequest other) {
-    return page.equals(other.page) && limit.equals(other.limit) && name.equals(other.name) && userId.equals(other.userId) && type.equals(other.type) && traceId.equals(other.traceId) && parentObservationId.equals(other.parentObservationId) && environment.equals(other.environment) && fromStartTime.equals(other.fromStartTime) && toStartTime.equals(other.toStartTime) && version.equals(other.version);
+    return page.equals(other.page) && limit.equals(other.limit) && name.equals(other.name) && userId.equals(other.userId) && type.equals(other.type) && traceId.equals(other.traceId) && level.equals(other.level) && parentObservationId.equals(other.parentObservationId) && environment.equals(other.environment) && fromStartTime.equals(other.fromStartTime) && toStartTime.equals(other.toStartTime) && version.equals(other.version) && filter.equals(other.filter);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.page, this.limit, this.name, this.userId, this.type, this.traceId, this.parentObservationId, this.environment, this.fromStartTime, this.toStartTime, this.version);
+    return Objects.hash(this.page, this.limit, this.name, this.userId, this.type, this.traceId, this.level, this.parentObservationId, this.environment, this.fromStartTime, this.toStartTime, this.version, this.filter);
   }
 
   @java.lang.Override
@@ -188,6 +212,8 @@ public final class GetObservationsRequest {
 
     private Optional<String> traceId = Optional.empty();
 
+    private Optional<ObservationLevel> level = Optional.empty();
+
     private Optional<String> parentObservationId = Optional.empty();
 
     private Optional<String> environment = Optional.empty();
@@ -197,6 +223,8 @@ public final class GetObservationsRequest {
     private Optional<OffsetDateTime> toStartTime = Optional.empty();
 
     private Optional<String> version = Optional.empty();
+
+    private Optional<String> filter = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -211,11 +239,13 @@ public final class GetObservationsRequest {
       userId(other.getUserId());
       type(other.getType());
       traceId(other.getTraceId());
+      level(other.getLevel());
       parentObservationId(other.getParentObservationId());
       environment(other.getEnvironment());
       fromStartTime(other.getFromStartTime());
       toStartTime(other.getToStartTime());
       version(other.getVersion());
+      filter(other.getFilter());
       return this;
     }
 
@@ -304,6 +334,20 @@ public final class GetObservationsRequest {
     }
 
     @JsonSetter(
+        value = "level",
+        nulls = Nulls.SKIP
+    )
+    public Builder level(Optional<ObservationLevel> level) {
+      this.level = level;
+      return this;
+    }
+
+    public Builder level(ObservationLevel level) {
+      this.level = Optional.ofNullable(level);
+      return this;
+    }
+
+    @JsonSetter(
         value = "parentObservationId",
         nulls = Nulls.SKIP
     )
@@ -373,8 +417,22 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    @JsonSetter(
+        value = "filter",
+        nulls = Nulls.SKIP
+    )
+    public Builder filter(Optional<String> filter) {
+      this.filter = filter;
+      return this;
+    }
+
+    public Builder filter(String filter) {
+      this.filter = Optional.ofNullable(filter);
+      return this;
+    }
+
     public GetObservationsRequest build() {
-      return new GetObservationsRequest(page, limit, name, userId, type, traceId, parentObservationId, environment, fromStartTime, toStartTime, version, additionalProperties);
+      return new GetObservationsRequest(page, limit, name, userId, type, traceId, level, parentObservationId, environment, fromStartTime, toStartTime, version, filter, additionalProperties);
     }
   }
 }
