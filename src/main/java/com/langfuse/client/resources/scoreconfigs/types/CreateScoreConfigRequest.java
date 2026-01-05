@@ -23,7 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import com.langfuse.client.resources.commons.types.ConfigCategory;
-import com.langfuse.client.resources.commons.types.ScoreDataType;
+import com.langfuse.client.resources.commons.types.ScoreConfigDataType;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
@@ -32,7 +32,7 @@ import com.langfuse.client.resources.commons.types.ScoreDataType;
 public final class CreateScoreConfigRequest {
   private final String name;
 
-  private final ScoreDataType dataType;
+  private final ScoreConfigDataType dataType;
 
   private final Optional<List<ConfigCategory>> categories;
 
@@ -44,7 +44,7 @@ public final class CreateScoreConfigRequest {
 
   private final Map<String, Object> additionalProperties;
 
-  private CreateScoreConfigRequest(String name, ScoreDataType dataType,
+  private CreateScoreConfigRequest(String name, ScoreConfigDataType dataType,
       Optional<List<ConfigCategory>> categories, Optional<Double> minValue,
       Optional<Double> maxValue, Optional<String> description,
       Map<String, Object> additionalProperties) {
@@ -63,7 +63,7 @@ public final class CreateScoreConfigRequest {
   }
 
   @JsonProperty("dataType")
-  public ScoreDataType getDataType() {
+  public ScoreConfigDataType getDataType() {
     return dataType;
   }
 
@@ -135,7 +135,7 @@ public final class CreateScoreConfigRequest {
   }
 
   public interface DataTypeStage {
-    _FinalStage dataType(@NotNull ScoreDataType dataType);
+    _FinalStage dataType(@NotNull ScoreConfigDataType dataType);
   }
 
   public interface _FinalStage {
@@ -164,7 +164,7 @@ public final class CreateScoreConfigRequest {
   public static final class Builder implements NameStage, DataTypeStage, _FinalStage {
     private String name;
 
-    private ScoreDataType dataType;
+    private ScoreConfigDataType dataType;
 
     private Optional<String> description = Optional.empty();
 
@@ -200,7 +200,7 @@ public final class CreateScoreConfigRequest {
 
     @java.lang.Override
     @JsonSetter("dataType")
-    public _FinalStage dataType(@NotNull ScoreDataType dataType) {
+    public _FinalStage dataType(@NotNull ScoreConfigDataType dataType) {
       this.dataType = Objects.requireNonNull(dataType, "dataType must not be null");
       return this;
     }

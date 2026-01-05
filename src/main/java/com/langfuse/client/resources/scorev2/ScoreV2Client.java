@@ -110,6 +110,9 @@ public class ScoreV2Client {
       if (request.getTraceTags().isPresent()) {
         QueryStringMapper.addQueryParameter(httpUrl, "traceTags", request.getTraceTags().get(), false);
       }
+      if (request.getFields().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "fields", request.getFields().get(), false);
+      }
       Request.Builder _requestBuilder = new Request.Builder()
         .url(httpUrl.build())
         .method("GET", null)
