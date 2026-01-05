@@ -102,6 +102,9 @@ public final class ScoreBody {
     return datasetRunId;
   }
 
+  /**
+   * @return The name of the score. Always overrides &quot;output&quot; for correction scores.
+   */
   @JsonProperty("name")
   public String getName() {
     return name;
@@ -295,6 +298,10 @@ public final class ScoreBody {
       return this;
     }
 
+    /**
+     * <p>The name of the score. Always overrides &quot;output&quot; for correction scores.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     @JsonSetter("name")
     public ValueStage name(@NotNull String name) {

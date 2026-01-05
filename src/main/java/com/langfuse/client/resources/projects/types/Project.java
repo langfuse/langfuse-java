@@ -32,16 +32,19 @@ public final class Project {
 
   private final String name;
 
+  private final Organization organization;
+
   private final Map<String, Object> metadata;
 
   private final Optional<Integer> retentionDays;
 
   private final Map<String, Object> additionalProperties;
 
-  private Project(String id, String name, Map<String, Object> metadata,
+  private Project(String id, String name, Organization organization, Map<String, Object> metadata,
       Optional<Integer> retentionDays, Map<String, Object> additionalProperties) {
     this.id = id;
     this.name = name;
+    this.organization = organization;
     this.metadata = metadata;
     this.retentionDays = retentionDays;
     this.additionalProperties = additionalProperties;
@@ -55,6 +58,14 @@ public final class Project {
   @JsonProperty("name")
   public String getName() {
     return name;
+  }
+
+  /**
+   * @return The organization this project belongs to
+   */
+  @JsonProperty("organization")
+  public Organization getOrganization() {
+    return organization;
   }
 
   /**
@@ -85,12 +96,12 @@ public final class Project {
   }
 
   private boolean equalTo(Project other) {
-    return id.equals(other.id) && name.equals(other.name) && metadata.equals(other.metadata) && retentionDays.equals(other.retentionDays);
+    return id.equals(other.id) && name.equals(other.name) && organization.equals(other.organization) && metadata.equals(other.metadata) && retentionDays.equals(other.retentionDays);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.name, this.metadata, this.retentionDays);
+    return Objects.hash(this.id, this.name, this.organization, this.metadata, this.retentionDays);
   }
 
   @java.lang.Override
@@ -109,7 +120,11 @@ public final class Project {
   }
 
   public interface NameStage {
-    _FinalStage name(@NotNull String name);
+    OrganizationStage name(@NotNull String name);
+  }
+
+  public interface OrganizationStage {
+    _FinalStage organization(@NotNull Organization organization);
   }
 
   public interface _FinalStage {
@@ -129,10 +144,12 @@ public final class Project {
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements IdStage, NameStage, _FinalStage {
+  public static final class Builder implements IdStage, NameStage, OrganizationStage, _FinalStage {
     private String id;
 
     private String name;
+
+    private Organization organization;
 
     private Optional<Integer> retentionDays = Optional.empty();
 
@@ -148,6 +165,7 @@ public final class Project {
     public Builder from(Project other) {
       id(other.getId());
       name(other.getName());
+      organization(other.getOrganization());
       metadata(other.getMetadata());
       retentionDays(other.getRetentionDays());
       return this;
@@ -162,8 +180,19 @@ public final class Project {
 
     @java.lang.Override
     @JsonSetter("name")
-    public _FinalStage name(@NotNull String name) {
+    public OrganizationStage name(@NotNull String name) {
       this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
+    }
+
+    /**
+     * <p>The organization this project belongs to</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("organization")
+    public _FinalStage organization(@NotNull Organization organization) {
+      this.organization = Objects.requireNonNull(organization, "organization must not be null");
       return this;
     }
 
@@ -220,7 +249,7 @@ public final class Project {
 
     @java.lang.Override
     public Project build() {
-      return new Project(id, name, metadata, retentionDays, additionalProperties);
+      return new Project(id, name, organization, metadata, retentionDays, additionalProperties);
     }
   }
 }

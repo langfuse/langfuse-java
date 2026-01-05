@@ -18,8 +18,10 @@ import com.langfuse.client.resources.ingestion.IngestionClient;
 import com.langfuse.client.resources.llmconnections.LlmConnectionsClient;
 import com.langfuse.client.resources.media.MediaClient;
 import com.langfuse.client.resources.metrics.MetricsClient;
+import com.langfuse.client.resources.metricsv2.MetricsV2Client;
 import com.langfuse.client.resources.models.ModelsClient;
 import com.langfuse.client.resources.observations.ObservationsClient;
+import com.langfuse.client.resources.observationsv2.ObservationsV2Client;
 import com.langfuse.client.resources.opentelemetry.OpentelemetryClient;
 import com.langfuse.client.resources.organizations.OrganizationsClient;
 import com.langfuse.client.resources.projects.ProjectsClient;
@@ -55,9 +57,13 @@ public class LangfuseClient {
 
   protected final Supplier<MediaClient> mediaClient;
 
+  protected final Supplier<MetricsV2Client> metricsV2Client;
+
   protected final Supplier<MetricsClient> metricsClient;
 
   protected final Supplier<ModelsClient> modelsClient;
+
+  protected final Supplier<ObservationsV2Client> observationsV2Client;
 
   protected final Supplier<ObservationsClient> observationsClient;
 
@@ -95,8 +101,10 @@ public class LangfuseClient {
     this.ingestionClient = Suppliers.memoize(() -> new IngestionClient(clientOptions));
     this.llmConnectionsClient = Suppliers.memoize(() -> new LlmConnectionsClient(clientOptions));
     this.mediaClient = Suppliers.memoize(() -> new MediaClient(clientOptions));
+    this.metricsV2Client = Suppliers.memoize(() -> new MetricsV2Client(clientOptions));
     this.metricsClient = Suppliers.memoize(() -> new MetricsClient(clientOptions));
     this.modelsClient = Suppliers.memoize(() -> new ModelsClient(clientOptions));
+    this.observationsV2Client = Suppliers.memoize(() -> new ObservationsV2Client(clientOptions));
     this.observationsClient = Suppliers.memoize(() -> new ObservationsClient(clientOptions));
     this.opentelemetryClient = Suppliers.memoize(() -> new OpentelemetryClient(clientOptions));
     this.organizationsClient = Suppliers.memoize(() -> new OrganizationsClient(clientOptions));
@@ -151,12 +159,20 @@ public class LangfuseClient {
     return this.mediaClient.get();
   }
 
+  public MetricsV2Client metricsV2() {
+    return this.metricsV2Client.get();
+  }
+
   public MetricsClient metrics() {
     return this.metricsClient.get();
   }
 
   public ModelsClient models() {
     return this.modelsClient.get();
+  }
+
+  public ObservationsV2Client observationsV2() {
+    return this.observationsV2Client.get();
   }
 
   public ObservationsClient observations() {

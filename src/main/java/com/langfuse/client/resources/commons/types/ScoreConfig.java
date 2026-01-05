@@ -39,7 +39,7 @@ public final class ScoreConfig {
 
   private final String projectId;
 
-  private final ScoreDataType dataType;
+  private final ScoreConfigDataType dataType;
 
   private final boolean isArchived;
 
@@ -54,7 +54,7 @@ public final class ScoreConfig {
   private final Map<String, Object> additionalProperties;
 
   private ScoreConfig(String id, String name, OffsetDateTime createdAt, OffsetDateTime updatedAt,
-      String projectId, ScoreDataType dataType, boolean isArchived, Optional<Double> minValue,
+      String projectId, ScoreConfigDataType dataType, boolean isArchived, Optional<Double> minValue,
       Optional<Double> maxValue, Optional<List<ConfigCategory>> categories,
       Optional<String> description, Map<String, Object> additionalProperties) {
     this.id = id;
@@ -97,7 +97,7 @@ public final class ScoreConfig {
   }
 
   @JsonProperty("dataType")
-  public ScoreDataType getDataType() {
+  public ScoreConfigDataType getDataType() {
     return dataType;
   }
 
@@ -190,7 +190,7 @@ public final class ScoreConfig {
   }
 
   public interface DataTypeStage {
-    IsArchivedStage dataType(@NotNull ScoreDataType dataType);
+    IsArchivedStage dataType(@NotNull ScoreConfigDataType dataType);
   }
 
   public interface IsArchivedStage {
@@ -231,7 +231,7 @@ public final class ScoreConfig {
 
     private String projectId;
 
-    private ScoreDataType dataType;
+    private ScoreConfigDataType dataType;
 
     private boolean isArchived;
 
@@ -302,7 +302,7 @@ public final class ScoreConfig {
 
     @java.lang.Override
     @JsonSetter("dataType")
-    public IsArchivedStage dataType(@NotNull ScoreDataType dataType) {
+    public IsArchivedStage dataType(@NotNull ScoreConfigDataType dataType) {
       this.dataType = Objects.requireNonNull(dataType, "dataType must not be null");
       return this;
     }

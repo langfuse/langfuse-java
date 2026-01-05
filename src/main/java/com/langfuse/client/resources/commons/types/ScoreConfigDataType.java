@@ -7,18 +7,16 @@ package com.langfuse.client.resources.commons.types;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.lang.String;
 
-public enum ScoreDataType {
+public enum ScoreConfigDataType {
   NUMERIC("NUMERIC"),
 
   BOOLEAN("BOOLEAN"),
 
-  CATEGORICAL("CATEGORICAL"),
-
-  CORRECTION("CORRECTION");
+  CATEGORICAL("CATEGORICAL");
 
   private final String value;
 
-  ScoreDataType(String value) {
+  ScoreConfigDataType(String value) {
     this.value = value;
   }
 

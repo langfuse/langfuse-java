@@ -66,6 +66,8 @@ public final class GetScoresRequest {
 
   private final Optional<String> traceTags;
 
+  private final Optional<String> fields;
+
   private final Map<String, Object> additionalProperties;
 
   private GetScoresRequest(Optional<Integer> page, Optional<Integer> limit, Optional<String> userId,
@@ -74,7 +76,7 @@ public final class GetScoresRequest {
       Optional<ScoreSource> source, Optional<String> operator, Optional<Double> value,
       Optional<String> scoreIds, Optional<String> configId, Optional<String> sessionId,
       Optional<String> datasetRunId, Optional<String> traceId, Optional<String> queueId,
-      Optional<ScoreDataType> dataType, Optional<String> traceTags,
+      Optional<ScoreDataType> dataType, Optional<String> traceTags, Optional<String> fields,
       Map<String, Object> additionalProperties) {
     this.page = page;
     this.limit = limit;
@@ -94,6 +96,7 @@ public final class GetScoresRequest {
     this.queueId = queueId;
     this.dataType = dataType;
     this.traceTags = traceTags;
+    this.fields = fields;
     this.additionalProperties = additionalProperties;
   }
 
@@ -241,6 +244,14 @@ public final class GetScoresRequest {
     return traceTags;
   }
 
+  /**
+   * @return Comma-separated list of field groups to include in the response. Available field groups: 'score' (core score fields), 'trace' (trace properties: userId, tags, environment). If not specified, both 'score' and 'trace' are returned by default. Example: 'score' to exclude trace data, 'score,trace' to include both. Note: When filtering by trace properties (using userId or traceTags parameters), the 'trace' field group must be included, otherwise a 400 error will be returned.
+   */
+  @JsonProperty("fields")
+  public Optional<String> getFields() {
+    return fields;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -253,12 +264,12 @@ public final class GetScoresRequest {
   }
 
   private boolean equalTo(GetScoresRequest other) {
-    return page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && environment.equals(other.environment) && source.equals(other.source) && operator.equals(other.operator) && value.equals(other.value) && scoreIds.equals(other.scoreIds) && configId.equals(other.configId) && sessionId.equals(other.sessionId) && datasetRunId.equals(other.datasetRunId) && traceId.equals(other.traceId) && queueId.equals(other.queueId) && dataType.equals(other.dataType) && traceTags.equals(other.traceTags);
+    return page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && environment.equals(other.environment) && source.equals(other.source) && operator.equals(other.operator) && value.equals(other.value) && scoreIds.equals(other.scoreIds) && configId.equals(other.configId) && sessionId.equals(other.sessionId) && datasetRunId.equals(other.datasetRunId) && traceId.equals(other.traceId) && queueId.equals(other.queueId) && dataType.equals(other.dataType) && traceTags.equals(other.traceTags) && fields.equals(other.fields);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.page, this.limit, this.userId, this.name, this.fromTimestamp, this.toTimestamp, this.environment, this.source, this.operator, this.value, this.scoreIds, this.configId, this.sessionId, this.datasetRunId, this.traceId, this.queueId, this.dataType, this.traceTags);
+    return Objects.hash(this.page, this.limit, this.userId, this.name, this.fromTimestamp, this.toTimestamp, this.environment, this.source, this.operator, this.value, this.scoreIds, this.configId, this.sessionId, this.datasetRunId, this.traceId, this.queueId, this.dataType, this.traceTags, this.fields);
   }
 
   @java.lang.Override
@@ -310,6 +321,8 @@ public final class GetScoresRequest {
 
     private Optional<String> traceTags = Optional.empty();
 
+    private Optional<String> fields = Optional.empty();
+
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -335,6 +348,7 @@ public final class GetScoresRequest {
       queueId(other.getQueueId());
       dataType(other.getDataType());
       traceTags(other.getTraceTags());
+      fields(other.getFields());
       return this;
     }
 
@@ -590,8 +604,22 @@ public final class GetScoresRequest {
       return this;
     }
 
+    @JsonSetter(
+        value = "fields",
+        nulls = Nulls.SKIP
+    )
+    public Builder fields(Optional<String> fields) {
+      this.fields = fields;
+      return this;
+    }
+
+    public Builder fields(String fields) {
+      this.fields = Optional.ofNullable(fields);
+      return this;
+    }
+
     public GetScoresRequest build() {
-      return new GetScoresRequest(page, limit, userId, name, fromTimestamp, toTimestamp, environment, source, operator, value, scoreIds, configId, sessionId, datasetRunId, traceId, queueId, dataType, traceTags, additionalProperties);
+      return new GetScoresRequest(page, limit, userId, name, fromTimestamp, toTimestamp, environment, source, operator, value, scoreIds, configId, sessionId, datasetRunId, traceId, queueId, dataType, traceTags, fields, additionalProperties);
     }
   }
 }
