@@ -12,11 +12,19 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.io.IOException;
 import java.lang.Object;
 import java.lang.String;
 import java.util.Objects;
 import java.util.Optional;
 
+@JsonDeserialize(using = ChatMessageWithPlaceholders.Deserializer.class)
 public final class ChatMessageWithPlaceholders {
   private final Value value;
 
@@ -199,6 +207,11 @@ public final class ChatMessageWithPlaceholders {
     private _UnknownValue(@JsonProperty("value") Object value) {
     }
 
+    private _UnknownValue(String type, Object value) {
+      this.type = type == null ? "unknown" : type;
+      this.value = value == null ? "" : value;
+    }
+
     @java.lang.Override
     public <T> T visit(Visitor<T> visitor) {
       return visitor._visitUnknown(value);
@@ -211,7 +224,7 @@ public final class ChatMessageWithPlaceholders {
     }
 
     private boolean equalTo(_UnknownValue other) {
-      return type.equals(other.type) && value.equals(other.value);
+      return Objects.equals(type, other.type) && Objects.equals(value, other.value);
     }
 
     @java.lang.Override
@@ -222,6 +235,50 @@ public final class ChatMessageWithPlaceholders {
     @java.lang.Override
     public String toString() {
       return "ChatMessageWithPlaceholders{" + "type: " + type + ", value: " + value + "}";
+    }
+  }
+
+  static final class Deserializer extends JsonDeserializer<ChatMessageWithPlaceholders> {
+    @java.lang.Override
+    public ChatMessageWithPlaceholders deserialize(JsonParser p, DeserializationContext ctxt)
+        throws IOException {
+      ObjectMapper mapper = (ObjectMapper) p.getCodec();
+      JsonNode node = mapper.readTree(p);
+      if (node == null || node.isNull()) {
+        return null;
+      }
+
+      String type = textOrNull(node.get("type"));
+      if ("chatmessage".equals(type)) {
+        ChatMessage message = mapper.treeToValue(node, ChatMessage.class);
+        return ChatMessageWithPlaceholders.chatmessage(message);
+      }
+      if ("placeholder".equals(type)) {
+        PlaceholderMessage placeholder = mapper.treeToValue(node, PlaceholderMessage.class);
+        return ChatMessageWithPlaceholders.placeholder(placeholder);
+      }
+
+      boolean hasRole = node.has("role");
+      boolean hasContent = node.has("content");
+      boolean hasName = node.has("name");
+      if (hasRole || hasContent) {
+        ChatMessage message = mapper.treeToValue(node, ChatMessage.class);
+        return ChatMessageWithPlaceholders.chatmessage(message);
+      }
+      if (hasName) {
+        PlaceholderMessage placeholder = mapper.treeToValue(node, PlaceholderMessage.class);
+        return ChatMessageWithPlaceholders.placeholder(placeholder);
+      }
+
+      Object raw = mapper.treeToValue(node, Object.class);
+      return new ChatMessageWithPlaceholders(new _UnknownValue(type, raw));
+    }
+
+    private String textOrNull(JsonNode node) {
+      if (node == null || node.isNull()) {
+        return null;
+      }
+      return node.asText();
     }
   }
 }
