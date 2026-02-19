@@ -1,0 +1,29 @@
+{
+  "id": "a8254424-fdad-49e3-8279-b58cf56834af",
+  "createdAt": "2026-02-18T14:21:09.711Z",
+  "updatedAt": "2026-02-18T14:21:09.711Z",
+  "projectId": "cm19d32ph000bjx8lvbuc94ev",
+  "createdBy": "cm17uncnj000214d9hu45bx77",
+  "prompt": [
+    {
+      "role": "system",
+      "content": "Hello World"
+    },
+    {
+      "name": "username",
+      "type": "placeholder"
+    }
+  ],
+  "name": "test-chat-prompt",
+  "version": 1,
+  "type": "chat",
+  "isActive": true,
+  "config": {},
+  "tags": [],
+  "labels": [
+    "production",
+    "latest"
+  ],
+  "commitMessage": null,
+  "resolutionGraph": null
+}
