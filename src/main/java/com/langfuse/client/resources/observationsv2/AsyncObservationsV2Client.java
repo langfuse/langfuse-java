@@ -29,27 +29,6 @@ public class AsyncObservationsV2Client {
 
   /**
    * Get a list of observations with cursor-based pagination and flexible field selection.
-   * <h2>Cursor-based Pagination</h2>
-   * <p>This endpoint uses cursor-based pagination for efficient traversal of large datasets.
-   * The cursor is returned in the response metadata and should be passed in subsequent requests
-   * to retrieve the next page of results.</p>
-   * <h2>Field Selection</h2>
-   * <p>Use the <code>fields</code> parameter to control which observation fields are returned:</p>
-   * <ul>
-   * <li><code>core</code> - Always included: id, traceId, startTime, endTime, projectId, parentObservationId, type</li>
-   * <li><code>basic</code> - name, level, statusMessage, version, environment, bookmarked, public, userId, sessionId</li>
-   * <li><code>time</code> - completionStartTime, createdAt, updatedAt</li>
-   * <li><code>io</code> - input, output</li>
-   * <li><code>metadata</code> - metadata (truncated to 200 chars by default, use <code>expandMetadata</code> to get full values)</li>
-   * <li><code>model</code> - providedModelName, internalModelId, modelParameters</li>
-   * <li><code>usage</code> - usageDetails, costDetails, totalCost</li>
-   * <li><code>prompt</code> - promptId, promptName, promptVersion</li>
-   * <li><code>metrics</code> - latency, timeToFirstToken</li>
-   * </ul>
-   * <p>If not specified, <code>core</code> and <code>basic</code> field groups are returned.</p>
-   * <h2>Filters</h2>
-   * <p>Multiple filtering options are available via query parameters or the structured <code>filter</code> parameter.
-   * When using the <code>filter</code> parameter, it takes precedence over individual query parameter filters.</p>
    */
   public CompletableFuture<ObservationsV2Response> getMany() {
     return this.rawClient.getMany().thenApply(response -> response.body());
@@ -57,27 +36,6 @@ public class AsyncObservationsV2Client {
 
   /**
    * Get a list of observations with cursor-based pagination and flexible field selection.
-   * <h2>Cursor-based Pagination</h2>
-   * <p>This endpoint uses cursor-based pagination for efficient traversal of large datasets.
-   * The cursor is returned in the response metadata and should be passed in subsequent requests
-   * to retrieve the next page of results.</p>
-   * <h2>Field Selection</h2>
-   * <p>Use the <code>fields</code> parameter to control which observation fields are returned:</p>
-   * <ul>
-   * <li><code>core</code> - Always included: id, traceId, startTime, endTime, projectId, parentObservationId, type</li>
-   * <li><code>basic</code> - name, level, statusMessage, version, environment, bookmarked, public, userId, sessionId</li>
-   * <li><code>time</code> - completionStartTime, createdAt, updatedAt</li>
-   * <li><code>io</code> - input, output</li>
-   * <li><code>metadata</code> - metadata (truncated to 200 chars by default, use <code>expandMetadata</code> to get full values)</li>
-   * <li><code>model</code> - providedModelName, internalModelId, modelParameters</li>
-   * <li><code>usage</code> - usageDetails, costDetails, totalCost</li>
-   * <li><code>prompt</code> - promptId, promptName, promptVersion</li>
-   * <li><code>metrics</code> - latency, timeToFirstToken</li>
-   * </ul>
-   * <p>If not specified, <code>core</code> and <code>basic</code> field groups are returned.</p>
-   * <h2>Filters</h2>
-   * <p>Multiple filtering options are available via query parameters or the structured <code>filter</code> parameter.
-   * When using the <code>filter</code> parameter, it takes precedence over individual query parameter filters.</p>
    */
   public CompletableFuture<ObservationsV2Response> getMany(RequestOptions requestOptions) {
     return this.rawClient.getMany(requestOptions).thenApply(response -> response.body());
@@ -85,27 +43,6 @@ public class AsyncObservationsV2Client {
 
   /**
    * Get a list of observations with cursor-based pagination and flexible field selection.
-   * <h2>Cursor-based Pagination</h2>
-   * <p>This endpoint uses cursor-based pagination for efficient traversal of large datasets.
-   * The cursor is returned in the response metadata and should be passed in subsequent requests
-   * to retrieve the next page of results.</p>
-   * <h2>Field Selection</h2>
-   * <p>Use the <code>fields</code> parameter to control which observation fields are returned:</p>
-   * <ul>
-   * <li><code>core</code> - Always included: id, traceId, startTime, endTime, projectId, parentObservationId, type</li>
-   * <li><code>basic</code> - name, level, statusMessage, version, environment, bookmarked, public, userId, sessionId</li>
-   * <li><code>time</code> - completionStartTime, createdAt, updatedAt</li>
-   * <li><code>io</code> - input, output</li>
-   * <li><code>metadata</code> - metadata (truncated to 200 chars by default, use <code>expandMetadata</code> to get full values)</li>
-   * <li><code>model</code> - providedModelName, internalModelId, modelParameters</li>
-   * <li><code>usage</code> - usageDetails, costDetails, totalCost</li>
-   * <li><code>prompt</code> - promptId, promptName, promptVersion</li>
-   * <li><code>metrics</code> - latency, timeToFirstToken</li>
-   * </ul>
-   * <p>If not specified, <code>core</code> and <code>basic</code> field groups are returned.</p>
-   * <h2>Filters</h2>
-   * <p>Multiple filtering options are available via query parameters or the structured <code>filter</code> parameter.
-   * When using the <code>filter</code> parameter, it takes precedence over individual query parameter filters.</p>
    */
   public CompletableFuture<ObservationsV2Response> getMany(GetObservationsV2Request request) {
     return this.rawClient.getMany(request).thenApply(response -> response.body());
@@ -113,27 +50,6 @@ public class AsyncObservationsV2Client {
 
   /**
    * Get a list of observations with cursor-based pagination and flexible field selection.
-   * <h2>Cursor-based Pagination</h2>
-   * <p>This endpoint uses cursor-based pagination for efficient traversal of large datasets.
-   * The cursor is returned in the response metadata and should be passed in subsequent requests
-   * to retrieve the next page of results.</p>
-   * <h2>Field Selection</h2>
-   * <p>Use the <code>fields</code> parameter to control which observation fields are returned:</p>
-   * <ul>
-   * <li><code>core</code> - Always included: id, traceId, startTime, endTime, projectId, parentObservationId, type</li>
-   * <li><code>basic</code> - name, level, statusMessage, version, environment, bookmarked, public, userId, sessionId</li>
-   * <li><code>time</code> - completionStartTime, createdAt, updatedAt</li>
-   * <li><code>io</code> - input, output</li>
-   * <li><code>metadata</code> - metadata (truncated to 200 chars by default, use <code>expandMetadata</code> to get full values)</li>
-   * <li><code>model</code> - providedModelName, internalModelId, modelParameters</li>
-   * <li><code>usage</code> - usageDetails, costDetails, totalCost</li>
-   * <li><code>prompt</code> - promptId, promptName, promptVersion</li>
-   * <li><code>metrics</code> - latency, timeToFirstToken</li>
-   * </ul>
-   * <p>If not specified, <code>core</code> and <code>basic</code> field groups are returned.</p>
-   * <h2>Filters</h2>
-   * <p>Multiple filtering options are available via query parameters or the structured <code>filter</code> parameter.
-   * When using the <code>filter</code> parameter, it takes precedence over individual query parameter filters.</p>
    */
   public CompletableFuture<ObservationsV2Response> getMany(GetObservationsV2Request request,
       RequestOptions requestOptions) {
