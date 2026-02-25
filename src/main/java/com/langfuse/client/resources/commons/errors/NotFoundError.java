@@ -6,6 +6,7 @@ package com.langfuse.client.resources.commons.errors;
 
 import com.langfuse.client.core.LangfuseClientApiException;
 import java.lang.Object;
+import okhttp3.Response;
 
 public final class NotFoundError extends LangfuseClientApiException {
   /**
@@ -15,6 +16,11 @@ public final class NotFoundError extends LangfuseClientApiException {
 
   public NotFoundError(Object body) {
     super("NotFoundError", 404, body);
+    this.body = body;
+  }
+
+  public NotFoundError(Object body, Response rawResponse) {
+    super("NotFoundError", 404, body, rawResponse);
     this.body = body;
   }
 

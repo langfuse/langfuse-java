@@ -118,6 +118,56 @@ public final class GetMetricsV2Request {
   }
 
   public interface QueryStage {
+    /**
+     * <p>JSON string containing the query parameters with the following structure:</p>
+     * <pre><code class="language-json">{
+     *   &quot;view&quot;: string,           // Required. One of &quot;observations&quot;, &quot;scores-numeric&quot;, &quot;scores-categorical&quot;
+     *   &quot;dimensions&quot;: [           // Optional. Default: []
+     *     {
+     *       &quot;field&quot;: string       // Field to group by (see available dimensions above)
+     *     }
+     *   ],
+     *   &quot;metrics&quot;: [              // Required. At least one metric must be provided
+     *     {
+     *       &quot;measure&quot;: string,    // What to measure (see available measures above)
+     *       &quot;aggregation&quot;: string // How to aggregate: &quot;sum&quot;, &quot;avg&quot;, &quot;count&quot;, &quot;max&quot;, &quot;min&quot;, &quot;p50&quot;, &quot;p75&quot;, &quot;p90&quot;, &quot;p95&quot;, &quot;p99&quot;, &quot;histogram&quot;
+     *     }
+     *   ],
+     *   &quot;filters&quot;: [              // Optional. Default: []
+     *     {
+     *       &quot;column&quot;: string,     // Column to filter on (any dimension field)
+     *       &quot;operator&quot;: string,   // Operator based on type:
+     *                             // - datetime: &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+     *                             // - string: &quot;=&quot;, &quot;contains&quot;, &quot;does not contain&quot;, &quot;starts with&quot;, &quot;ends with&quot;
+     *                             // - stringOptions: &quot;any of&quot;, &quot;none of&quot;
+     *                             // - arrayOptions: &quot;any of&quot;, &quot;none of&quot;, &quot;all of&quot;
+     *                             // - number: &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+     *                             // - stringObject/numberObject: same as string/number with required &quot;key&quot;
+     *                             // - boolean: &quot;=&quot;, &quot;&lt;&gt;&quot;
+     *                             // - null: &quot;is null&quot;, &quot;is not null&quot;
+     *       &quot;value&quot;: any,         // Value to compare against
+     *       &quot;type&quot;: string,       // Data type: &quot;datetime&quot;, &quot;string&quot;, &quot;number&quot;, &quot;stringOptions&quot;, &quot;categoryOptions&quot;, &quot;arrayOptions&quot;, &quot;stringObject&quot;, &quot;numberObject&quot;, &quot;boolean&quot;, &quot;null&quot;
+     *       &quot;key&quot;: string         // Required only for stringObject/numberObject types (e.g., metadata filtering)
+     *     }
+     *   ],
+     *   &quot;timeDimension&quot;: {        // Optional. Default: null. If provided, results will be grouped by time
+     *     &quot;granularity&quot;: string   // One of &quot;auto&quot;, &quot;minute&quot;, &quot;hour&quot;, &quot;day&quot;, &quot;week&quot;, &quot;month&quot;
+     *   },
+     *   &quot;fromTimestamp&quot;: string,  // Required. ISO datetime string for start of time range
+     *   &quot;toTimestamp&quot;: string,    // Required. ISO datetime string for end of time range (must be after fromTimestamp)
+     *   &quot;orderBy&quot;: [              // Optional. Default: null
+     *     {
+     *       &quot;field&quot;: string,      // Field to order by (dimension or metric alias)
+     *       &quot;direction&quot;: string   // &quot;asc&quot; or &quot;desc&quot;
+     *     }
+     *   ],
+     *   &quot;config&quot;: {               // Optional. Query-specific configuration
+     *     &quot;bins&quot;: number,         // Optional. Number of bins for histogram aggregation (1-100), default: 10
+     *     &quot;row_limit&quot;: number     // Optional. Maximum number of rows to return (1-1000), default: 100
+     *   }
+     * }
+     * </code></pre>
+     */
     _FinalStage query(@NotNull String query);
 
     Builder from(GetMetricsV2Request other);
@@ -125,6 +175,10 @@ public final class GetMetricsV2Request {
 
   public interface _FinalStage {
     GetMetricsV2Request build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -194,6 +248,54 @@ public final class GetMetricsV2Request {
      *   }
      * }
      * </code></pre>
+     * <p>JSON string containing the query parameters with the following structure:</p>
+     * <pre><code class="language-json">{
+     *   &quot;view&quot;: string,           // Required. One of &quot;observations&quot;, &quot;scores-numeric&quot;, &quot;scores-categorical&quot;
+     *   &quot;dimensions&quot;: [           // Optional. Default: []
+     *     {
+     *       &quot;field&quot;: string       // Field to group by (see available dimensions above)
+     *     }
+     *   ],
+     *   &quot;metrics&quot;: [              // Required. At least one metric must be provided
+     *     {
+     *       &quot;measure&quot;: string,    // What to measure (see available measures above)
+     *       &quot;aggregation&quot;: string // How to aggregate: &quot;sum&quot;, &quot;avg&quot;, &quot;count&quot;, &quot;max&quot;, &quot;min&quot;, &quot;p50&quot;, &quot;p75&quot;, &quot;p90&quot;, &quot;p95&quot;, &quot;p99&quot;, &quot;histogram&quot;
+     *     }
+     *   ],
+     *   &quot;filters&quot;: [              // Optional. Default: []
+     *     {
+     *       &quot;column&quot;: string,     // Column to filter on (any dimension field)
+     *       &quot;operator&quot;: string,   // Operator based on type:
+     *                             // - datetime: &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+     *                             // - string: &quot;=&quot;, &quot;contains&quot;, &quot;does not contain&quot;, &quot;starts with&quot;, &quot;ends with&quot;
+     *                             // - stringOptions: &quot;any of&quot;, &quot;none of&quot;
+     *                             // - arrayOptions: &quot;any of&quot;, &quot;none of&quot;, &quot;all of&quot;
+     *                             // - number: &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+     *                             // - stringObject/numberObject: same as string/number with required &quot;key&quot;
+     *                             // - boolean: &quot;=&quot;, &quot;&lt;&gt;&quot;
+     *                             // - null: &quot;is null&quot;, &quot;is not null&quot;
+     *       &quot;value&quot;: any,         // Value to compare against
+     *       &quot;type&quot;: string,       // Data type: &quot;datetime&quot;, &quot;string&quot;, &quot;number&quot;, &quot;stringOptions&quot;, &quot;categoryOptions&quot;, &quot;arrayOptions&quot;, &quot;stringObject&quot;, &quot;numberObject&quot;, &quot;boolean&quot;, &quot;null&quot;
+     *       &quot;key&quot;: string         // Required only for stringObject/numberObject types (e.g., metadata filtering)
+     *     }
+     *   ],
+     *   &quot;timeDimension&quot;: {        // Optional. Default: null. If provided, results will be grouped by time
+     *     &quot;granularity&quot;: string   // One of &quot;auto&quot;, &quot;minute&quot;, &quot;hour&quot;, &quot;day&quot;, &quot;week&quot;, &quot;month&quot;
+     *   },
+     *   &quot;fromTimestamp&quot;: string,  // Required. ISO datetime string for start of time range
+     *   &quot;toTimestamp&quot;: string,    // Required. ISO datetime string for end of time range (must be after fromTimestamp)
+     *   &quot;orderBy&quot;: [              // Optional. Default: null
+     *     {
+     *       &quot;field&quot;: string,      // Field to order by (dimension or metric alias)
+     *       &quot;direction&quot;: string   // &quot;asc&quot; or &quot;desc&quot;
+     *     }
+     *   ],
+     *   &quot;config&quot;: {               // Optional. Query-specific configuration
+     *     &quot;bins&quot;: number,         // Optional. Number of bins for histogram aggregation (1-100), default: 10
+     *     &quot;row_limit&quot;: number     // Optional. Maximum number of rows to return (1-1000), default: 100
+     *   }
+     * }
+     * </code></pre>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -206,6 +308,18 @@ public final class GetMetricsV2Request {
     @java.lang.Override
     public GetMetricsV2Request build() {
       return new GetMetricsV2Request(query, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

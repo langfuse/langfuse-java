@@ -90,6 +90,10 @@ public final class ScoreConfigs {
   public interface _FinalStage {
     ScoreConfigs build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage data(List<ScoreConfig> data);
 
     _FinalStage addData(ScoreConfig data);
@@ -127,7 +131,9 @@ public final class ScoreConfigs {
 
     @java.lang.Override
     public _FinalStage addAllData(List<ScoreConfig> data) {
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
@@ -144,13 +150,27 @@ public final class ScoreConfigs {
     )
     public _FinalStage data(List<ScoreConfig> data) {
       this.data.clear();
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
     @java.lang.Override
     public ScoreConfigs build() {
       return new ScoreConfigs(data, meta, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

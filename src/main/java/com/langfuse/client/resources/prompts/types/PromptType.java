@@ -4,23 +4,85 @@
 
 package com.langfuse.client.resources.prompts.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum PromptType {
-  CHAT("chat"),
+public final class PromptType {
+  public static final PromptType TEXT = new PromptType(Value.TEXT, "text");
 
-  TEXT("text");
+  public static final PromptType CHAT = new PromptType(Value.CHAT, "chat");
 
-  private final String value;
+  private final Value value;
 
-  PromptType(String value) {
+  private final String string;
+
+  PromptType(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof PromptType && this.string.equals(((PromptType) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case TEXT:
+        return visitor.visitText();
+      case CHAT:
+        return visitor.visitChat();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static PromptType valueOf(String value) {
+    switch (value) {
+      case "text":
+        return TEXT;
+      case "chat":
+        return CHAT;
+      default:
+        return new PromptType(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    CHAT,
+
+    TEXT,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitChat();
+
+    T visitText();
+
+    T visitUnknown(String unknownType);
   }
 }

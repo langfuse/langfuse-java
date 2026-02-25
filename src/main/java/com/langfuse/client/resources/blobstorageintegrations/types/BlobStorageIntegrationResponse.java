@@ -270,6 +270,10 @@ public final class BlobStorageIntegrationResponse {
   public interface _FinalStage {
     BlobStorageIntegrationResponse build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage endpoint(Optional<String> endpoint);
 
     _FinalStage endpoint(String endpoint);
@@ -534,6 +538,18 @@ public final class BlobStorageIntegrationResponse {
     @java.lang.Override
     public BlobStorageIntegrationResponse build() {
       return new BlobStorageIntegrationResponse(id, projectId, type, bucketName, endpoint, region, accessKeyId, prefix, exportFrequency, enabled, forcePathStyle, fileType, exportMode, exportStartDate, nextSyncAt, lastSyncAt, createdAt, updatedAt, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

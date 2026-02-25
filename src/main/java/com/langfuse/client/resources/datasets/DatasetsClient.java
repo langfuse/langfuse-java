@@ -4,29 +4,9 @@
 
 package com.langfuse.client.resources.datasets;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.langfuse.client.core.ClientOptions;
-import com.langfuse.client.core.LangfuseClientApiException;
-import com.langfuse.client.core.LangfuseClientException;
-import com.langfuse.client.core.MediaTypes;
-import com.langfuse.client.core.ObjectMappers;
-import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
-import java.io.IOException;
-import java.lang.Object;
 import java.lang.String;
-import okhttp3.Headers;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-import com.langfuse.client.resources.commons.errors.AccessDeniedError;
-import com.langfuse.client.resources.commons.errors.Error;
-import com.langfuse.client.resources.commons.errors.MethodNotAllowedError;
-import com.langfuse.client.resources.commons.errors.NotFoundError;
-import com.langfuse.client.resources.commons.errors.UnauthorizedError;
 import com.langfuse.client.resources.commons.types.Dataset;
 import com.langfuse.client.resources.commons.types.DatasetRunWithItems;
 import com.langfuse.client.resources.datasets.requests.GetDatasetRunsRequest;
@@ -39,354 +19,132 @@ import com.langfuse.client.resources.datasets.types.PaginatedDatasets;
 public class DatasetsClient {
   protected final ClientOptions clientOptions;
 
+  private final RawDatasetsClient rawClient;
+
   public DatasetsClient(ClientOptions clientOptions) {
     this.clientOptions = clientOptions;
+    this.rawClient = new RawDatasetsClient(clientOptions);
+  }
+
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawDatasetsClient withRawResponse() {
+    return this.rawClient;
   }
 
   /**
    * Get all datasets
    */
   public PaginatedDatasets list() {
-    return list(GetDatasetsRequest.builder().build());
+    return this.rawClient.list().body();
+  }
+
+  /**
+   * Get all datasets
+   */
+  public PaginatedDatasets list(RequestOptions requestOptions) {
+    return this.rawClient.list(requestOptions).body();
   }
 
   /**
    * Get all datasets
    */
   public PaginatedDatasets list(GetDatasetsRequest request) {
-    return list(request,null);
+    return this.rawClient.list(request).body();
   }
 
   /**
    * Get all datasets
    */
   public PaginatedDatasets list(GetDatasetsRequest request, RequestOptions requestOptions) {
-    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-      .addPathSegments("api/public")
-      .addPathSegments("v2/datasets");if (request.getPage().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get().toString(), false);
-      }
-      if (request.getLimit().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get().toString(), false);
-      }
-      Request.Builder _requestBuilder = new Request.Builder()
-        .url(httpUrl.build())
-        .method("GET", null)
-        .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json");
-      Request okhttpRequest = _requestBuilder.build();
-      OkHttpClient client = clientOptions.httpClient();
-      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-        client = clientOptions.httpClientWithTimeout(requestOptions);
-      }
-      try (Response response = client.newCall(okhttpRequest).execute()) {
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), PaginatedDatasets.class);
-        }
-        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-        try {
-          switch (response.code()) {
-            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-        }
-        catch (JsonProcessingException ignored) {
-          // unable to map error response, throwing generic error
-        }
-        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-      }
-      catch (IOException e) {
-        throw new LangfuseClientException("Network error executing HTTP request", e);
-      }
-    }
+    return this.rawClient.list(request, requestOptions).body();
+  }
 
-    /**
-     * Get a dataset
-     */
-    public Dataset get(String datasetName) {
-      return get(datasetName,null);
-    }
+  /**
+   * Get a dataset
+   */
+  public Dataset get(String datasetName) {
+    return this.rawClient.get(datasetName).body();
+  }
 
-    /**
-     * Get a dataset
-     */
-    public Dataset get(String datasetName, RequestOptions requestOptions) {
-      HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-        .addPathSegments("api/public")
-        .addPathSegments("v2/datasets")
-        .addPathSegment(datasetName)
-        .build();
-      Request okhttpRequest = new Request.Builder()
-        .url(httpUrl)
-        .method("GET", null)
-        .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json")
-        .build();
-      OkHttpClient client = clientOptions.httpClient();
-      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-        client = clientOptions.httpClientWithTimeout(requestOptions);
-      }
-      try (Response response = client.newCall(okhttpRequest).execute()) {
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), Dataset.class);
-        }
-        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-        try {
-          switch (response.code()) {
-            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-        }
-        catch (JsonProcessingException ignored) {
-          // unable to map error response, throwing generic error
-        }
-        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-      }
-      catch (IOException e) {
-        throw new LangfuseClientException("Network error executing HTTP request", e);
-      }
-    }
+  /**
+   * Get a dataset
+   */
+  public Dataset get(String datasetName, RequestOptions requestOptions) {
+    return this.rawClient.get(datasetName, requestOptions).body();
+  }
 
-    /**
-     * Create a dataset
-     */
-    public Dataset create(CreateDatasetRequest request) {
-      return create(request,null);
-    }
+  /**
+   * Create a dataset
+   */
+  public Dataset create(CreateDatasetRequest request) {
+    return this.rawClient.create(request).body();
+  }
 
-    /**
-     * Create a dataset
-     */
-    public Dataset create(CreateDatasetRequest request, RequestOptions requestOptions) {
-      HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-        .addPathSegments("api/public")
-        .addPathSegments("v2/datasets")
-        .build();
-      RequestBody body;
-      try {
-        body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-      }
-      catch(JsonProcessingException e) {
-        throw new LangfuseClientException("Failed to serialize request", e);
-      }
-      Request okhttpRequest = new Request.Builder()
-        .url(httpUrl)
-        .method("POST", body)
-        .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json")
-        .build();
-      OkHttpClient client = clientOptions.httpClient();
-      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-        client = clientOptions.httpClientWithTimeout(requestOptions);
-      }
-      try (Response response = client.newCall(okhttpRequest).execute()) {
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), Dataset.class);
-        }
-        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-        try {
-          switch (response.code()) {
-            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-        }
-        catch (JsonProcessingException ignored) {
-          // unable to map error response, throwing generic error
-        }
-        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-      }
-      catch (IOException e) {
-        throw new LangfuseClientException("Network error executing HTTP request", e);
-      }
-    }
+  /**
+   * Create a dataset
+   */
+  public Dataset create(CreateDatasetRequest request, RequestOptions requestOptions) {
+    return this.rawClient.create(request, requestOptions).body();
+  }
 
-    /**
-     * Get a dataset run and its items
-     */
-    public DatasetRunWithItems getRun(String datasetName, String runName) {
-      return getRun(datasetName,runName,null);
-    }
+  /**
+   * Get a dataset run and its items
+   */
+  public DatasetRunWithItems getRun(String datasetName, String runName) {
+    return this.rawClient.getRun(datasetName, runName).body();
+  }
 
-    /**
-     * Get a dataset run and its items
-     */
-    public DatasetRunWithItems getRun(String datasetName, String runName,
-        RequestOptions requestOptions) {
-      HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-        .addPathSegments("api/public")
-        .addPathSegments("datasets")
-        .addPathSegment(datasetName)
-        .addPathSegments("runs")
-        .addPathSegment(runName)
-        .build();
-      Request okhttpRequest = new Request.Builder()
-        .url(httpUrl)
-        .method("GET", null)
-        .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json")
-        .build();
-      OkHttpClient client = clientOptions.httpClient();
-      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-        client = clientOptions.httpClientWithTimeout(requestOptions);
-      }
-      try (Response response = client.newCall(okhttpRequest).execute()) {
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), DatasetRunWithItems.class);
-        }
-        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-        try {
-          switch (response.code()) {
-            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-        }
-        catch (JsonProcessingException ignored) {
-          // unable to map error response, throwing generic error
-        }
-        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-      }
-      catch (IOException e) {
-        throw new LangfuseClientException("Network error executing HTTP request", e);
-      }
-    }
+  /**
+   * Get a dataset run and its items
+   */
+  public DatasetRunWithItems getRun(String datasetName, String runName,
+      RequestOptions requestOptions) {
+    return this.rawClient.getRun(datasetName, runName, requestOptions).body();
+  }
 
-    /**
-     * Delete a dataset run and all its run items. This action is irreversible.
-     */
-    public DeleteDatasetRunResponse deleteRun(String datasetName, String runName) {
-      return deleteRun(datasetName,runName,null);
-    }
+  /**
+   * Delete a dataset run and all its run items. This action is irreversible.
+   */
+  public DeleteDatasetRunResponse deleteRun(String datasetName, String runName) {
+    return this.rawClient.deleteRun(datasetName, runName).body();
+  }
 
-    /**
-     * Delete a dataset run and all its run items. This action is irreversible.
-     */
-    public DeleteDatasetRunResponse deleteRun(String datasetName, String runName,
-        RequestOptions requestOptions) {
-      HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-        .addPathSegments("api/public")
-        .addPathSegments("datasets")
-        .addPathSegment(datasetName)
-        .addPathSegments("runs")
-        .addPathSegment(runName)
-        .build();
-      Request okhttpRequest = new Request.Builder()
-        .url(httpUrl)
-        .method("DELETE", null)
-        .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json")
-        .build();
-      OkHttpClient client = clientOptions.httpClient();
-      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-        client = clientOptions.httpClientWithTimeout(requestOptions);
-      }
-      try (Response response = client.newCall(okhttpRequest).execute()) {
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), DeleteDatasetRunResponse.class);
-        }
-        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-        try {
-          switch (response.code()) {
-            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-        }
-        catch (JsonProcessingException ignored) {
-          // unable to map error response, throwing generic error
-        }
-        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-      }
-      catch (IOException e) {
-        throw new LangfuseClientException("Network error executing HTTP request", e);
-      }
-    }
+  /**
+   * Delete a dataset run and all its run items. This action is irreversible.
+   */
+  public DeleteDatasetRunResponse deleteRun(String datasetName, String runName,
+      RequestOptions requestOptions) {
+    return this.rawClient.deleteRun(datasetName, runName, requestOptions).body();
+  }
 
-    /**
-     * Get dataset runs
-     */
-    public PaginatedDatasetRuns getRuns(String datasetName) {
-      return getRuns(datasetName,GetDatasetRunsRequest.builder().build());
-    }
+  /**
+   * Get dataset runs
+   */
+  public PaginatedDatasetRuns getRuns(String datasetName) {
+    return this.rawClient.getRuns(datasetName).body();
+  }
 
-    /**
-     * Get dataset runs
-     */
-    public PaginatedDatasetRuns getRuns(String datasetName, GetDatasetRunsRequest request) {
-      return getRuns(datasetName,request,null);
-    }
+  /**
+   * Get dataset runs
+   */
+  public PaginatedDatasetRuns getRuns(String datasetName, RequestOptions requestOptions) {
+    return this.rawClient.getRuns(datasetName, requestOptions).body();
+  }
 
-    /**
-     * Get dataset runs
-     */
-    public PaginatedDatasetRuns getRuns(String datasetName, GetDatasetRunsRequest request,
-        RequestOptions requestOptions) {
-      HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-        .addPathSegments("api/public")
-        .addPathSegments("datasets")
-        .addPathSegment(datasetName)
-        .addPathSegments("runs");if (request.getPage().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get().toString(), false);
-        }
-        if (request.getLimit().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get().toString(), false);
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-          .url(httpUrl.build())
-          .method("GET", null)
-          .headers(Headers.of(clientOptions.headers(requestOptions)))
-          .addHeader("Content-Type", "application/json")
-          .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-          client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-          ResponseBody responseBody = response.body();
-          if (response.isSuccessful()) {
-            return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), PaginatedDatasetRuns.class);
-          }
-          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-          try {
-            switch (response.code()) {
-              case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            }
-          }
-          catch (JsonProcessingException ignored) {
-            // unable to map error response, throwing generic error
-          }
-          throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-        }
-        catch (IOException e) {
-          throw new LangfuseClientException("Network error executing HTTP request", e);
-        }
-      }
-    }
+  /**
+   * Get dataset runs
+   */
+  public PaginatedDatasetRuns getRuns(String datasetName, GetDatasetRunsRequest request) {
+    return this.rawClient.getRuns(datasetName, request).body();
+  }
+
+  /**
+   * Get dataset runs
+   */
+  public PaginatedDatasetRuns getRuns(String datasetName, GetDatasetRunsRequest request,
+      RequestOptions requestOptions) {
+    return this.rawClient.getRuns(datasetName, request, requestOptions).body();
+  }
+}

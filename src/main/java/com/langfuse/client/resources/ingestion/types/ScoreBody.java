@@ -187,17 +187,27 @@ public final class ScoreBody {
   }
 
   public interface NameStage {
+    /**
+     * <p>The name of the score. Always overrides &quot;output&quot; for correction scores.</p>
+     */
     ValueStage name(@NotNull String name);
 
     Builder from(ScoreBody other);
   }
 
   public interface ValueStage {
+    /**
+     * <p>The value of the score. Must be passed as string for categorical scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false)</p>
+     */
     _FinalStage value(@NotNull CreateScoreValue value);
   }
 
   public interface _FinalStage {
     ScoreBody build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
     _FinalStage id(Optional<String> id);
 
@@ -223,6 +233,9 @@ public final class ScoreBody {
 
     _FinalStage environment(String environment);
 
+    /**
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
+     */
     _FinalStage queueId(Optional<String> queueId);
 
     _FinalStage queueId(String queueId);
@@ -235,10 +248,16 @@ public final class ScoreBody {
 
     _FinalStage metadata(Object metadata);
 
+    /**
+     * <p>When set, must match the score value's type. If not set, will be inferred from the score value or config</p>
+     */
     _FinalStage dataType(Optional<ScoreDataType> dataType);
 
     _FinalStage dataType(ScoreDataType dataType);
 
+    /**
+     * <p>Reference a score config on a score. When set, the score name must equal the config name and scores must comply with the config's range and data type. For categorical scores, the value must map to a config category. Numeric scores might be constrained by the score config's max and min values</p>
+     */
     _FinalStage configId(Optional<String> configId);
 
     _FinalStage configId(String configId);
@@ -300,6 +319,7 @@ public final class ScoreBody {
 
     /**
      * <p>The name of the score. Always overrides &quot;output&quot; for correction scores.</p>
+     * <p>The name of the score. Always overrides &quot;output&quot; for correction scores.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -310,6 +330,7 @@ public final class ScoreBody {
     }
 
     /**
+     * <p>The value of the score. Must be passed as string for categorical scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false)</p>
      * <p>The value of the score. Must be passed as string for categorical scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false)</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -330,6 +351,9 @@ public final class ScoreBody {
       return this;
     }
 
+    /**
+     * <p>Reference a score config on a score. When set, the score name must equal the config name and scores must comply with the config's range and data type. For categorical scores, the value must map to a config category. Numeric scores might be constrained by the score config's max and min values</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "configId",
@@ -350,6 +374,9 @@ public final class ScoreBody {
       return this;
     }
 
+    /**
+     * <p>When set, must match the score value's type. If not set, will be inferred from the score value or config</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "dataType",
@@ -402,6 +429,9 @@ public final class ScoreBody {
       return this;
     }
 
+    /**
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "queueId",
@@ -511,6 +541,18 @@ public final class ScoreBody {
     @java.lang.Override
     public ScoreBody build() {
       return new ScoreBody(id, traceId, sessionId, observationId, datasetRunId, name, environment, queueId, value, comment, metadata, dataType, configId, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

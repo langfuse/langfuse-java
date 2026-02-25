@@ -4,31 +4,125 @@
 
 package com.langfuse.client.resources.llmconnections.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum LlmAdapter {
-  ANTHROPIC("anthropic"),
+public final class LlmAdapter {
+  public static final LlmAdapter ANTHROPIC = new LlmAdapter(Value.ANTHROPIC, "anthropic");
 
-  OPEN_AI("openai"),
+  public static final LlmAdapter AZURE = new LlmAdapter(Value.AZURE, "azure");
 
-  AZURE("azure"),
+  public static final LlmAdapter GOOGLE_AI_STUDIO = new LlmAdapter(Value.GOOGLE_AI_STUDIO, "google-ai-studio");
 
-  BEDROCK("bedrock"),
+  public static final LlmAdapter BEDROCK = new LlmAdapter(Value.BEDROCK, "bedrock");
 
-  GOOGLE_VERTEX_AI("google-vertex-ai"),
+  public static final LlmAdapter GOOGLE_VERTEX_AI = new LlmAdapter(Value.GOOGLE_VERTEX_AI, "google-vertex-ai");
 
-  GOOGLE_AI_STUDIO("google-ai-studio");
+  public static final LlmAdapter OPEN_AI = new LlmAdapter(Value.OPEN_AI, "openai");
 
-  private final String value;
+  private final Value value;
 
-  LlmAdapter(String value) {
+  private final String string;
+
+  LlmAdapter(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof LlmAdapter && this.string.equals(((LlmAdapter) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case ANTHROPIC:
+        return visitor.visitAnthropic();
+      case AZURE:
+        return visitor.visitAzure();
+      case GOOGLE_AI_STUDIO:
+        return visitor.visitGoogleAiStudio();
+      case BEDROCK:
+        return visitor.visitBedrock();
+      case GOOGLE_VERTEX_AI:
+        return visitor.visitGoogleVertexAi();
+      case OPEN_AI:
+        return visitor.visitOpenAi();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static LlmAdapter valueOf(String value) {
+    switch (value) {
+      case "anthropic":
+        return ANTHROPIC;
+      case "azure":
+        return AZURE;
+      case "google-ai-studio":
+        return GOOGLE_AI_STUDIO;
+      case "bedrock":
+        return BEDROCK;
+      case "google-vertex-ai":
+        return GOOGLE_VERTEX_AI;
+      case "openai":
+        return OPEN_AI;
+      default:
+        return new LlmAdapter(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    ANTHROPIC,
+
+    OPEN_AI,
+
+    AZURE,
+
+    BEDROCK,
+
+    GOOGLE_VERTEX_AI,
+
+    GOOGLE_AI_STUDIO,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitAnthropic();
+
+    T visitOpenAi();
+
+    T visitAzure();
+
+    T visitBedrock();
+
+    T visitGoogleVertexAi();
+
+    T visitGoogleAiStudio();
+
+    T visitUnknown(String unknownType);
   }
 }

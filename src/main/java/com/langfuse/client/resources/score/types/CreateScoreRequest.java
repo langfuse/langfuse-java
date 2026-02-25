@@ -194,11 +194,18 @@ public final class CreateScoreRequest {
   }
 
   public interface ValueStage {
+    /**
+     * <p>The value of the score. Must be passed as string for categorical scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false)</p>
+     */
     _FinalStage value(@NotNull CreateScoreValue value);
   }
 
   public interface _FinalStage {
     CreateScoreRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
     _FinalStage id(Optional<String> id);
 
@@ -228,18 +235,30 @@ public final class CreateScoreRequest {
 
     _FinalStage metadata(Map<String, Object> metadata);
 
+    /**
+     * <p>The environment of the score. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
+     */
     _FinalStage environment(Optional<String> environment);
 
     _FinalStage environment(String environment);
 
+    /**
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
+     */
     _FinalStage queueId(Optional<String> queueId);
 
     _FinalStage queueId(String queueId);
 
+    /**
+     * <p>The data type of the score. When passing a configId this field is inferred. Otherwise, this field must be passed or will default to numeric.</p>
+     */
     _FinalStage dataType(Optional<ScoreDataType> dataType);
 
     _FinalStage dataType(ScoreDataType dataType);
 
+    /**
+     * <p>Reference a score config on a score. The unique langfuse identifier of a score config. When passing this field, the dataType and stringValue fields are automatically populated.</p>
+     */
     _FinalStage configId(Optional<String> configId);
 
     _FinalStage configId(String configId);
@@ -308,6 +327,7 @@ public final class CreateScoreRequest {
 
     /**
      * <p>The value of the score. Must be passed as string for categorical scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false)</p>
+     * <p>The value of the score. Must be passed as string for categorical scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false)</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -327,6 +347,9 @@ public final class CreateScoreRequest {
       return this;
     }
 
+    /**
+     * <p>Reference a score config on a score. The unique langfuse identifier of a score config. When passing this field, the dataType and stringValue fields are automatically populated.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "configId",
@@ -347,6 +370,9 @@ public final class CreateScoreRequest {
       return this;
     }
 
+    /**
+     * <p>The data type of the score. When passing a configId this field is inferred. Otherwise, this field must be passed or will default to numeric.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "dataType",
@@ -367,6 +393,9 @@ public final class CreateScoreRequest {
       return this;
     }
 
+    /**
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "queueId",
@@ -387,6 +416,9 @@ public final class CreateScoreRequest {
       return this;
     }
 
+    /**
+     * <p>The environment of the score. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "environment",
@@ -512,6 +544,18 @@ public final class CreateScoreRequest {
     @java.lang.Override
     public CreateScoreRequest build() {
       return new CreateScoreRequest(id, traceId, sessionId, observationId, datasetRunId, name, value, comment, metadata, environment, queueId, dataType, configId, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

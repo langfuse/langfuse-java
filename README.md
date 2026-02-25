@@ -48,6 +48,41 @@ try {
 }
 ```
 
+## Testing
+
+### Unit tests
+
+Unit tests (deserialization, query string mapping) run without any credentials:
+
+```bash
+mvn test
+```
+
+### Integration tests
+
+Integration tests connect to a real Langfuse project. They require credentials and are excluded from `mvn test`.
+
+1. Copy `.env.example` to `.env` and fill in your API keys:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Ensure your Langfuse project contains the following prompts:
+   - `test-chat-prompt` — chat type, at least one message with `role` and `content`
+   - `test-text-prompt` — text type, non-empty prompt text
+
+3. Run all tests (unit + integration):
+   ```bash
+   mvn verify
+   ```
+
+   Or run only integration tests:
+   ```bash
+   mvn failsafe:integration-test
+   ```
+
+Integration tests skip gracefully when credentials are absent.
+
 ## Drafting a Release
 
 Run `./mvnw release:prepare -DreleaseVersion=` with the version you want to create.
@@ -78,6 +113,6 @@ To publish to Maven Central, you need to configure the following secrets in your
    ```
 3. Generate the new client code using `npx fern-api generate --api server`.
 4. Manually set the `package` across all files to `com.langfuse.client`.
-5. Overwrite `this.clientOptionsBuilder.addHeader("Authorization", "Bearer " + encodedToken);` to `Basic` in LangfuseClientBuilder.java.
+5. Overwrite `this.clientOptionsBuilder.addHeader("Authorization", "Basic " + encodedToken);` to `Basic` in com.langfuse.client.LangfuseClientBuilder.java.
 6. Adjust Javadoc strings with HTML properties as the apidocs package does not support them.
 7. Commit the changes in langfuse-java and push them to the repository.

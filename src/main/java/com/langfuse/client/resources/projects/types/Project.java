@@ -124,18 +124,31 @@ public final class Project {
   }
 
   public interface OrganizationStage {
+    /**
+     * <p>The organization this project belongs to</p>
+     */
     _FinalStage organization(@NotNull Organization organization);
   }
 
   public interface _FinalStage {
     Project build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Metadata for the project</p>
+     */
     _FinalStage metadata(Map<String, Object> metadata);
 
     _FinalStage putAllMetadata(Map<String, Object> metadata);
 
     _FinalStage metadata(String key, Object value);
 
+    /**
+     * <p>Number of days to retain data. Null or 0 means no retention. Omitted if no retention is configured.</p>
+     */
     _FinalStage retentionDays(Optional<Integer> retentionDays);
 
     _FinalStage retentionDays(Integer retentionDays);
@@ -187,6 +200,7 @@ public final class Project {
 
     /**
      * <p>The organization this project belongs to</p>
+     * <p>The organization this project belongs to</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -206,6 +220,9 @@ public final class Project {
       return this;
     }
 
+    /**
+     * <p>Number of days to retain data. Null or 0 means no retention. Omitted if no retention is configured.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "retentionDays",
@@ -232,10 +249,15 @@ public final class Project {
      */
     @java.lang.Override
     public _FinalStage putAllMetadata(Map<String, Object> metadata) {
-      this.metadata.putAll(metadata);
+      if (metadata != null) {
+        this.metadata.putAll(metadata);
+      }
       return this;
     }
 
+    /**
+     * <p>Metadata for the project</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "metadata",
@@ -243,13 +265,27 @@ public final class Project {
     )
     public _FinalStage metadata(Map<String, Object> metadata) {
       this.metadata.clear();
-      this.metadata.putAll(metadata);
+      if (metadata != null) {
+        this.metadata.putAll(metadata);
+      }
       return this;
     }
 
     @java.lang.Override
     public Project build() {
       return new Project(id, name, organization, metadata, retentionDays, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

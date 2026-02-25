@@ -210,6 +210,9 @@ public final class CreateBlobStorageIntegrationRequest {
   }
 
   public interface ProjectIdStage {
+    /**
+     * <p>ID of the project in which to configure the blob storage integration</p>
+     */
     TypeStage projectId(@NotNull String projectId);
 
     Builder from(CreateBlobStorageIntegrationRequest other);
@@ -220,10 +223,16 @@ public final class CreateBlobStorageIntegrationRequest {
   }
 
   public interface BucketNameStage {
+    /**
+     * <p>Name of the storage bucket</p>
+     */
     RegionStage bucketName(@NotNull String bucketName);
   }
 
   public interface RegionStage {
+    /**
+     * <p>Storage region</p>
+     */
     ExportFrequencyStage region(@NotNull String region);
   }
 
@@ -232,10 +241,16 @@ public final class CreateBlobStorageIntegrationRequest {
   }
 
   public interface EnabledStage {
+    /**
+     * <p>Whether the integration is active</p>
+     */
     ForcePathStyleStage enabled(boolean enabled);
   }
 
   public interface ForcePathStyleStage {
+    /**
+     * <p>Use path-style URLs for S3 requests</p>
+     */
     FileTypeStage forcePathStyle(boolean forcePathStyle);
   }
 
@@ -250,22 +265,41 @@ public final class CreateBlobStorageIntegrationRequest {
   public interface _FinalStage {
     CreateBlobStorageIntegrationRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Custom endpoint URL (required for S3_COMPATIBLE type)</p>
+     */
     _FinalStage endpoint(Optional<String> endpoint);
 
     _FinalStage endpoint(String endpoint);
 
+    /**
+     * <p>Access key ID for authentication</p>
+     */
     _FinalStage accessKeyId(Optional<String> accessKeyId);
 
     _FinalStage accessKeyId(String accessKeyId);
 
+    /**
+     * <p>Secret access key for authentication (will be encrypted when stored)</p>
+     */
     _FinalStage secretAccessKey(Optional<String> secretAccessKey);
 
     _FinalStage secretAccessKey(String secretAccessKey);
 
+    /**
+     * <p>Path prefix for exported files (must end with forward slash if provided)</p>
+     */
     _FinalStage prefix(Optional<String> prefix);
 
     _FinalStage prefix(String prefix);
 
+    /**
+     * <p>Custom start date for exports (required when exportMode is FROM_CUSTOM_DATE)</p>
+     */
     _FinalStage exportStartDate(Optional<OffsetDateTime> exportStartDate);
 
     _FinalStage exportStartDate(OffsetDateTime exportStartDate);
@@ -330,6 +364,7 @@ public final class CreateBlobStorageIntegrationRequest {
 
     /**
      * <p>ID of the project in which to configure the blob storage integration</p>
+     * <p>ID of the project in which to configure the blob storage integration</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -348,6 +383,7 @@ public final class CreateBlobStorageIntegrationRequest {
 
     /**
      * <p>Name of the storage bucket</p>
+     * <p>Name of the storage bucket</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -358,6 +394,7 @@ public final class CreateBlobStorageIntegrationRequest {
     }
 
     /**
+     * <p>Storage region</p>
      * <p>Storage region</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -377,6 +414,7 @@ public final class CreateBlobStorageIntegrationRequest {
 
     /**
      * <p>Whether the integration is active</p>
+     * <p>Whether the integration is active</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -387,6 +425,7 @@ public final class CreateBlobStorageIntegrationRequest {
     }
 
     /**
+     * <p>Use path-style URLs for S3 requests</p>
      * <p>Use path-style URLs for S3 requests</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -421,6 +460,9 @@ public final class CreateBlobStorageIntegrationRequest {
       return this;
     }
 
+    /**
+     * <p>Custom start date for exports (required when exportMode is FROM_CUSTOM_DATE)</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "exportStartDate",
@@ -441,6 +483,9 @@ public final class CreateBlobStorageIntegrationRequest {
       return this;
     }
 
+    /**
+     * <p>Path prefix for exported files (must end with forward slash if provided)</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "prefix",
@@ -461,6 +506,9 @@ public final class CreateBlobStorageIntegrationRequest {
       return this;
     }
 
+    /**
+     * <p>Secret access key for authentication (will be encrypted when stored)</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "secretAccessKey",
@@ -481,6 +529,9 @@ public final class CreateBlobStorageIntegrationRequest {
       return this;
     }
 
+    /**
+     * <p>Access key ID for authentication</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "accessKeyId",
@@ -501,6 +552,9 @@ public final class CreateBlobStorageIntegrationRequest {
       return this;
     }
 
+    /**
+     * <p>Custom endpoint URL (required for S3_COMPATIBLE type)</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "endpoint",
@@ -514,6 +568,18 @@ public final class CreateBlobStorageIntegrationRequest {
     @java.lang.Override
     public CreateBlobStorageIntegrationRequest build() {
       return new CreateBlobStorageIntegrationRequest(projectId, type, bucketName, endpoint, region, accessKeyId, secretAccessKey, prefix, exportFrequency, enabled, forcePathStyle, fileType, exportMode, exportStartDate, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

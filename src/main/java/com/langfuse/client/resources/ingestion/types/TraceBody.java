@@ -395,6 +395,9 @@ public final class TraceBody {
       return this;
     }
 
+    /**
+     * <p>Make trace publicly accessible via url</p>
+     */
     @JsonSetter(
         value = "public",
         nulls = Nulls.SKIP
@@ -411,6 +414,16 @@ public final class TraceBody {
 
     public TraceBody build() {
       return new TraceBody(id, timestamp, name, userId, input, output, sessionId, release, version, metadata, tags, environment, public_, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

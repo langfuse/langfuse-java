@@ -71,6 +71,9 @@ public final class CreateCommentResponse {
   }
 
   public interface IdStage {
+    /**
+     * <p>The id of the created object in Langfuse</p>
+     */
     _FinalStage id(@NotNull String id);
 
     Builder from(CreateCommentResponse other);
@@ -78,6 +81,10 @@ public final class CreateCommentResponse {
 
   public interface _FinalStage {
     CreateCommentResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -100,6 +107,7 @@ public final class CreateCommentResponse {
 
     /**
      * <p>The id of the created object in Langfuse</p>
+     * <p>The id of the created object in Langfuse</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -112,6 +120,18 @@ public final class CreateCommentResponse {
     @java.lang.Override
     public CreateCommentResponse build() {
       return new CreateCommentResponse(id, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -6,12 +6,15 @@ package com.langfuse.client.resources.commons.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
 import java.lang.String;
@@ -85,8 +88,14 @@ public final class DatasetRunItem {
     return traceId;
   }
 
-  @JsonProperty("observationId")
+  /**
+   * @return The observation ID associated with this run item
+   */
+  @JsonIgnore
   public Optional<String> getObservationId() {
+    if (observationId == null) {
+      return Optional.empty();
+    }
     return observationId;
   }
 
@@ -98,6 +107,15 @@ public final class DatasetRunItem {
   @JsonProperty("updatedAt")
   public OffsetDateTime getUpdatedAt() {
     return updatedAt;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("observationId")
+  private Optional<String> _getObservationId() {
+    return observationId;
   }
 
   @java.lang.Override
@@ -162,9 +180,18 @@ public final class DatasetRunItem {
   public interface _FinalStage {
     DatasetRunItem build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>The observation ID associated with this run item</p>
+     */
     _FinalStage observationId(Optional<String> observationId);
 
     _FinalStage observationId(String observationId);
+
+    _FinalStage observationId(Nullable<String> observationId);
   }
 
   @JsonIgnoreProperties(
@@ -255,12 +282,37 @@ public final class DatasetRunItem {
       return this;
     }
 
+    /**
+     * <p>The observation ID associated with this run item</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage observationId(Nullable<String> observationId) {
+      if (observationId.isNull()) {
+        this.observationId = null;
+      }
+      else if (observationId.isEmpty()) {
+        this.observationId = Optional.empty();
+      }
+      else {
+        this.observationId = Optional.of(observationId.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The observation ID associated with this run item</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     public _FinalStage observationId(String observationId) {
       this.observationId = Optional.ofNullable(observationId);
       return this;
     }
 
+    /**
+     * <p>The observation ID associated with this run item</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "observationId",
@@ -274,6 +326,18 @@ public final class DatasetRunItem {
     @java.lang.Override
     public DatasetRunItem build() {
       return new DatasetRunItem(id, datasetRunId, datasetRunName, datasetItemId, traceId, observationId, createdAt, updatedAt, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -79,6 +79,9 @@ public final class HealthResponse {
   }
 
   public interface VersionStage {
+    /**
+     * <p>Langfuse server version</p>
+     */
     StatusStage version(@NotNull String version);
 
     Builder from(HealthResponse other);
@@ -90,6 +93,10 @@ public final class HealthResponse {
 
   public interface _FinalStage {
     HealthResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -115,6 +122,7 @@ public final class HealthResponse {
 
     /**
      * <p>Langfuse server version</p>
+     * <p>Langfuse server version</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -134,6 +142,18 @@ public final class HealthResponse {
     @java.lang.Override
     public HealthResponse build() {
       return new HealthResponse(version, status, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -4,27 +4,105 @@
 
 package com.langfuse.client.resources.commons.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum CommentObjectType {
-  TRACE("TRACE"),
+public final class CommentObjectType {
+  public static final CommentObjectType OBSERVATION = new CommentObjectType(Value.OBSERVATION, "OBSERVATION");
 
-  OBSERVATION("OBSERVATION"),
+  public static final CommentObjectType PROMPT = new CommentObjectType(Value.PROMPT, "PROMPT");
 
-  SESSION("SESSION"),
+  public static final CommentObjectType SESSION = new CommentObjectType(Value.SESSION, "SESSION");
 
-  PROMPT("PROMPT");
+  public static final CommentObjectType TRACE = new CommentObjectType(Value.TRACE, "TRACE");
 
-  private final String value;
+  private final Value value;
 
-  CommentObjectType(String value) {
+  private final String string;
+
+  CommentObjectType(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof CommentObjectType && this.string.equals(((CommentObjectType) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case OBSERVATION:
+        return visitor.visitObservation();
+      case PROMPT:
+        return visitor.visitPrompt();
+      case SESSION:
+        return visitor.visitSession();
+      case TRACE:
+        return visitor.visitTrace();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static CommentObjectType valueOf(String value) {
+    switch (value) {
+      case "OBSERVATION":
+        return OBSERVATION;
+      case "PROMPT":
+        return PROMPT;
+      case "SESSION":
+        return SESSION;
+      case "TRACE":
+        return TRACE;
+      default:
+        return new CommentObjectType(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    TRACE,
+
+    OBSERVATION,
+
+    SESSION,
+
+    PROMPT,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitTrace();
+
+    T visitObservation();
+
+    T visitSession();
+
+    T visitPrompt();
+
+    T visitUnknown(String unknownType);
   }
 }

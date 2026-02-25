@@ -123,26 +123,45 @@ public final class CreateUserRequest {
   }
 
   public interface UserNameStage {
+    /**
+     * <p>User's email address (required)</p>
+     */
     NameStage userName(@NotNull String userName);
 
     Builder from(CreateUserRequest other);
   }
 
   public interface NameStage {
+    /**
+     * <p>User's name information</p>
+     */
     _FinalStage name(@NotNull ScimName name);
   }
 
   public interface _FinalStage {
     CreateUserRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>User's email addresses</p>
+     */
     _FinalStage emails(Optional<List<ScimEmail>> emails);
 
     _FinalStage emails(List<ScimEmail> emails);
 
+    /**
+     * <p>Whether the user is active</p>
+     */
     _FinalStage active(Optional<Boolean> active);
 
     _FinalStage active(Boolean active);
 
+    /**
+     * <p>Initial password for the user</p>
+     */
     _FinalStage password(Optional<String> password);
 
     _FinalStage password(String password);
@@ -180,6 +199,7 @@ public final class CreateUserRequest {
 
     /**
      * <p>User's email address (required)</p>
+     * <p>User's email address (required)</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -190,6 +210,7 @@ public final class CreateUserRequest {
     }
 
     /**
+     * <p>User's name information</p>
      * <p>User's name information</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -210,6 +231,9 @@ public final class CreateUserRequest {
       return this;
     }
 
+    /**
+     * <p>Initial password for the user</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "password",
@@ -230,6 +254,9 @@ public final class CreateUserRequest {
       return this;
     }
 
+    /**
+     * <p>Whether the user is active</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "active",
@@ -250,6 +277,9 @@ public final class CreateUserRequest {
       return this;
     }
 
+    /**
+     * <p>User's email addresses</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "emails",
@@ -263,6 +293,18 @@ public final class CreateUserRequest {
     @java.lang.Override
     public CreateUserRequest build() {
       return new CreateUserRequest(userName, name, emails, active, password, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

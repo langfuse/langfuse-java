@@ -6,6 +6,7 @@ package com.langfuse.client.resources.commons.errors;
 
 import com.langfuse.client.core.LangfuseClientApiException;
 import java.lang.Object;
+import okhttp3.Response;
 
 public final class UnauthorizedError extends LangfuseClientApiException {
   /**
@@ -15,6 +16,11 @@ public final class UnauthorizedError extends LangfuseClientApiException {
 
   public UnauthorizedError(Object body) {
     super("UnauthorizedError", 401, body);
+    this.body = body;
+  }
+
+  public UnauthorizedError(Object body, Response rawResponse) {
+    super("UnauthorizedError", 401, body, rawResponse);
     this.body = body;
   }
 

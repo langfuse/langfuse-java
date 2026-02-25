@@ -14,11 +14,13 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.langfuse.client.core.ObjectMappers;
 import java.io.IOException;
 import java.lang.Boolean;
-import java.lang.IllegalArgumentException;
+import java.lang.Float;
 import java.lang.IllegalStateException;
 import java.lang.Integer;
 import java.lang.Object;
+import java.lang.RuntimeException;
 import java.lang.String;
+import java.lang.SuppressWarnings;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -41,14 +43,17 @@ public final class MapValue {
     return this.value;
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T visit(Visitor<T> visitor) {
     if(this.type == 0) {
       return visitor.visitOptionalString((Optional<String>) this.value);
     } else if(this.type == 1) {
       return visitor.visitOptionalInteger((Optional<Integer>) this.value);
     } else if(this.type == 2) {
-      return visitor.visitOptionalBoolean((Optional<Boolean>) this.value);
+      return visitor.visitOptionalFloat((Optional<Float>) this.value);
     } else if(this.type == 3) {
+      return visitor.visitOptionalBoolean((Optional<Boolean>) this.value);
+    } else if(this.type == 4) {
       return visitor.visitOptionalListOfString((Optional<List<String>>) this.value);
     }
     throw new IllegalStateException("Failed to visit value. This should never happen.");
@@ -82,18 +87,24 @@ public final class MapValue {
     return new MapValue(value, 1);
   }
 
-  public static MapValue ofOptionalBoolean(Optional<Boolean> value) {
+  public static MapValue ofOptionalFloat(Optional<Float> value) {
     return new MapValue(value, 2);
   }
 
-  public static MapValue ofOptionalListOfString(Optional<List<String>> value) {
+  public static MapValue ofOptionalBoolean(Optional<Boolean> value) {
     return new MapValue(value, 3);
+  }
+
+  public static MapValue ofOptionalListOfString(Optional<List<String>> value) {
+    return new MapValue(value, 4);
   }
 
   public interface Visitor<T> {
     T visitOptionalString(Optional<String> value);
 
     T visitOptionalInteger(Optional<Integer> value);
+
+    T visitOptionalFloat(Optional<Float> value);
 
     T visitOptionalBoolean(Optional<Boolean> value);
 
@@ -110,19 +121,23 @@ public final class MapValue {
       Object value = p.readValueAs(Object.class);
       try {
         return ofOptionalString(ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<Optional<String>>() {}));
-      } catch(IllegalArgumentException e) {
+      } catch(RuntimeException e) {
       }
       try {
         return ofOptionalInteger(ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<Optional<Integer>>() {}));
-      } catch(IllegalArgumentException e) {
+      } catch(RuntimeException e) {
+      }
+      try {
+        return ofOptionalFloat(ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<Optional<Float>>() {}));
+      } catch(RuntimeException e) {
       }
       try {
         return ofOptionalBoolean(ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<Optional<Boolean>>() {}));
-      } catch(IllegalArgumentException e) {
+      } catch(RuntimeException e) {
       }
       try {
         return ofOptionalListOfString(ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<Optional<List<String>>>() {}));
-      } catch(IllegalArgumentException e) {
+      } catch(RuntimeException e) {
       }
       throw new JsonParseException(p, "Failed to deserialize");
     }

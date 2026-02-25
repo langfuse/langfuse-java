@@ -107,12 +107,18 @@ public final class CreateGenerationEvent implements IBaseEvent {
   }
 
   public interface IdStage {
+    /**
+     * <p>UUID v4 that identifies the event</p>
+     */
     TimestampStage id(@NotNull String id);
 
     Builder from(CreateGenerationEvent other);
   }
 
   public interface TimestampStage {
+    /**
+     * <p>Datetime (ISO 8601) of event creation in client. Should be as close to actual event creation in client as possible, this timestamp will be used for ordering of events in future release. Resolution: milliseconds (required), microseconds (optimal).</p>
+     */
     BodyStage timestamp(@NotNull String timestamp);
   }
 
@@ -123,6 +129,13 @@ public final class CreateGenerationEvent implements IBaseEvent {
   public interface _FinalStage {
     CreateGenerationEvent build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Optional. Metadata field used by the Langfuse SDKs for debugging.</p>
+     */
     _FinalStage metadata(Optional<Object> metadata);
 
     _FinalStage metadata(Object metadata);
@@ -157,6 +170,7 @@ public final class CreateGenerationEvent implements IBaseEvent {
 
     /**
      * <p>UUID v4 that identifies the event</p>
+     * <p>UUID v4 that identifies the event</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -167,6 +181,7 @@ public final class CreateGenerationEvent implements IBaseEvent {
     }
 
     /**
+     * <p>Datetime (ISO 8601) of event creation in client. Should be as close to actual event creation in client as possible, this timestamp will be used for ordering of events in future release. Resolution: milliseconds (required), microseconds (optimal).</p>
      * <p>Datetime (ISO 8601) of event creation in client. Should be as close to actual event creation in client as possible, this timestamp will be used for ordering of events in future release. Resolution: milliseconds (required), microseconds (optimal).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -194,6 +209,9 @@ public final class CreateGenerationEvent implements IBaseEvent {
       return this;
     }
 
+    /**
+     * <p>Optional. Metadata field used by the Langfuse SDKs for debugging.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "metadata",
@@ -207,6 +225,18 @@ public final class CreateGenerationEvent implements IBaseEvent {
     @java.lang.Override
     public CreateGenerationEvent build() {
       return new CreateGenerationEvent(id, timestamp, metadata, body, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

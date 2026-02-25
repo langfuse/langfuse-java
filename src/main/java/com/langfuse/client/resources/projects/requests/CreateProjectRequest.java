@@ -99,12 +99,22 @@ public final class CreateProjectRequest {
   }
 
   public interface RetentionStage {
+    /**
+     * <p>Number of days to retain data. Must be 0 or at least 3 days. Requires data-retention entitlement for non-zero values. Optional.</p>
+     */
     _FinalStage retention(int retention);
   }
 
   public interface _FinalStage {
     CreateProjectRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Optional metadata for the project</p>
+     */
     _FinalStage metadata(Optional<Map<String, Object>> metadata);
 
     _FinalStage metadata(Map<String, Object> metadata);
@@ -143,6 +153,7 @@ public final class CreateProjectRequest {
 
     /**
      * <p>Number of days to retain data. Must be 0 or at least 3 days. Requires data-retention entitlement for non-zero values. Optional.</p>
+     * <p>Number of days to retain data. Must be 0 or at least 3 days. Requires data-retention entitlement for non-zero values. Optional.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -162,6 +173,9 @@ public final class CreateProjectRequest {
       return this;
     }
 
+    /**
+     * <p>Optional metadata for the project</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "metadata",
@@ -175,6 +189,18 @@ public final class CreateProjectRequest {
     @java.lang.Override
     public CreateProjectRequest build() {
       return new CreateProjectRequest(name, metadata, retention, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

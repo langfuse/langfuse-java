@@ -114,10 +114,20 @@ public final class ListDatasetRunItemsRequest {
   public interface _FinalStage {
     ListDatasetRunItemsRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>page number, starts at 1</p>
+     */
     _FinalStage page(Optional<Integer> page);
 
     _FinalStage page(Integer page);
 
+    /**
+     * <p>limit of items per page</p>
+     */
     _FinalStage limit(Optional<Integer> limit);
 
     _FinalStage limit(Integer limit);
@@ -174,6 +184,9 @@ public final class ListDatasetRunItemsRequest {
       return this;
     }
 
+    /**
+     * <p>limit of items per page</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "limit",
@@ -194,6 +207,9 @@ public final class ListDatasetRunItemsRequest {
       return this;
     }
 
+    /**
+     * <p>page number, starts at 1</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "page",
@@ -207,6 +223,18 @@ public final class ListDatasetRunItemsRequest {
     @java.lang.Override
     public ListDatasetRunItemsRequest build() {
       return new ListDatasetRunItemsRequest(datasetId, runName, page, limit, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -18,7 +18,9 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,6 +32,10 @@ import com.langfuse.client.resources.commons.types.ScoreSource;
     builder = GetScoresRequest.Builder.class
 )
 public final class GetScoresRequest {
+  private final Optional<List<String>> environment;
+
+  private final Optional<List<String>> traceTags;
+
   private final Optional<Integer> page;
 
   private final Optional<Integer> limit;
@@ -41,8 +47,6 @@ public final class GetScoresRequest {
   private final Optional<OffsetDateTime> fromTimestamp;
 
   private final Optional<OffsetDateTime> toTimestamp;
-
-  private final Optional<String> environment;
 
   private final Optional<ScoreSource> source;
 
@@ -60,31 +64,34 @@ public final class GetScoresRequest {
 
   private final Optional<String> traceId;
 
+  private final Optional<String> observationId;
+
   private final Optional<String> queueId;
 
   private final Optional<ScoreDataType> dataType;
 
-  private final Optional<String> traceTags;
-
   private final Optional<String> fields;
+
+  private final Optional<String> filter;
 
   private final Map<String, Object> additionalProperties;
 
-  private GetScoresRequest(Optional<Integer> page, Optional<Integer> limit, Optional<String> userId,
+  private GetScoresRequest(Optional<List<String>> environment, Optional<List<String>> traceTags,
+      Optional<Integer> page, Optional<Integer> limit, Optional<String> userId,
       Optional<String> name, Optional<OffsetDateTime> fromTimestamp,
-      Optional<OffsetDateTime> toTimestamp, Optional<String> environment,
-      Optional<ScoreSource> source, Optional<String> operator, Optional<Double> value,
-      Optional<String> scoreIds, Optional<String> configId, Optional<String> sessionId,
-      Optional<String> datasetRunId, Optional<String> traceId, Optional<String> queueId,
-      Optional<ScoreDataType> dataType, Optional<String> traceTags, Optional<String> fields,
-      Map<String, Object> additionalProperties) {
+      Optional<OffsetDateTime> toTimestamp, Optional<ScoreSource> source, Optional<String> operator,
+      Optional<Double> value, Optional<String> scoreIds, Optional<String> configId,
+      Optional<String> sessionId, Optional<String> datasetRunId, Optional<String> traceId,
+      Optional<String> observationId, Optional<String> queueId, Optional<ScoreDataType> dataType,
+      Optional<String> fields, Optional<String> filter, Map<String, Object> additionalProperties) {
+    this.environment = environment;
+    this.traceTags = traceTags;
     this.page = page;
     this.limit = limit;
     this.userId = userId;
     this.name = name;
     this.fromTimestamp = fromTimestamp;
     this.toTimestamp = toTimestamp;
-    this.environment = environment;
     this.source = source;
     this.operator = operator;
     this.value = value;
@@ -93,11 +100,28 @@ public final class GetScoresRequest {
     this.sessionId = sessionId;
     this.datasetRunId = datasetRunId;
     this.traceId = traceId;
+    this.observationId = observationId;
     this.queueId = queueId;
     this.dataType = dataType;
-    this.traceTags = traceTags;
     this.fields = fields;
+    this.filter = filter;
     this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Optional filter for scores where the environment is one of the provided values.
+   */
+  @JsonProperty("environment")
+  public Optional<List<String>> getEnvironment() {
+    return environment;
+  }
+
+  /**
+   * @return Only scores linked to traces that include all of these tags will be returned.
+   */
+  @JsonProperty("traceTags")
+  public Optional<List<String>> getTraceTags() {
+    return traceTags;
   }
 
   /**
@@ -146,14 +170,6 @@ public final class GetScoresRequest {
   @JsonProperty("toTimestamp")
   public Optional<OffsetDateTime> getToTimestamp() {
     return toTimestamp;
-  }
-
-  /**
-   * @return Optional filter for scores where the environment is one of the provided values.
-   */
-  @JsonProperty("environment")
-  public Optional<String> getEnvironment() {
-    return environment;
   }
 
   /**
@@ -221,6 +237,14 @@ public final class GetScoresRequest {
   }
 
   /**
+   * @return Comma-separated list of observation IDs to filter scores by.
+   */
+  @JsonProperty("observationId")
+  public Optional<String> getObservationId() {
+    return observationId;
+  }
+
+  /**
    * @return Retrieve only scores with a specific annotation queueId.
    */
   @JsonProperty("queueId")
@@ -237,19 +261,19 @@ public final class GetScoresRequest {
   }
 
   /**
-   * @return Only scores linked to traces that include all of these tags will be returned.
-   */
-  @JsonProperty("traceTags")
-  public Optional<String> getTraceTags() {
-    return traceTags;
-  }
-
-  /**
    * @return Comma-separated list of field groups to include in the response. Available field groups: 'score' (core score fields), 'trace' (trace properties: userId, tags, environment). If not specified, both 'score' and 'trace' are returned by default. Example: 'score' to exclude trace data, 'score,trace' to include both. Note: When filtering by trace properties (using userId or traceTags parameters), the 'trace' field group must be included, otherwise a 400 error will be returned.
    */
   @JsonProperty("fields")
   public Optional<String> getFields() {
     return fields;
+  }
+
+  /**
+   * @return A JSON stringified array of filter objects. Each object requires type, column, operator, and value. Supports filtering by score metadata using the stringObject type. Example: [{&quot;type&quot;:&quot;stringObject&quot;,&quot;column&quot;:&quot;metadata&quot;,&quot;key&quot;:&quot;user_id&quot;,&quot;operator&quot;:&quot;=&quot;,&quot;value&quot;:&quot;abc123&quot;}]. Supported types: stringObject (metadata key-value filtering), string, number, datetime, stringOptions, arrayOptions. Supported operators for stringObject: =, contains, does not contain, starts with, ends with.
+   */
+  @JsonProperty("filter")
+  public Optional<String> getFilter() {
+    return filter;
   }
 
   @java.lang.Override
@@ -264,12 +288,12 @@ public final class GetScoresRequest {
   }
 
   private boolean equalTo(GetScoresRequest other) {
-    return page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && environment.equals(other.environment) && source.equals(other.source) && operator.equals(other.operator) && value.equals(other.value) && scoreIds.equals(other.scoreIds) && configId.equals(other.configId) && sessionId.equals(other.sessionId) && datasetRunId.equals(other.datasetRunId) && traceId.equals(other.traceId) && queueId.equals(other.queueId) && dataType.equals(other.dataType) && traceTags.equals(other.traceTags) && fields.equals(other.fields);
+    return environment.equals(other.environment) && traceTags.equals(other.traceTags) && page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && source.equals(other.source) && operator.equals(other.operator) && value.equals(other.value) && scoreIds.equals(other.scoreIds) && configId.equals(other.configId) && sessionId.equals(other.sessionId) && datasetRunId.equals(other.datasetRunId) && traceId.equals(other.traceId) && observationId.equals(other.observationId) && queueId.equals(other.queueId) && dataType.equals(other.dataType) && fields.equals(other.fields) && filter.equals(other.filter);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.page, this.limit, this.userId, this.name, this.fromTimestamp, this.toTimestamp, this.environment, this.source, this.operator, this.value, this.scoreIds, this.configId, this.sessionId, this.datasetRunId, this.traceId, this.queueId, this.dataType, this.traceTags, this.fields);
+    return Objects.hash(this.environment, this.traceTags, this.page, this.limit, this.userId, this.name, this.fromTimestamp, this.toTimestamp, this.source, this.operator, this.value, this.scoreIds, this.configId, this.sessionId, this.datasetRunId, this.traceId, this.observationId, this.queueId, this.dataType, this.fields, this.filter);
   }
 
   @java.lang.Override
@@ -285,6 +309,10 @@ public final class GetScoresRequest {
       ignoreUnknown = true
   )
   public static final class Builder {
+    private Optional<List<String>> environment = Optional.empty();
+
+    private Optional<List<String>> traceTags = Optional.empty();
+
     private Optional<Integer> page = Optional.empty();
 
     private Optional<Integer> limit = Optional.empty();
@@ -296,8 +324,6 @@ public final class GetScoresRequest {
     private Optional<OffsetDateTime> fromTimestamp = Optional.empty();
 
     private Optional<OffsetDateTime> toTimestamp = Optional.empty();
-
-    private Optional<String> environment = Optional.empty();
 
     private Optional<ScoreSource> source = Optional.empty();
 
@@ -315,13 +341,15 @@ public final class GetScoresRequest {
 
     private Optional<String> traceId = Optional.empty();
 
+    private Optional<String> observationId = Optional.empty();
+
     private Optional<String> queueId = Optional.empty();
 
     private Optional<ScoreDataType> dataType = Optional.empty();
 
-    private Optional<String> traceTags = Optional.empty();
-
     private Optional<String> fields = Optional.empty();
+
+    private Optional<String> filter = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -330,13 +358,14 @@ public final class GetScoresRequest {
     }
 
     public Builder from(GetScoresRequest other) {
+      environment(other.getEnvironment());
+      traceTags(other.getTraceTags());
       page(other.getPage());
       limit(other.getLimit());
       userId(other.getUserId());
       name(other.getName());
       fromTimestamp(other.getFromTimestamp());
       toTimestamp(other.getToTimestamp());
-      environment(other.getEnvironment());
       source(other.getSource());
       operator(other.getOperator());
       value(other.getValue());
@@ -345,13 +374,61 @@ public final class GetScoresRequest {
       sessionId(other.getSessionId());
       datasetRunId(other.getDatasetRunId());
       traceId(other.getTraceId());
+      observationId(other.getObservationId());
       queueId(other.getQueueId());
       dataType(other.getDataType());
-      traceTags(other.getTraceTags());
       fields(other.getFields());
+      filter(other.getFilter());
       return this;
     }
 
+    /**
+     * <p>Optional filter for scores where the environment is one of the provided values.</p>
+     */
+    @JsonSetter(
+        value = "environment",
+        nulls = Nulls.SKIP
+    )
+    public Builder environment(Optional<List<String>> environment) {
+      this.environment = environment;
+      return this;
+    }
+
+    public Builder environment(List<String> environment) {
+      this.environment = Optional.ofNullable(environment);
+      return this;
+    }
+
+    public Builder environment(String environment) {
+      this.environment = Optional.of(Collections.singletonList(environment));
+      return this;
+    }
+
+    /**
+     * <p>Only scores linked to traces that include all of these tags will be returned.</p>
+     */
+    @JsonSetter(
+        value = "traceTags",
+        nulls = Nulls.SKIP
+    )
+    public Builder traceTags(Optional<List<String>> traceTags) {
+      this.traceTags = traceTags;
+      return this;
+    }
+
+    public Builder traceTags(List<String> traceTags) {
+      this.traceTags = Optional.ofNullable(traceTags);
+      return this;
+    }
+
+    public Builder traceTags(String traceTags) {
+      this.traceTags = Optional.of(Collections.singletonList(traceTags));
+      return this;
+    }
+
+    /**
+     * <p>Page number, starts at 1.</p>
+     */
     @JsonSetter(
         value = "page",
         nulls = Nulls.SKIP
@@ -366,6 +443,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Limit of items per page. If you encounter api issues due to too large page sizes, try to reduce the limit.</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -380,6 +460,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Retrieve only scores with this userId associated to the trace.</p>
+     */
     @JsonSetter(
         value = "userId",
         nulls = Nulls.SKIP
@@ -394,6 +477,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Retrieve only scores with this name.</p>
+     */
     @JsonSetter(
         value = "name",
         nulls = Nulls.SKIP
@@ -408,6 +494,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include scores created on or after a certain datetime (ISO 8601)</p>
+     */
     @JsonSetter(
         value = "fromTimestamp",
         nulls = Nulls.SKIP
@@ -422,6 +511,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include scores created before a certain datetime (ISO 8601)</p>
+     */
     @JsonSetter(
         value = "toTimestamp",
         nulls = Nulls.SKIP
@@ -436,20 +528,9 @@ public final class GetScoresRequest {
       return this;
     }
 
-    @JsonSetter(
-        value = "environment",
-        nulls = Nulls.SKIP
-    )
-    public Builder environment(Optional<String> environment) {
-      this.environment = environment;
-      return this;
-    }
-
-    public Builder environment(String environment) {
-      this.environment = Optional.ofNullable(environment);
-      return this;
-    }
-
+    /**
+     * <p>Retrieve only scores from a specific source.</p>
+     */
     @JsonSetter(
         value = "source",
         nulls = Nulls.SKIP
@@ -464,6 +545,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Retrieve only scores with &lt;operator&gt; value.</p>
+     */
     @JsonSetter(
         value = "operator",
         nulls = Nulls.SKIP
@@ -478,6 +562,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Retrieve only scores with &lt;operator&gt; value.</p>
+     */
     @JsonSetter(
         value = "value",
         nulls = Nulls.SKIP
@@ -492,6 +579,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Comma-separated list of score IDs to limit the results to.</p>
+     */
     @JsonSetter(
         value = "scoreIds",
         nulls = Nulls.SKIP
@@ -506,6 +596,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Retrieve only scores with a specific configId.</p>
+     */
     @JsonSetter(
         value = "configId",
         nulls = Nulls.SKIP
@@ -520,6 +613,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Retrieve only scores with a specific sessionId.</p>
+     */
     @JsonSetter(
         value = "sessionId",
         nulls = Nulls.SKIP
@@ -534,6 +630,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Retrieve only scores with a specific datasetRunId.</p>
+     */
     @JsonSetter(
         value = "datasetRunId",
         nulls = Nulls.SKIP
@@ -548,6 +647,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Retrieve only scores with a specific traceId.</p>
+     */
     @JsonSetter(
         value = "traceId",
         nulls = Nulls.SKIP
@@ -562,6 +664,26 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Comma-separated list of observation IDs to filter scores by.</p>
+     */
+    @JsonSetter(
+        value = "observationId",
+        nulls = Nulls.SKIP
+    )
+    public Builder observationId(Optional<String> observationId) {
+      this.observationId = observationId;
+      return this;
+    }
+
+    public Builder observationId(String observationId) {
+      this.observationId = Optional.ofNullable(observationId);
+      return this;
+    }
+
+    /**
+     * <p>Retrieve only scores with a specific annotation queueId.</p>
+     */
     @JsonSetter(
         value = "queueId",
         nulls = Nulls.SKIP
@@ -576,6 +698,9 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>Retrieve only scores with a specific dataType.</p>
+     */
     @JsonSetter(
         value = "dataType",
         nulls = Nulls.SKIP
@@ -590,20 +715,9 @@ public final class GetScoresRequest {
       return this;
     }
 
-    @JsonSetter(
-        value = "traceTags",
-        nulls = Nulls.SKIP
-    )
-    public Builder traceTags(Optional<String> traceTags) {
-      this.traceTags = traceTags;
-      return this;
-    }
-
-    public Builder traceTags(String traceTags) {
-      this.traceTags = Optional.ofNullable(traceTags);
-      return this;
-    }
-
+    /**
+     * <p>Comma-separated list of field groups to include in the response. Available field groups: 'score' (core score fields), 'trace' (trace properties: userId, tags, environment). If not specified, both 'score' and 'trace' are returned by default. Example: 'score' to exclude trace data, 'score,trace' to include both. Note: When filtering by trace properties (using userId or traceTags parameters), the 'trace' field group must be included, otherwise a 400 error will be returned.</p>
+     */
     @JsonSetter(
         value = "fields",
         nulls = Nulls.SKIP
@@ -618,8 +732,35 @@ public final class GetScoresRequest {
       return this;
     }
 
+    /**
+     * <p>A JSON stringified array of filter objects. Each object requires type, column, operator, and value. Supports filtering by score metadata using the stringObject type. Example: [{&quot;type&quot;:&quot;stringObject&quot;,&quot;column&quot;:&quot;metadata&quot;,&quot;key&quot;:&quot;user_id&quot;,&quot;operator&quot;:&quot;=&quot;,&quot;value&quot;:&quot;abc123&quot;}]. Supported types: stringObject (metadata key-value filtering), string, number, datetime, stringOptions, arrayOptions. Supported operators for stringObject: =, contains, does not contain, starts with, ends with.</p>
+     */
+    @JsonSetter(
+        value = "filter",
+        nulls = Nulls.SKIP
+    )
+    public Builder filter(Optional<String> filter) {
+      this.filter = filter;
+      return this;
+    }
+
+    public Builder filter(String filter) {
+      this.filter = Optional.ofNullable(filter);
+      return this;
+    }
+
     public GetScoresRequest build() {
-      return new GetScoresRequest(page, limit, userId, name, fromTimestamp, toTimestamp, environment, source, operator, value, scoreIds, configId, sessionId, datasetRunId, traceId, queueId, dataType, traceTags, fields, additionalProperties);
+      return new GetScoresRequest(environment, traceTags, page, limit, userId, name, fromTimestamp, toTimestamp, source, operator, value, scoreIds, configId, sessionId, datasetRunId, traceId, observationId, queueId, dataType, fields, filter, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

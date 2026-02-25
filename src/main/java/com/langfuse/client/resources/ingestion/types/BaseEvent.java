@@ -99,18 +99,31 @@ public final class BaseEvent implements IBaseEvent {
   }
 
   public interface IdStage {
+    /**
+     * <p>UUID v4 that identifies the event</p>
+     */
     TimestampStage id(@NotNull String id);
 
     Builder from(BaseEvent other);
   }
 
   public interface TimestampStage {
+    /**
+     * <p>Datetime (ISO 8601) of event creation in client. Should be as close to actual event creation in client as possible, this timestamp will be used for ordering of events in future release. Resolution: milliseconds (required), microseconds (optimal).</p>
+     */
     _FinalStage timestamp(@NotNull String timestamp);
   }
 
   public interface _FinalStage {
     BaseEvent build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Optional. Metadata field used by the Langfuse SDKs for debugging.</p>
+     */
     _FinalStage metadata(Optional<Object> metadata);
 
     _FinalStage metadata(Object metadata);
@@ -142,6 +155,7 @@ public final class BaseEvent implements IBaseEvent {
 
     /**
      * <p>UUID v4 that identifies the event</p>
+     * <p>UUID v4 that identifies the event</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -152,6 +166,7 @@ public final class BaseEvent implements IBaseEvent {
     }
 
     /**
+     * <p>Datetime (ISO 8601) of event creation in client. Should be as close to actual event creation in client as possible, this timestamp will be used for ordering of events in future release. Resolution: milliseconds (required), microseconds (optimal).</p>
      * <p>Datetime (ISO 8601) of event creation in client. Should be as close to actual event creation in client as possible, this timestamp will be used for ordering of events in future release. Resolution: milliseconds (required), microseconds (optimal).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -172,6 +187,9 @@ public final class BaseEvent implements IBaseEvent {
       return this;
     }
 
+    /**
+     * <p>Optional. Metadata field used by the Langfuse SDKs for debugging.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "metadata",
@@ -185,6 +203,18 @@ public final class BaseEvent implements IBaseEvent {
     @java.lang.Override
     public BaseEvent build() {
       return new BaseEvent(id, timestamp, metadata, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

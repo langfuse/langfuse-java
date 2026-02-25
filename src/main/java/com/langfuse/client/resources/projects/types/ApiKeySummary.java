@@ -141,6 +141,10 @@ public final class ApiKeySummary {
   public interface _FinalStage {
     ApiKeySummary build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage expiresAt(Optional<OffsetDateTime> expiresAt);
 
     _FinalStage expiresAt(OffsetDateTime expiresAt);
@@ -269,6 +273,18 @@ public final class ApiKeySummary {
     @java.lang.Override
     public ApiKeySummary build() {
       return new ApiKeySummary(id, createdAt, expiresAt, lastUsedAt, note, publicKey, displaySecretKey, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

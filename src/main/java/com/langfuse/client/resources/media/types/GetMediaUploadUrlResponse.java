@@ -85,6 +85,9 @@ public final class GetMediaUploadUrlResponse {
   }
 
   public interface MediaIdStage {
+    /**
+     * <p>The unique langfuse identifier of a media record</p>
+     */
     _FinalStage mediaId(@NotNull String mediaId);
 
     Builder from(GetMediaUploadUrlResponse other);
@@ -93,6 +96,13 @@ public final class GetMediaUploadUrlResponse {
   public interface _FinalStage {
     GetMediaUploadUrlResponse build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>The presigned upload URL. If the asset is already uploaded, this will be null</p>
+     */
     _FinalStage uploadUrl(Optional<String> uploadUrl);
 
     _FinalStage uploadUrl(String uploadUrl);
@@ -121,6 +131,7 @@ public final class GetMediaUploadUrlResponse {
 
     /**
      * <p>The unique langfuse identifier of a media record</p>
+     * <p>The unique langfuse identifier of a media record</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -140,6 +151,9 @@ public final class GetMediaUploadUrlResponse {
       return this;
     }
 
+    /**
+     * <p>The presigned upload URL. If the asset is already uploaded, this will be null</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "uploadUrl",
@@ -153,6 +167,18 @@ public final class GetMediaUploadUrlResponse {
     @java.lang.Override
     public GetMediaUploadUrlResponse build() {
       return new GetMediaUploadUrlResponse(uploadUrl, mediaId, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

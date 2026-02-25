@@ -106,13 +106,18 @@ public final class IngestionRequest {
       return this;
     }
 
+    /**
+     * <p>Batch of tracing events to be ingested. Discriminated by attribute <code>type</code>.</p>
+     */
     @JsonSetter(
         value = "batch",
         nulls = Nulls.SKIP
     )
     public Builder batch(List<IngestionEvent> batch) {
       this.batch.clear();
-      this.batch.addAll(batch);
+      if (batch != null) {
+        this.batch.addAll(batch);
+      }
       return this;
     }
 
@@ -122,10 +127,15 @@ public final class IngestionRequest {
     }
 
     public Builder addAllBatch(List<IngestionEvent> batch) {
-      this.batch.addAll(batch);
+      if (batch != null) {
+        this.batch.addAll(batch);
+      }
       return this;
     }
 
+    /**
+     * <p>Optional. Metadata field used by the Langfuse SDKs for debugging.</p>
+     */
     @JsonSetter(
         value = "metadata",
         nulls = Nulls.SKIP
@@ -142,6 +152,16 @@ public final class IngestionRequest {
 
     public IngestionRequest build() {
       return new IngestionRequest(batch, metadata, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

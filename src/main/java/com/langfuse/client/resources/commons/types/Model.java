@@ -6,12 +6,15 @@ package com.langfuse.client.resources.commons.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Double;
 import java.lang.Object;
@@ -49,7 +52,7 @@ public final class Model {
 
   private final Optional<String> tokenizerId;
 
-  private final Optional<Object> tokenizerConfig;
+  private final Object tokenizerConfig;
 
   private final boolean isLangfuseManaged;
 
@@ -64,7 +67,7 @@ public final class Model {
   private Model(String id, String modelName, String matchPattern,
       Optional<OffsetDateTime> startDate, Optional<ModelUsageUnit> unit,
       Optional<Double> inputPrice, Optional<Double> outputPrice, Optional<Double> totalPrice,
-      Optional<String> tokenizerId, Optional<Object> tokenizerConfig, boolean isLangfuseManaged,
+      Optional<String> tokenizerId, Object tokenizerConfig, boolean isLangfuseManaged,
       OffsetDateTime createdAt, Map<String, ModelPrice> prices, List<PricingTier> pricingTiers,
       Map<String, Object> additionalProperties) {
     this.id = id;
@@ -108,48 +111,66 @@ public final class Model {
   /**
    * @return Apply only to generations which are newer than this ISO date.
    */
-  @JsonProperty("startDate")
+  @JsonIgnore
   public Optional<OffsetDateTime> getStartDate() {
+    if (startDate == null) {
+      return Optional.empty();
+    }
     return startDate;
   }
 
   /**
    * @return Unit used by this model.
    */
-  @JsonProperty("unit")
+  @JsonIgnore
   public Optional<ModelUsageUnit> getUnit() {
+    if (unit == null) {
+      return Optional.empty();
+    }
     return unit;
   }
 
   /**
    * @return Deprecated. See 'prices' instead. Price (USD) per input unit
    */
-  @JsonProperty("inputPrice")
+  @JsonIgnore
   public Optional<Double> getInputPrice() {
+    if (inputPrice == null) {
+      return Optional.empty();
+    }
     return inputPrice;
   }
 
   /**
    * @return Deprecated. See 'prices' instead. Price (USD) per output unit
    */
-  @JsonProperty("outputPrice")
+  @JsonIgnore
   public Optional<Double> getOutputPrice() {
+    if (outputPrice == null) {
+      return Optional.empty();
+    }
     return outputPrice;
   }
 
   /**
    * @return Deprecated. See 'prices' instead. Price (USD) per total unit. Cannot be set if input or output price is set.
    */
-  @JsonProperty("totalPrice")
+  @JsonIgnore
   public Optional<Double> getTotalPrice() {
+    if (totalPrice == null) {
+      return Optional.empty();
+    }
     return totalPrice;
   }
 
   /**
    * @return Optional. Tokenizer to be applied to observations which match to this model. See docs for more details.
    */
-  @JsonProperty("tokenizerId")
+  @JsonIgnore
   public Optional<String> getTokenizerId() {
+    if (tokenizerId == null) {
+      return Optional.empty();
+    }
     return tokenizerId;
   }
 
@@ -157,7 +178,7 @@ public final class Model {
    * @return Optional. Configuration for the selected tokenizer. Needs to be JSON. See docs for more details.
    */
   @JsonProperty("tokenizerConfig")
-  public Optional<Object> getTokenizerConfig() {
+  public Object getTokenizerConfig() {
     return tokenizerConfig;
   }
 
@@ -197,6 +218,60 @@ public final class Model {
     return pricingTiers;
   }
 
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("startDate")
+  private Optional<OffsetDateTime> _getStartDate() {
+    return startDate;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("unit")
+  private Optional<ModelUsageUnit> _getUnit() {
+    return unit;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("inputPrice")
+  private Optional<Double> _getInputPrice() {
+    return inputPrice;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("outputPrice")
+  private Optional<Double> _getOutputPrice() {
+    return outputPrice;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("totalPrice")
+  private Optional<Double> _getTotalPrice() {
+    return totalPrice;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("tokenizerId")
+  private Optional<String> _getTokenizerId() {
+    return tokenizerId;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -233,11 +308,24 @@ public final class Model {
   }
 
   public interface ModelNameStage {
+    /**
+     * <p>Name of the model definition. If multiple with the same name exist, they are applied in the following order: (1) custom over built-in, (2) newest according to startTime where model.startTime&lt;observation.startTime</p>
+     */
     MatchPatternStage modelName(@NotNull String modelName);
   }
 
   public interface MatchPatternStage {
-    IsLangfuseManagedStage matchPattern(@NotNull String matchPattern);
+    /**
+     * <p>Regex pattern which matches this model definition to generation.model. Useful in case of fine-tuned models. If you want to exact match, use <code>(?i)^modelname$</code></p>
+     */
+    TokenizerConfigStage matchPattern(@NotNull String matchPattern);
+  }
+
+  public interface TokenizerConfigStage {
+    /**
+     * <p>Optional. Configuration for the selected tokenizer. Needs to be JSON. See docs for more details.</p>
+     */
+    IsLangfuseManagedStage tokenizerConfig(Object tokenizerConfig);
   }
 
   public interface IsLangfuseManagedStage {
@@ -245,46 +333,92 @@ public final class Model {
   }
 
   public interface CreatedAtStage {
+    /**
+     * <p>Timestamp when the model was created</p>
+     */
     _FinalStage createdAt(@NotNull OffsetDateTime createdAt);
   }
 
   public interface _FinalStage {
     Model build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Apply only to generations which are newer than this ISO date.</p>
+     */
     _FinalStage startDate(Optional<OffsetDateTime> startDate);
 
     _FinalStage startDate(OffsetDateTime startDate);
 
+    _FinalStage startDate(Nullable<OffsetDateTime> startDate);
+
+    /**
+     * <p>Unit used by this model.</p>
+     */
     _FinalStage unit(Optional<ModelUsageUnit> unit);
 
     _FinalStage unit(ModelUsageUnit unit);
 
+    _FinalStage unit(Nullable<ModelUsageUnit> unit);
+
+    /**
+     * <p>Deprecated. See 'prices' instead. Price (USD) per input unit</p>
+     */
     _FinalStage inputPrice(Optional<Double> inputPrice);
 
     _FinalStage inputPrice(Double inputPrice);
 
+    _FinalStage inputPrice(Nullable<Double> inputPrice);
+
+    /**
+     * <p>Deprecated. See 'prices' instead. Price (USD) per output unit</p>
+     */
     _FinalStage outputPrice(Optional<Double> outputPrice);
 
     _FinalStage outputPrice(Double outputPrice);
 
+    _FinalStage outputPrice(Nullable<Double> outputPrice);
+
+    /**
+     * <p>Deprecated. See 'prices' instead. Price (USD) per total unit. Cannot be set if input or output price is set.</p>
+     */
     _FinalStage totalPrice(Optional<Double> totalPrice);
 
     _FinalStage totalPrice(Double totalPrice);
 
+    _FinalStage totalPrice(Nullable<Double> totalPrice);
+
+    /**
+     * <p>Optional. Tokenizer to be applied to observations which match to this model. See docs for more details.</p>
+     */
     _FinalStage tokenizerId(Optional<String> tokenizerId);
 
     _FinalStage tokenizerId(String tokenizerId);
 
-    _FinalStage tokenizerConfig(Optional<Object> tokenizerConfig);
+    _FinalStage tokenizerId(Nullable<String> tokenizerId);
 
-    _FinalStage tokenizerConfig(Object tokenizerConfig);
-
+    /**
+     * <p>Deprecated. Use 'pricingTiers' instead for models with usage-based pricing variations.</p>
+     * <p>This field shows prices by usage type from the default pricing tier. Maintained for backward compatibility.
+     * If the model uses tiered pricing, this field will be populated from the default tier's prices.</p>
+     */
     _FinalStage prices(Map<String, ModelPrice> prices);
 
     _FinalStage putAllPrices(Map<String, ModelPrice> prices);
 
     _FinalStage prices(String key, ModelPrice value);
 
+    /**
+     * <p>Array of pricing tiers with conditional pricing based on usage thresholds.</p>
+     * <p>Pricing tiers enable accurate cost tracking for models that charge different rates based on usage patterns
+     * (e.g., different rates for high-volume usage, large context windows, or cached tokens).</p>
+     * <p>Each model must have exactly one default tier (isDefault=true, priority=0) that serves as a fallback.
+     * Additional conditional tiers can be defined with specific matching criteria.</p>
+     * <p>If this array is empty, the model uses legacy flat pricing from the inputPrice/outputPrice/totalPrice fields.</p>
+     */
     _FinalStage pricingTiers(List<PricingTier> pricingTiers);
 
     _FinalStage addPricingTiers(PricingTier pricingTiers);
@@ -295,12 +429,14 @@ public final class Model {
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements IdStage, ModelNameStage, MatchPatternStage, IsLangfuseManagedStage, CreatedAtStage, _FinalStage {
+  public static final class Builder implements IdStage, ModelNameStage, MatchPatternStage, TokenizerConfigStage, IsLangfuseManagedStage, CreatedAtStage, _FinalStage {
     private String id;
 
     private String modelName;
 
     private String matchPattern;
+
+    private Object tokenizerConfig;
 
     private boolean isLangfuseManaged;
 
@@ -309,8 +445,6 @@ public final class Model {
     private List<PricingTier> pricingTiers = new ArrayList<>();
 
     private Map<String, ModelPrice> prices = new LinkedHashMap<>();
-
-    private Optional<Object> tokenizerConfig = Optional.empty();
 
     private Optional<String> tokenizerId = Optional.empty();
 
@@ -358,6 +492,7 @@ public final class Model {
 
     /**
      * <p>Name of the model definition. If multiple with the same name exist, they are applied in the following order: (1) custom over built-in, (2) newest according to startTime where model.startTime&lt;observation.startTime</p>
+     * <p>Name of the model definition. If multiple with the same name exist, they are applied in the following order: (1) custom over built-in, (2) newest according to startTime where model.startTime&lt;observation.startTime</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -369,12 +504,25 @@ public final class Model {
 
     /**
      * <p>Regex pattern which matches this model definition to generation.model. Useful in case of fine-tuned models. If you want to exact match, use <code>(?i)^modelname$</code></p>
+     * <p>Regex pattern which matches this model definition to generation.model. Useful in case of fine-tuned models. If you want to exact match, use <code>(?i)^modelname$</code></p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
     @JsonSetter("matchPattern")
-    public IsLangfuseManagedStage matchPattern(@NotNull String matchPattern) {
+    public TokenizerConfigStage matchPattern(@NotNull String matchPattern) {
       this.matchPattern = Objects.requireNonNull(matchPattern, "matchPattern must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Optional. Configuration for the selected tokenizer. Needs to be JSON. See docs for more details.</p>
+     * <p>Optional. Configuration for the selected tokenizer. Needs to be JSON. See docs for more details.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("tokenizerConfig")
+    public IsLangfuseManagedStage tokenizerConfig(Object tokenizerConfig) {
+      this.tokenizerConfig = tokenizerConfig;
       return this;
     }
 
@@ -386,6 +534,7 @@ public final class Model {
     }
 
     /**
+     * <p>Timestamp when the model was created</p>
      * <p>Timestamp when the model was created</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -407,7 +556,9 @@ public final class Model {
      */
     @java.lang.Override
     public _FinalStage addAllPricingTiers(List<PricingTier> pricingTiers) {
-      this.pricingTiers.addAll(pricingTiers);
+      if (pricingTiers != null) {
+        this.pricingTiers.addAll(pricingTiers);
+      }
       return this;
     }
 
@@ -426,6 +577,14 @@ public final class Model {
       return this;
     }
 
+    /**
+     * <p>Array of pricing tiers with conditional pricing based on usage thresholds.</p>
+     * <p>Pricing tiers enable accurate cost tracking for models that charge different rates based on usage patterns
+     * (e.g., different rates for high-volume usage, large context windows, or cached tokens).</p>
+     * <p>Each model must have exactly one default tier (isDefault=true, priority=0) that serves as a fallback.
+     * Additional conditional tiers can be defined with specific matching criteria.</p>
+     * <p>If this array is empty, the model uses legacy flat pricing from the inputPrice/outputPrice/totalPrice fields.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "pricingTiers",
@@ -433,7 +592,9 @@ public final class Model {
     )
     public _FinalStage pricingTiers(List<PricingTier> pricingTiers) {
       this.pricingTiers.clear();
-      this.pricingTiers.addAll(pricingTiers);
+      if (pricingTiers != null) {
+        this.pricingTiers.addAll(pricingTiers);
+      }
       return this;
     }
 
@@ -457,10 +618,17 @@ public final class Model {
      */
     @java.lang.Override
     public _FinalStage putAllPrices(Map<String, ModelPrice> prices) {
-      this.prices.putAll(prices);
+      if (prices != null) {
+        this.prices.putAll(prices);
+      }
       return this;
     }
 
+    /**
+     * <p>Deprecated. Use 'pricingTiers' instead for models with usage-based pricing variations.</p>
+     * <p>This field shows prices by usage type from the default pricing tier. Maintained for backward compatibility.
+     * If the model uses tiered pricing, this field will be populated from the default tier's prices.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "prices",
@@ -468,27 +636,27 @@ public final class Model {
     )
     public _FinalStage prices(Map<String, ModelPrice> prices) {
       this.prices.clear();
-      this.prices.putAll(prices);
+      if (prices != null) {
+        this.prices.putAll(prices);
+      }
       return this;
     }
 
     /**
-     * <p>Optional. Configuration for the selected tokenizer. Needs to be JSON. See docs for more details.</p>
+     * <p>Optional. Tokenizer to be applied to observations which match to this model. See docs for more details.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage tokenizerConfig(Object tokenizerConfig) {
-      this.tokenizerConfig = Optional.ofNullable(tokenizerConfig);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "tokenizerConfig",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage tokenizerConfig(Optional<Object> tokenizerConfig) {
-      this.tokenizerConfig = tokenizerConfig;
+    public _FinalStage tokenizerId(Nullable<String> tokenizerId) {
+      if (tokenizerId.isNull()) {
+        this.tokenizerId = null;
+      }
+      else if (tokenizerId.isEmpty()) {
+        this.tokenizerId = Optional.empty();
+      }
+      else {
+        this.tokenizerId = Optional.of(tokenizerId.get());
+      }
       return this;
     }
 
@@ -502,6 +670,9 @@ public final class Model {
       return this;
     }
 
+    /**
+     * <p>Optional. Tokenizer to be applied to observations which match to this model. See docs for more details.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "tokenizerId",
@@ -517,11 +688,32 @@ public final class Model {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage totalPrice(Nullable<Double> totalPrice) {
+      if (totalPrice.isNull()) {
+        this.totalPrice = null;
+      }
+      else if (totalPrice.isEmpty()) {
+        this.totalPrice = Optional.empty();
+      }
+      else {
+        this.totalPrice = Optional.of(totalPrice.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>Deprecated. See 'prices' instead. Price (USD) per total unit. Cannot be set if input or output price is set.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage totalPrice(Double totalPrice) {
       this.totalPrice = Optional.ofNullable(totalPrice);
       return this;
     }
 
+    /**
+     * <p>Deprecated. See 'prices' instead. Price (USD) per total unit. Cannot be set if input or output price is set.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "totalPrice",
@@ -537,11 +729,32 @@ public final class Model {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage outputPrice(Nullable<Double> outputPrice) {
+      if (outputPrice.isNull()) {
+        this.outputPrice = null;
+      }
+      else if (outputPrice.isEmpty()) {
+        this.outputPrice = Optional.empty();
+      }
+      else {
+        this.outputPrice = Optional.of(outputPrice.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>Deprecated. See 'prices' instead. Price (USD) per output unit</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage outputPrice(Double outputPrice) {
       this.outputPrice = Optional.ofNullable(outputPrice);
       return this;
     }
 
+    /**
+     * <p>Deprecated. See 'prices' instead. Price (USD) per output unit</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "outputPrice",
@@ -557,11 +770,32 @@ public final class Model {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage inputPrice(Nullable<Double> inputPrice) {
+      if (inputPrice.isNull()) {
+        this.inputPrice = null;
+      }
+      else if (inputPrice.isEmpty()) {
+        this.inputPrice = Optional.empty();
+      }
+      else {
+        this.inputPrice = Optional.of(inputPrice.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>Deprecated. See 'prices' instead. Price (USD) per input unit</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage inputPrice(Double inputPrice) {
       this.inputPrice = Optional.ofNullable(inputPrice);
       return this;
     }
 
+    /**
+     * <p>Deprecated. See 'prices' instead. Price (USD) per input unit</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "inputPrice",
@@ -577,11 +811,32 @@ public final class Model {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage unit(Nullable<ModelUsageUnit> unit) {
+      if (unit.isNull()) {
+        this.unit = null;
+      }
+      else if (unit.isEmpty()) {
+        this.unit = Optional.empty();
+      }
+      else {
+        this.unit = Optional.of(unit.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>Unit used by this model.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage unit(ModelUsageUnit unit) {
       this.unit = Optional.ofNullable(unit);
       return this;
     }
 
+    /**
+     * <p>Unit used by this model.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "unit",
@@ -597,11 +852,32 @@ public final class Model {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage startDate(Nullable<OffsetDateTime> startDate) {
+      if (startDate.isNull()) {
+        this.startDate = null;
+      }
+      else if (startDate.isEmpty()) {
+        this.startDate = Optional.empty();
+      }
+      else {
+        this.startDate = Optional.of(startDate.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>Apply only to generations which are newer than this ISO date.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage startDate(OffsetDateTime startDate) {
       this.startDate = Optional.ofNullable(startDate);
       return this;
     }
 
+    /**
+     * <p>Apply only to generations which are newer than this ISO date.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "startDate",
@@ -615,6 +891,18 @@ public final class Model {
     @java.lang.Override
     public Model build() {
       return new Model(id, modelName, matchPattern, startDate, unit, inputPrice, outputPrice, totalPrice, tokenizerId, tokenizerConfig, isLangfuseManaged, createdAt, prices, pricingTiers, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

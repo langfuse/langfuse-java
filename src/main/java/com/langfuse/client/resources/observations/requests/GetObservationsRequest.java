@@ -17,7 +17,9 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,6 +30,8 @@ import com.langfuse.client.resources.commons.types.ObservationLevel;
     builder = GetObservationsRequest.Builder.class
 )
 public final class GetObservationsRequest {
+  private final Optional<List<String>> environment;
+
   private final Optional<Integer> page;
 
   private final Optional<Integer> limit;
@@ -44,8 +48,6 @@ public final class GetObservationsRequest {
 
   private final Optional<String> parentObservationId;
 
-  private final Optional<String> environment;
-
   private final Optional<OffsetDateTime> fromStartTime;
 
   private final Optional<OffsetDateTime> toStartTime;
@@ -56,12 +58,13 @@ public final class GetObservationsRequest {
 
   private final Map<String, Object> additionalProperties;
 
-  private GetObservationsRequest(Optional<Integer> page, Optional<Integer> limit,
-      Optional<String> name, Optional<String> userId, Optional<String> type,
-      Optional<String> traceId, Optional<ObservationLevel> level,
-      Optional<String> parentObservationId, Optional<String> environment,
-      Optional<OffsetDateTime> fromStartTime, Optional<OffsetDateTime> toStartTime,
-      Optional<String> version, Optional<String> filter, Map<String, Object> additionalProperties) {
+  private GetObservationsRequest(Optional<List<String>> environment, Optional<Integer> page,
+      Optional<Integer> limit, Optional<String> name, Optional<String> userId,
+      Optional<String> type, Optional<String> traceId, Optional<ObservationLevel> level,
+      Optional<String> parentObservationId, Optional<OffsetDateTime> fromStartTime,
+      Optional<OffsetDateTime> toStartTime, Optional<String> version, Optional<String> filter,
+      Map<String, Object> additionalProperties) {
+    this.environment = environment;
     this.page = page;
     this.limit = limit;
     this.name = name;
@@ -70,12 +73,19 @@ public final class GetObservationsRequest {
     this.traceId = traceId;
     this.level = level;
     this.parentObservationId = parentObservationId;
-    this.environment = environment;
     this.fromStartTime = fromStartTime;
     this.toStartTime = toStartTime;
     this.version = version;
     this.filter = filter;
     this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Optional filter for observations where the environment is one of the provided values.
+   */
+  @JsonProperty("environment")
+  public Optional<List<String>> getEnvironment() {
+    return environment;
   }
 
   /**
@@ -128,14 +138,6 @@ public final class GetObservationsRequest {
   }
 
   /**
-   * @return Optional filter for observations where the environment is one of the provided values.
-   */
-  @JsonProperty("environment")
-  public Optional<String> getEnvironment() {
-    return environment;
-  }
-
-  /**
    * @return Retrieve only observations with a start_time on or after this datetime (ISO 8601).
    */
   @JsonProperty("fromStartTime")
@@ -179,12 +181,12 @@ public final class GetObservationsRequest {
   }
 
   private boolean equalTo(GetObservationsRequest other) {
-    return page.equals(other.page) && limit.equals(other.limit) && name.equals(other.name) && userId.equals(other.userId) && type.equals(other.type) && traceId.equals(other.traceId) && level.equals(other.level) && parentObservationId.equals(other.parentObservationId) && environment.equals(other.environment) && fromStartTime.equals(other.fromStartTime) && toStartTime.equals(other.toStartTime) && version.equals(other.version) && filter.equals(other.filter);
+    return environment.equals(other.environment) && page.equals(other.page) && limit.equals(other.limit) && name.equals(other.name) && userId.equals(other.userId) && type.equals(other.type) && traceId.equals(other.traceId) && level.equals(other.level) && parentObservationId.equals(other.parentObservationId) && fromStartTime.equals(other.fromStartTime) && toStartTime.equals(other.toStartTime) && version.equals(other.version) && filter.equals(other.filter);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.page, this.limit, this.name, this.userId, this.type, this.traceId, this.level, this.parentObservationId, this.environment, this.fromStartTime, this.toStartTime, this.version, this.filter);
+    return Objects.hash(this.environment, this.page, this.limit, this.name, this.userId, this.type, this.traceId, this.level, this.parentObservationId, this.fromStartTime, this.toStartTime, this.version, this.filter);
   }
 
   @java.lang.Override
@@ -200,6 +202,8 @@ public final class GetObservationsRequest {
       ignoreUnknown = true
   )
   public static final class Builder {
+    private Optional<List<String>> environment = Optional.empty();
+
     private Optional<Integer> page = Optional.empty();
 
     private Optional<Integer> limit = Optional.empty();
@@ -216,8 +220,6 @@ public final class GetObservationsRequest {
 
     private Optional<String> parentObservationId = Optional.empty();
 
-    private Optional<String> environment = Optional.empty();
-
     private Optional<OffsetDateTime> fromStartTime = Optional.empty();
 
     private Optional<OffsetDateTime> toStartTime = Optional.empty();
@@ -233,6 +235,7 @@ public final class GetObservationsRequest {
     }
 
     public Builder from(GetObservationsRequest other) {
+      environment(other.getEnvironment());
       page(other.getPage());
       limit(other.getLimit());
       name(other.getName());
@@ -241,7 +244,6 @@ public final class GetObservationsRequest {
       traceId(other.getTraceId());
       level(other.getLevel());
       parentObservationId(other.getParentObservationId());
-      environment(other.getEnvironment());
       fromStartTime(other.getFromStartTime());
       toStartTime(other.getToStartTime());
       version(other.getVersion());
@@ -249,6 +251,31 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter for observations where the environment is one of the provided values.</p>
+     */
+    @JsonSetter(
+        value = "environment",
+        nulls = Nulls.SKIP
+    )
+    public Builder environment(Optional<List<String>> environment) {
+      this.environment = environment;
+      return this;
+    }
+
+    public Builder environment(List<String> environment) {
+      this.environment = Optional.ofNullable(environment);
+      return this;
+    }
+
+    public Builder environment(String environment) {
+      this.environment = Optional.of(Collections.singletonList(environment));
+      return this;
+    }
+
+    /**
+     * <p>Page number, starts at 1.</p>
+     */
     @JsonSetter(
         value = "page",
         nulls = Nulls.SKIP
@@ -263,6 +290,9 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    /**
+     * <p>Limit of items per page. If you encounter api issues due to too large page sizes, try to reduce the limit.</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -333,6 +363,9 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter for observations with a specific level (e.g. &quot;DEBUG&quot;, &quot;DEFAULT&quot;, &quot;WARNING&quot;, &quot;ERROR&quot;).</p>
+     */
     @JsonSetter(
         value = "level",
         nulls = Nulls.SKIP
@@ -361,20 +394,9 @@ public final class GetObservationsRequest {
       return this;
     }
 
-    @JsonSetter(
-        value = "environment",
-        nulls = Nulls.SKIP
-    )
-    public Builder environment(Optional<String> environment) {
-      this.environment = environment;
-      return this;
-    }
-
-    public Builder environment(String environment) {
-      this.environment = Optional.ofNullable(environment);
-      return this;
-    }
-
+    /**
+     * <p>Retrieve only observations with a start_time on or after this datetime (ISO 8601).</p>
+     */
     @JsonSetter(
         value = "fromStartTime",
         nulls = Nulls.SKIP
@@ -389,6 +411,9 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    /**
+     * <p>Retrieve only observations with a start_time before this datetime (ISO 8601).</p>
+     */
     @JsonSetter(
         value = "toStartTime",
         nulls = Nulls.SKIP
@@ -403,6 +428,9 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include observations with a certain version.</p>
+     */
     @JsonSetter(
         value = "version",
         nulls = Nulls.SKIP
@@ -432,7 +460,17 @@ public final class GetObservationsRequest {
     }
 
     public GetObservationsRequest build() {
-      return new GetObservationsRequest(page, limit, name, userId, type, traceId, level, parentObservationId, environment, fromStartTime, toStartTime, version, filter, additionalProperties);
+      return new GetObservationsRequest(environment, page, limit, name, userId, type, traceId, level, parentObservationId, fromStartTime, toStartTime, version, filter, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

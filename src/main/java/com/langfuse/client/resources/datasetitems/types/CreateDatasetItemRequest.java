@@ -144,6 +144,10 @@ public final class CreateDatasetItemRequest {
   public interface _FinalStage {
     CreateDatasetItemRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage input(Optional<Object> input);
 
     _FinalStage input(Object input);
@@ -164,10 +168,16 @@ public final class CreateDatasetItemRequest {
 
     _FinalStage sourceObservationId(String sourceObservationId);
 
+    /**
+     * <p>Dataset items are upserted on their id. Id needs to be unique (project-level) and cannot be reused across datasets.</p>
+     */
     _FinalStage id(Optional<String> id);
 
     _FinalStage id(String id);
 
+    /**
+     * <p>Defaults to ACTIVE for newly created items</p>
+     */
     _FinalStage status(Optional<DatasetStatus> status);
 
     _FinalStage status(DatasetStatus status);
@@ -229,6 +239,9 @@ public final class CreateDatasetItemRequest {
       return this;
     }
 
+    /**
+     * <p>Defaults to ACTIVE for newly created items</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "status",
@@ -249,6 +262,9 @@ public final class CreateDatasetItemRequest {
       return this;
     }
 
+    /**
+     * <p>Dataset items are upserted on their id. Id needs to be unique (project-level) and cannot be reused across datasets.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "id",
@@ -342,6 +358,18 @@ public final class CreateDatasetItemRequest {
     @java.lang.Override
     public CreateDatasetItemRequest build() {
       return new CreateDatasetItemRequest(datasetName, input, expectedOutput, metadata, sourceTraceId, sourceObservationId, id, status, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

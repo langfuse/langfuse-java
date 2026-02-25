@@ -16,6 +16,7 @@ import com.langfuse.client.core.ObjectMappers;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +33,8 @@ public final class GetDatasetItemsRequest {
 
   private final Optional<String> sourceObservationId;
 
+  private final Optional<OffsetDateTime> version;
+
   private final Optional<Integer> page;
 
   private final Optional<Integer> limit;
@@ -39,11 +42,12 @@ public final class GetDatasetItemsRequest {
   private final Map<String, Object> additionalProperties;
 
   private GetDatasetItemsRequest(Optional<String> datasetName, Optional<String> sourceTraceId,
-      Optional<String> sourceObservationId, Optional<Integer> page, Optional<Integer> limit,
-      Map<String, Object> additionalProperties) {
+      Optional<String> sourceObservationId, Optional<OffsetDateTime> version,
+      Optional<Integer> page, Optional<Integer> limit, Map<String, Object> additionalProperties) {
     this.datasetName = datasetName;
     this.sourceTraceId = sourceTraceId;
     this.sourceObservationId = sourceObservationId;
+    this.version = version;
     this.page = page;
     this.limit = limit;
     this.additionalProperties = additionalProperties;
@@ -62,6 +66,16 @@ public final class GetDatasetItemsRequest {
   @JsonProperty("sourceObservationId")
   public Optional<String> getSourceObservationId() {
     return sourceObservationId;
+  }
+
+  /**
+   * @return ISO 8601 timestamp (RFC 3339, Section 5.6) in UTC (e.g., &quot;2026-01-21T14:35:42Z&quot;).
+   * If provided, returns state of dataset at this timestamp.
+   * If not provided, returns the latest version. Requires datasetName to be specified.
+   */
+  @JsonProperty("version")
+  public Optional<OffsetDateTime> getVersion() {
+    return version;
   }
 
   /**
@@ -92,12 +106,12 @@ public final class GetDatasetItemsRequest {
   }
 
   private boolean equalTo(GetDatasetItemsRequest other) {
-    return datasetName.equals(other.datasetName) && sourceTraceId.equals(other.sourceTraceId) && sourceObservationId.equals(other.sourceObservationId) && page.equals(other.page) && limit.equals(other.limit);
+    return datasetName.equals(other.datasetName) && sourceTraceId.equals(other.sourceTraceId) && sourceObservationId.equals(other.sourceObservationId) && version.equals(other.version) && page.equals(other.page) && limit.equals(other.limit);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.datasetName, this.sourceTraceId, this.sourceObservationId, this.page, this.limit);
+    return Objects.hash(this.datasetName, this.sourceTraceId, this.sourceObservationId, this.version, this.page, this.limit);
   }
 
   @java.lang.Override
@@ -119,6 +133,8 @@ public final class GetDatasetItemsRequest {
 
     private Optional<String> sourceObservationId = Optional.empty();
 
+    private Optional<OffsetDateTime> version = Optional.empty();
+
     private Optional<Integer> page = Optional.empty();
 
     private Optional<Integer> limit = Optional.empty();
@@ -133,6 +149,7 @@ public final class GetDatasetItemsRequest {
       datasetName(other.getDatasetName());
       sourceTraceId(other.getSourceTraceId());
       sourceObservationId(other.getSourceObservationId());
+      version(other.getVersion());
       page(other.getPage());
       limit(other.getLimit());
       return this;
@@ -180,6 +197,28 @@ public final class GetDatasetItemsRequest {
       return this;
     }
 
+    /**
+     * <p>ISO 8601 timestamp (RFC 3339, Section 5.6) in UTC (e.g., &quot;2026-01-21T14:35:42Z&quot;).
+     * If provided, returns state of dataset at this timestamp.
+     * If not provided, returns the latest version. Requires datasetName to be specified.</p>
+     */
+    @JsonSetter(
+        value = "version",
+        nulls = Nulls.SKIP
+    )
+    public Builder version(Optional<OffsetDateTime> version) {
+      this.version = version;
+      return this;
+    }
+
+    public Builder version(OffsetDateTime version) {
+      this.version = Optional.ofNullable(version);
+      return this;
+    }
+
+    /**
+     * <p>page number, starts at 1</p>
+     */
     @JsonSetter(
         value = "page",
         nulls = Nulls.SKIP
@@ -194,6 +233,9 @@ public final class GetDatasetItemsRequest {
       return this;
     }
 
+    /**
+     * <p>limit of items per page</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -209,7 +251,17 @@ public final class GetDatasetItemsRequest {
     }
 
     public GetDatasetItemsRequest build() {
-      return new GetDatasetItemsRequest(datasetName, sourceTraceId, sourceObservationId, page, limit, additionalProperties);
+      return new GetDatasetItemsRequest(datasetName, sourceTraceId, sourceObservationId, version, page, limit, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -6,6 +6,7 @@ package com.langfuse.client.resources.commons.errors;
 
 import com.langfuse.client.core.LangfuseClientApiException;
 import java.lang.Object;
+import okhttp3.Response;
 
 public final class MethodNotAllowedError extends LangfuseClientApiException {
   /**
@@ -15,6 +16,11 @@ public final class MethodNotAllowedError extends LangfuseClientApiException {
 
   public MethodNotAllowedError(Object body) {
     super("MethodNotAllowedError", 405, body);
+    this.body = body;
+  }
+
+  public MethodNotAllowedError(Object body, Response rawResponse) {
+    super("MethodNotAllowedError", 405, body, rawResponse);
     this.body = body;
   }
 

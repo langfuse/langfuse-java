@@ -74,6 +74,10 @@ public final class SdkLogBody {
 
   public interface _FinalStage {
     SdkLogBody build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -104,6 +108,18 @@ public final class SdkLogBody {
     @java.lang.Override
     public SdkLogBody build() {
       return new SdkLogBody(log, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

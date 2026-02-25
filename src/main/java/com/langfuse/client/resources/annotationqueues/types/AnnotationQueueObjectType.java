@@ -4,25 +4,95 @@
 
 package com.langfuse.client.resources.annotationqueues.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum AnnotationQueueObjectType {
-  TRACE("TRACE"),
+public final class AnnotationQueueObjectType {
+  public static final AnnotationQueueObjectType OBSERVATION = new AnnotationQueueObjectType(Value.OBSERVATION, "OBSERVATION");
 
-  OBSERVATION("OBSERVATION"),
+  public static final AnnotationQueueObjectType SESSION = new AnnotationQueueObjectType(Value.SESSION, "SESSION");
 
-  SESSION("SESSION");
+  public static final AnnotationQueueObjectType TRACE = new AnnotationQueueObjectType(Value.TRACE, "TRACE");
 
-  private final String value;
+  private final Value value;
 
-  AnnotationQueueObjectType(String value) {
+  private final String string;
+
+  AnnotationQueueObjectType(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof AnnotationQueueObjectType && this.string.equals(((AnnotationQueueObjectType) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case OBSERVATION:
+        return visitor.visitObservation();
+      case SESSION:
+        return visitor.visitSession();
+      case TRACE:
+        return visitor.visitTrace();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static AnnotationQueueObjectType valueOf(String value) {
+    switch (value) {
+      case "OBSERVATION":
+        return OBSERVATION;
+      case "SESSION":
+        return SESSION;
+      case "TRACE":
+        return TRACE;
+      default:
+        return new AnnotationQueueObjectType(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    TRACE,
+
+    OBSERVATION,
+
+    SESSION,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitTrace();
+
+    T visitObservation();
+
+    T visitSession();
+
+    T visitUnknown(String unknownType);
   }
 }

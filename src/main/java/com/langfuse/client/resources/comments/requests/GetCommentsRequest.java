@@ -147,6 +147,9 @@ public final class GetCommentsRequest {
       return this;
     }
 
+    /**
+     * <p>Page number, starts at 1.</p>
+     */
     @JsonSetter(
         value = "page",
         nulls = Nulls.SKIP
@@ -161,6 +164,9 @@ public final class GetCommentsRequest {
       return this;
     }
 
+    /**
+     * <p>Limit of items per page. If you encounter api issues due to too large page sizes, try to reduce the limit</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -175,6 +181,9 @@ public final class GetCommentsRequest {
       return this;
     }
 
+    /**
+     * <p>Filter comments by object type (trace, observation, session, prompt).</p>
+     */
     @JsonSetter(
         value = "objectType",
         nulls = Nulls.SKIP
@@ -189,6 +198,9 @@ public final class GetCommentsRequest {
       return this;
     }
 
+    /**
+     * <p>Filter comments by object id. If objectType is not provided, an error will be thrown.</p>
+     */
     @JsonSetter(
         value = "objectId",
         nulls = Nulls.SKIP
@@ -203,6 +215,9 @@ public final class GetCommentsRequest {
       return this;
     }
 
+    /**
+     * <p>Filter comments by author user id.</p>
+     */
     @JsonSetter(
         value = "authorUserId",
         nulls = Nulls.SKIP
@@ -219,6 +234,16 @@ public final class GetCommentsRequest {
 
     public GetCommentsRequest build() {
       return new GetCommentsRequest(page, limit, objectType, objectId, authorUserId, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

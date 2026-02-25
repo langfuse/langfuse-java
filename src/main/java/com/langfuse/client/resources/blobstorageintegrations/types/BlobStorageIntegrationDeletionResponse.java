@@ -76,6 +76,10 @@ public final class BlobStorageIntegrationDeletionResponse {
 
   public interface _FinalStage {
     BlobStorageIntegrationDeletionResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -106,6 +110,18 @@ public final class BlobStorageIntegrationDeletionResponse {
     @java.lang.Override
     public BlobStorageIntegrationDeletionResponse build() {
       return new BlobStorageIntegrationDeletionResponse(message, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

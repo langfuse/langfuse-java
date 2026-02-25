@@ -4,31 +4,125 @@
 
 package com.langfuse.client.resources.commons.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum PricingTierOperator {
-  GT("gt"),
+public final class PricingTierOperator {
+  public static final PricingTierOperator GTE = new PricingTierOperator(Value.GTE, "gte");
 
-  GTE("gte"),
+  public static final PricingTierOperator LT = new PricingTierOperator(Value.LT, "lt");
 
-  LT("lt"),
+  public static final PricingTierOperator GT = new PricingTierOperator(Value.GT, "gt");
 
-  LTE("lte"),
+  public static final PricingTierOperator EQ = new PricingTierOperator(Value.EQ, "eq");
 
-  EQ("eq"),
+  public static final PricingTierOperator LTE = new PricingTierOperator(Value.LTE, "lte");
 
-  NEQ("neq");
+  public static final PricingTierOperator NEQ = new PricingTierOperator(Value.NEQ, "neq");
 
-  private final String value;
+  private final Value value;
 
-  PricingTierOperator(String value) {
+  private final String string;
+
+  PricingTierOperator(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof PricingTierOperator && this.string.equals(((PricingTierOperator) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case GTE:
+        return visitor.visitGte();
+      case LT:
+        return visitor.visitLt();
+      case GT:
+        return visitor.visitGt();
+      case EQ:
+        return visitor.visitEq();
+      case LTE:
+        return visitor.visitLte();
+      case NEQ:
+        return visitor.visitNeq();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static PricingTierOperator valueOf(String value) {
+    switch (value) {
+      case "gte":
+        return GTE;
+      case "lt":
+        return LT;
+      case "gt":
+        return GT;
+      case "eq":
+        return EQ;
+      case "lte":
+        return LTE;
+      case "neq":
+        return NEQ;
+      default:
+        return new PricingTierOperator(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    GT,
+
+    GTE,
+
+    LT,
+
+    LTE,
+
+    EQ,
+
+    NEQ,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitGt();
+
+    T visitGte();
+
+    T visitLt();
+
+    T visitLte();
+
+    T visitEq();
+
+    T visitNeq();
+
+    T visitUnknown(String unknownType);
   }
 }

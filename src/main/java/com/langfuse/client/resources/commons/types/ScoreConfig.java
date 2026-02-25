@@ -6,12 +6,15 @@ package com.langfuse.client.resources.commons.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Double;
 import java.lang.Object;
@@ -112,16 +115,22 @@ public final class ScoreConfig {
   /**
    * @return Sets minimum value for numerical scores. If not set, the minimum value defaults to -∞
    */
-  @JsonProperty("minValue")
+  @JsonIgnore
   public Optional<Double> getMinValue() {
+    if (minValue == null) {
+      return Optional.empty();
+    }
     return minValue;
   }
 
   /**
    * @return Sets maximum value for numerical scores. If not set, the maximum value defaults to +∞
    */
-  @JsonProperty("maxValue")
+  @JsonIgnore
   public Optional<Double> getMaxValue() {
+    if (maxValue == null) {
+      return Optional.empty();
+    }
     return maxValue;
   }
 
@@ -133,8 +142,41 @@ public final class ScoreConfig {
     return categories;
   }
 
-  @JsonProperty("description")
+  /**
+   * @return Description of the score config
+   */
+  @JsonIgnore
   public Optional<String> getDescription() {
+    if (description == null) {
+      return Optional.empty();
+    }
+    return description;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("minValue")
+  private Optional<Double> _getMinValue() {
+    return minValue;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("maxValue")
+  private Optional<Double> _getMaxValue() {
+    return maxValue;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("description")
+  private Optional<String> _getDescription() {
     return description;
   }
 
@@ -194,27 +236,52 @@ public final class ScoreConfig {
   }
 
   public interface IsArchivedStage {
+    /**
+     * <p>Whether the score config is archived. Defaults to false</p>
+     */
     _FinalStage isArchived(boolean isArchived);
   }
 
   public interface _FinalStage {
     ScoreConfig build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Sets minimum value for numerical scores. If not set, the minimum value defaults to -∞</p>
+     */
     _FinalStage minValue(Optional<Double> minValue);
 
     _FinalStage minValue(Double minValue);
 
+    _FinalStage minValue(Nullable<Double> minValue);
+
+    /**
+     * <p>Sets maximum value for numerical scores. If not set, the maximum value defaults to +∞</p>
+     */
     _FinalStage maxValue(Optional<Double> maxValue);
 
     _FinalStage maxValue(Double maxValue);
 
+    _FinalStage maxValue(Nullable<Double> maxValue);
+
+    /**
+     * <p>Configures custom categories for categorical scores</p>
+     */
     _FinalStage categories(Optional<List<ConfigCategory>> categories);
 
     _FinalStage categories(List<ConfigCategory> categories);
 
+    /**
+     * <p>Description of the score config</p>
+     */
     _FinalStage description(Optional<String> description);
 
     _FinalStage description(String description);
+
+    _FinalStage description(Nullable<String> description);
   }
 
   @JsonIgnoreProperties(
@@ -309,6 +376,7 @@ public final class ScoreConfig {
 
     /**
      * <p>Whether the score config is archived. Defaults to false</p>
+     * <p>Whether the score config is archived. Defaults to false</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -318,12 +386,37 @@ public final class ScoreConfig {
       return this;
     }
 
+    /**
+     * <p>Description of the score config</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage description(Nullable<String> description) {
+      if (description.isNull()) {
+        this.description = null;
+      }
+      else if (description.isEmpty()) {
+        this.description = Optional.empty();
+      }
+      else {
+        this.description = Optional.of(description.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>Description of the score config</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     public _FinalStage description(String description) {
       this.description = Optional.ofNullable(description);
       return this;
     }
 
+    /**
+     * <p>Description of the score config</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "description",
@@ -344,6 +437,9 @@ public final class ScoreConfig {
       return this;
     }
 
+    /**
+     * <p>Configures custom categories for categorical scores</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "categories",
@@ -359,11 +455,32 @@ public final class ScoreConfig {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage maxValue(Nullable<Double> maxValue) {
+      if (maxValue.isNull()) {
+        this.maxValue = null;
+      }
+      else if (maxValue.isEmpty()) {
+        this.maxValue = Optional.empty();
+      }
+      else {
+        this.maxValue = Optional.of(maxValue.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>Sets maximum value for numerical scores. If not set, the maximum value defaults to +∞</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage maxValue(Double maxValue) {
       this.maxValue = Optional.ofNullable(maxValue);
       return this;
     }
 
+    /**
+     * <p>Sets maximum value for numerical scores. If not set, the maximum value defaults to +∞</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "maxValue",
@@ -379,11 +496,32 @@ public final class ScoreConfig {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage minValue(Nullable<Double> minValue) {
+      if (minValue.isNull()) {
+        this.minValue = null;
+      }
+      else if (minValue.isEmpty()) {
+        this.minValue = Optional.empty();
+      }
+      else {
+        this.minValue = Optional.of(minValue.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>Sets minimum value for numerical scores. If not set, the minimum value defaults to -∞</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage minValue(Double minValue) {
       this.minValue = Optional.ofNullable(minValue);
       return this;
     }
 
+    /**
+     * <p>Sets minimum value for numerical scores. If not set, the minimum value defaults to -∞</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "minValue",
@@ -397,6 +535,18 @@ public final class ScoreConfig {
     @java.lang.Override
     public ScoreConfig build() {
       return new ScoreConfig(id, name, createdAt, updatedAt, projectId, dataType, isArchived, minValue, maxValue, categories, description, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -89,6 +89,10 @@ public final class PaginatedLlmConnections {
   public interface _FinalStage {
     PaginatedLlmConnections build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage data(List<LlmConnection> data);
 
     _FinalStage addData(LlmConnection data);
@@ -126,7 +130,9 @@ public final class PaginatedLlmConnections {
 
     @java.lang.Override
     public _FinalStage addAllData(List<LlmConnection> data) {
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
@@ -143,13 +149,27 @@ public final class PaginatedLlmConnections {
     )
     public _FinalStage data(List<LlmConnection> data) {
       this.data.clear();
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
     @java.lang.Override
     public PaginatedLlmConnections build() {
       return new PaginatedLlmConnections(data, meta, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

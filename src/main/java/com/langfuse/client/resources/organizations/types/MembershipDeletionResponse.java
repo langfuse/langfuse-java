@@ -88,6 +88,10 @@ public final class MembershipDeletionResponse {
 
   public interface _FinalStage {
     MembershipDeletionResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -128,6 +132,18 @@ public final class MembershipDeletionResponse {
     @java.lang.Override
     public MembershipDeletionResponse build() {
       return new MembershipDeletionResponse(message, userId, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

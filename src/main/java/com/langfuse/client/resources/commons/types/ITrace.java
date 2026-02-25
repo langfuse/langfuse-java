@@ -4,7 +4,6 @@
 
 package com.langfuse.client.resources.commons.types;
 
-import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
@@ -32,9 +31,9 @@ public interface ITrace {
 
   Optional<Object> getMetadata();
 
-  Optional<List<String>> getTags();
+  List<String> getTags();
 
-  Optional<Boolean> getPublic();
+  boolean getPublic();
 
-  Optional<String> getEnvironment();
+  String getEnvironment();
 }

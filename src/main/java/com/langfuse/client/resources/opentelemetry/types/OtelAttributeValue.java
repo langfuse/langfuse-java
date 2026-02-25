@@ -135,6 +135,9 @@ public final class OtelAttributeValue {
       return this;
     }
 
+    /**
+     * <p>String value</p>
+     */
     @JsonSetter(
         value = "stringValue",
         nulls = Nulls.SKIP
@@ -149,6 +152,9 @@ public final class OtelAttributeValue {
       return this;
     }
 
+    /**
+     * <p>Integer value</p>
+     */
     @JsonSetter(
         value = "intValue",
         nulls = Nulls.SKIP
@@ -163,6 +169,9 @@ public final class OtelAttributeValue {
       return this;
     }
 
+    /**
+     * <p>Double value</p>
+     */
     @JsonSetter(
         value = "doubleValue",
         nulls = Nulls.SKIP
@@ -177,6 +186,9 @@ public final class OtelAttributeValue {
       return this;
     }
 
+    /**
+     * <p>Boolean value</p>
+     */
     @JsonSetter(
         value = "boolValue",
         nulls = Nulls.SKIP
@@ -193,6 +205,16 @@ public final class OtelAttributeValue {
 
     public OtelAttributeValue build() {
       return new OtelAttributeValue(stringValue, intValue, doubleValue, boolValue, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

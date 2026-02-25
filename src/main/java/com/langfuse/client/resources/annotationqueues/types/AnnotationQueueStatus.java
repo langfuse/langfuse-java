@@ -4,23 +4,85 @@
 
 package com.langfuse.client.resources.annotationqueues.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum AnnotationQueueStatus {
-  PENDING("PENDING"),
+public final class AnnotationQueueStatus {
+  public static final AnnotationQueueStatus COMPLETED = new AnnotationQueueStatus(Value.COMPLETED, "COMPLETED");
 
-  COMPLETED("COMPLETED");
+  public static final AnnotationQueueStatus PENDING = new AnnotationQueueStatus(Value.PENDING, "PENDING");
 
-  private final String value;
+  private final Value value;
 
-  AnnotationQueueStatus(String value) {
+  private final String string;
+
+  AnnotationQueueStatus(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof AnnotationQueueStatus && this.string.equals(((AnnotationQueueStatus) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case COMPLETED:
+        return visitor.visitCompleted();
+      case PENDING:
+        return visitor.visitPending();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static AnnotationQueueStatus valueOf(String value) {
+    switch (value) {
+      case "COMPLETED":
+        return COMPLETED;
+      case "PENDING":
+        return PENDING;
+      default:
+        return new AnnotationQueueStatus(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    PENDING,
+
+    COMPLETED,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitPending();
+
+    T visitCompleted();
+
+    T visitUnknown(String unknownType);
   }
 }

@@ -43,6 +43,10 @@ public final class Score {
     return new Score(new BooleanValue(value));
   }
 
+  public static Score correction(CorrectionScore value) {
+    return new Score(new CorrectionValue(value));
+  }
+
   public boolean isNumeric() {
     return value instanceof NumericValue;
   }
@@ -53,6 +57,10 @@ public final class Score {
 
   public boolean isBoolean() {
     return value instanceof BooleanValue;
+  }
+
+  public boolean isCorrection() {
+    return value instanceof CorrectionValue;
   }
 
   public boolean _isUnknown() {
@@ -80,6 +88,13 @@ public final class Score {
     return Optional.empty();
   }
 
+  public Optional<CorrectionScore> getCorrection() {
+    if (isCorrection()) {
+      return Optional.of(((CorrectionValue) value).value);
+    }
+    return Optional.empty();
+  }
+
   public Optional<Object> _getUnknown() {
     if (_isUnknown()) {
       return Optional.of(((_UnknownValue) value).value);
@@ -99,6 +114,8 @@ public final class Score {
 
     T visitBoolean(BooleanScore boolean_);
 
+    T visitCorrection(CorrectionScore correction);
+
     T _visitUnknown(Object unknownType);
   }
 
@@ -111,7 +128,8 @@ public final class Score {
   @JsonSubTypes({
       @JsonSubTypes.Type(NumericValue.class),
       @JsonSubTypes.Type(CategoricalValue.class),
-      @JsonSubTypes.Type(BooleanValue.class)
+      @JsonSubTypes.Type(BooleanValue.class),
+      @JsonSubTypes.Type(CorrectionValue.class)
   })
   @JsonIgnoreProperties(
       ignoreUnknown = true
@@ -232,6 +250,48 @@ public final class Score {
     }
 
     private boolean equalTo(BooleanValue other) {
+      return value.equals(other.value);
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      return Objects.hash(this.value);
+    }
+
+    @java.lang.Override
+    public String toString() {
+      return "Score{" + "value: " + value + "}";
+    }
+  }
+
+  @JsonTypeName("CORRECTION")
+  @JsonIgnoreProperties("dataType")
+  private static final class CorrectionValue implements Value {
+    @JsonUnwrapped
+    private CorrectionScore value;
+
+    @JsonCreator(
+        mode = JsonCreator.Mode.PROPERTIES
+    )
+    private CorrectionValue() {
+    }
+
+    private CorrectionValue(CorrectionScore value) {
+      this.value = value;
+    }
+
+    @java.lang.Override
+    public <T> T visit(Visitor<T> visitor) {
+      return visitor.visitCorrection(value);
+    }
+
+    @java.lang.Override
+    public boolean equals(Object other) {
+      if (this == other) return true;
+      return other instanceof CorrectionValue && equalTo((CorrectionValue) other);
+    }
+
+    private boolean equalTo(CorrectionValue other) {
       return value.equals(other.value);
     }
 

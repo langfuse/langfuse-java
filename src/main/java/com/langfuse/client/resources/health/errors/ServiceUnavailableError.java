@@ -6,9 +6,14 @@ package com.langfuse.client.resources.health.errors;
 
 import com.langfuse.client.core.LangfuseClientApiException;
 import java.lang.Object;
+import okhttp3.Response;
 
 public final class ServiceUnavailableError extends LangfuseClientApiException {
   public ServiceUnavailableError(Object body) {
     super("ServiceUnavailableError", 503, body);
+  }
+
+  public ServiceUnavailableError(Object body, Response rawResponse) {
+    super("ServiceUnavailableError", 503, body, rawResponse);
   }
 }

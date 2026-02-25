@@ -4,35 +4,26 @@
 
 package com.langfuse.client.resources.metrics;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.langfuse.client.core.ClientOptions;
-import com.langfuse.client.core.LangfuseClientApiException;
-import com.langfuse.client.core.LangfuseClientException;
-import com.langfuse.client.core.ObjectMappers;
-import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
-import java.io.IOException;
-import java.lang.Object;
-import java.lang.String;
-import okhttp3.Headers;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-import com.langfuse.client.resources.commons.errors.AccessDeniedError;
-import com.langfuse.client.resources.commons.errors.Error;
-import com.langfuse.client.resources.commons.errors.MethodNotAllowedError;
-import com.langfuse.client.resources.commons.errors.NotFoundError;
-import com.langfuse.client.resources.commons.errors.UnauthorizedError;
 import com.langfuse.client.resources.metrics.requests.GetMetricsRequest;
 import com.langfuse.client.resources.metrics.types.MetricsResponse;
 
 public class MetricsClient {
   protected final ClientOptions clientOptions;
 
+  private final RawMetricsClient rawClient;
+
   public MetricsClient(ClientOptions clientOptions) {
     this.clientOptions = clientOptions;
+    this.rawClient = new RawMetricsClient(clientOptions);
+  }
+
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawMetricsClient withRawResponse() {
+    return this.rawClient;
   }
 
   /**
@@ -41,7 +32,7 @@ public class MetricsClient {
    * <p>For more details, see the <a href="https://langfuse.com/docs/metrics/features/metrics-api">Metrics API documentation</a>.</p>
    */
   public MetricsResponse metrics(GetMetricsRequest request) {
-    return metrics(request,null);
+    return this.rawClient.metrics(request).body();
   }
 
   /**
@@ -50,42 +41,6 @@ public class MetricsClient {
    * <p>For more details, see the <a href="https://langfuse.com/docs/metrics/features/metrics-api">Metrics API documentation</a>.</p>
    */
   public MetricsResponse metrics(GetMetricsRequest request, RequestOptions requestOptions) {
-    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-      .addPathSegments("api/public")
-      .addPathSegments("metrics");QueryStringMapper.addQueryParameter(httpUrl, "query", request.getQuery(), false);
-      Request.Builder _requestBuilder = new Request.Builder()
-        .url(httpUrl.build())
-        .method("GET", null)
-        .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json");
-      Request okhttpRequest = _requestBuilder.build();
-      OkHttpClient client = clientOptions.httpClient();
-      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-        client = clientOptions.httpClientWithTimeout(requestOptions);
-      }
-      try (Response response = client.newCall(okhttpRequest).execute()) {
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), MetricsResponse.class);
-        }
-        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-        try {
-          switch (response.code()) {
-            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-        }
-        catch (JsonProcessingException ignored) {
-          // unable to map error response, throwing generic error
-        }
-        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-      }
-      catch (IOException e) {
-        throw new LangfuseClientException("Network error executing HTTP request", e);
-      }
-    }
+    return this.rawClient.metrics(request, requestOptions).body();
   }
+}

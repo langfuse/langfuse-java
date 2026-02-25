@@ -118,26 +118,45 @@ public final class CreateCommentRequest {
   }
 
   public interface ProjectIdStage {
+    /**
+     * <p>The id of the project to attach the comment to.</p>
+     */
     ObjectTypeStage projectId(@NotNull String projectId);
 
     Builder from(CreateCommentRequest other);
   }
 
   public interface ObjectTypeStage {
+    /**
+     * <p>The type of the object to attach the comment to (trace, observation, session, prompt).</p>
+     */
     ObjectIdStage objectType(@NotNull String objectType);
   }
 
   public interface ObjectIdStage {
+    /**
+     * <p>The id of the object to attach the comment to. If this does not reference a valid existing object, an error will be thrown.</p>
+     */
     ContentStage objectId(@NotNull String objectId);
   }
 
   public interface ContentStage {
+    /**
+     * <p>The content of the comment. May include markdown. Currently limited to 5000 characters.</p>
+     */
     _FinalStage content(@NotNull String content);
   }
 
   public interface _FinalStage {
     CreateCommentRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>The id of the user who created the comment.</p>
+     */
     _FinalStage authorUserId(Optional<String> authorUserId);
 
     _FinalStage authorUserId(String authorUserId);
@@ -175,6 +194,7 @@ public final class CreateCommentRequest {
 
     /**
      * <p>The id of the project to attach the comment to.</p>
+     * <p>The id of the project to attach the comment to.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -185,6 +205,7 @@ public final class CreateCommentRequest {
     }
 
     /**
+     * <p>The type of the object to attach the comment to (trace, observation, session, prompt).</p>
      * <p>The type of the object to attach the comment to (trace, observation, session, prompt).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -197,6 +218,7 @@ public final class CreateCommentRequest {
 
     /**
      * <p>The id of the object to attach the comment to. If this does not reference a valid existing object, an error will be thrown.</p>
+     * <p>The id of the object to attach the comment to. If this does not reference a valid existing object, an error will be thrown.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -207,6 +229,7 @@ public final class CreateCommentRequest {
     }
 
     /**
+     * <p>The content of the comment. May include markdown. Currently limited to 5000 characters.</p>
      * <p>The content of the comment. May include markdown. Currently limited to 5000 characters.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -227,6 +250,9 @@ public final class CreateCommentRequest {
       return this;
     }
 
+    /**
+     * <p>The id of the user who created the comment.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "authorUserId",
@@ -240,6 +266,18 @@ public final class CreateCommentRequest {
     @java.lang.Override
     public CreateCommentRequest build() {
       return new CreateCommentRequest(projectId, objectType, objectId, content, authorUserId, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

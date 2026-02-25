@@ -184,6 +184,10 @@ public final class UpdateEventBody implements IUpdateEventBody, IOptionalObserva
   public interface _FinalStage {
     UpdateEventBody build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage traceId(Optional<String> traceId);
 
     _FinalStage traceId(String traceId);
@@ -466,6 +470,18 @@ public final class UpdateEventBody implements IUpdateEventBody, IOptionalObserva
     @java.lang.Override
     public UpdateEventBody build() {
       return new UpdateEventBody(id, traceId, name, startTime, metadata, input, output, level, statusMessage, parentObservationId, version, environment, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

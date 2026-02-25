@@ -6,15 +6,17 @@ package com.langfuse.client.resources.commons.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Double;
-import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.util.HashMap;
@@ -27,13 +29,13 @@ import java.util.Optional;
     builder = Usage.Builder.class
 )
 public final class Usage {
-  private final Optional<Integer> input;
+  private final int input;
 
-  private final Optional<Integer> output;
+  private final int output;
 
-  private final Optional<Integer> total;
+  private final int total;
 
-  private final Optional<ModelUsageUnit> unit;
+  private final Optional<String> unit;
 
   private final Optional<Double> inputCost;
 
@@ -43,9 +45,9 @@ public final class Usage {
 
   private final Map<String, Object> additionalProperties;
 
-  private Usage(Optional<Integer> input, Optional<Integer> output, Optional<Integer> total,
-      Optional<ModelUsageUnit> unit, Optional<Double> inputCost, Optional<Double> outputCost,
-      Optional<Double> totalCost, Map<String, Object> additionalProperties) {
+  private Usage(int input, int output, int total, Optional<String> unit, Optional<Double> inputCost,
+      Optional<Double> outputCost, Optional<Double> totalCost,
+      Map<String, Object> additionalProperties) {
     this.input = input;
     this.output = output;
     this.total = total;
@@ -60,7 +62,7 @@ public final class Usage {
    * @return Number of input units (e.g. tokens)
    */
   @JsonProperty("input")
-  public Optional<Integer> getInput() {
+  public int getInput() {
     return input;
   }
 
@@ -68,7 +70,7 @@ public final class Usage {
    * @return Number of output units (e.g. tokens)
    */
   @JsonProperty("output")
-  public Optional<Integer> getOutput() {
+  public int getOutput() {
     return output;
   }
 
@@ -76,12 +78,18 @@ public final class Usage {
    * @return Defaults to input+output if not set
    */
   @JsonProperty("total")
-  public Optional<Integer> getTotal() {
+  public int getTotal() {
     return total;
   }
 
-  @JsonProperty("unit")
-  public Optional<ModelUsageUnit> getUnit() {
+  /**
+   * @return Unit of measurement
+   */
+  @JsonIgnore
+  public Optional<String> getUnit() {
+    if (unit == null) {
+      return Optional.empty();
+    }
     return unit;
   }
 
@@ -109,6 +117,15 @@ public final class Usage {
     return totalCost;
   }
 
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("unit")
+  private Optional<String> _getUnit() {
+    return unit;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -121,7 +138,7 @@ public final class Usage {
   }
 
   private boolean equalTo(Usage other) {
-    return input.equals(other.input) && output.equals(other.output) && total.equals(other.total) && unit.equals(other.unit) && inputCost.equals(other.inputCost) && outputCost.equals(other.outputCost) && totalCost.equals(other.totalCost);
+    return input == other.input && output == other.output && total == other.total && unit.equals(other.unit) && inputCost.equals(other.inputCost) && outputCost.equals(other.outputCost) && totalCost.equals(other.totalCost);
   }
 
   @java.lang.Override
@@ -134,27 +151,88 @@ public final class Usage {
     return ObjectMappers.stringify(this);
   }
 
-  public static Builder builder() {
+  public static InputStage builder() {
     return new Builder();
+  }
+
+  public interface InputStage {
+    /**
+     * <p>Number of input units (e.g. tokens)</p>
+     */
+    OutputStage input(int input);
+
+    Builder from(Usage other);
+  }
+
+  public interface OutputStage {
+    /**
+     * <p>Number of output units (e.g. tokens)</p>
+     */
+    TotalStage output(int output);
+  }
+
+  public interface TotalStage {
+    /**
+     * <p>Defaults to input+output if not set</p>
+     */
+    _FinalStage total(int total);
+  }
+
+  public interface _FinalStage {
+    Usage build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Unit of measurement</p>
+     */
+    _FinalStage unit(Optional<String> unit);
+
+    _FinalStage unit(String unit);
+
+    _FinalStage unit(Nullable<String> unit);
+
+    /**
+     * <p>USD input cost</p>
+     */
+    _FinalStage inputCost(Optional<Double> inputCost);
+
+    _FinalStage inputCost(Double inputCost);
+
+    /**
+     * <p>USD output cost</p>
+     */
+    _FinalStage outputCost(Optional<Double> outputCost);
+
+    _FinalStage outputCost(Double outputCost);
+
+    /**
+     * <p>USD total cost, defaults to input+output</p>
+     */
+    _FinalStage totalCost(Optional<Double> totalCost);
+
+    _FinalStage totalCost(Double totalCost);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder {
-    private Optional<Integer> input = Optional.empty();
+  public static final class Builder implements InputStage, OutputStage, TotalStage, _FinalStage {
+    private int input;
 
-    private Optional<Integer> output = Optional.empty();
+    private int output;
 
-    private Optional<Integer> total = Optional.empty();
+    private int total;
 
-    private Optional<ModelUsageUnit> unit = Optional.empty();
-
-    private Optional<Double> inputCost = Optional.empty();
+    private Optional<Double> totalCost = Optional.empty();
 
     private Optional<Double> outputCost = Optional.empty();
 
-    private Optional<Double> totalCost = Optional.empty();
+    private Optional<Double> inputCost = Optional.empty();
+
+    private Optional<String> unit = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -162,6 +240,7 @@ public final class Usage {
     private Builder() {
     }
 
+    @java.lang.Override
     public Builder from(Usage other) {
       input(other.getInput());
       output(other.getOutput());
@@ -173,106 +252,167 @@ public final class Usage {
       return this;
     }
 
-    @JsonSetter(
-        value = "input",
-        nulls = Nulls.SKIP
-    )
-    public Builder input(Optional<Integer> input) {
+    /**
+     * <p>Number of input units (e.g. tokens)</p>
+     * <p>Number of input units (e.g. tokens)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("input")
+    public OutputStage input(int input) {
       this.input = input;
       return this;
     }
 
-    public Builder input(Integer input) {
-      this.input = Optional.ofNullable(input);
-      return this;
-    }
-
-    @JsonSetter(
-        value = "output",
-        nulls = Nulls.SKIP
-    )
-    public Builder output(Optional<Integer> output) {
+    /**
+     * <p>Number of output units (e.g. tokens)</p>
+     * <p>Number of output units (e.g. tokens)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("output")
+    public TotalStage output(int output) {
       this.output = output;
       return this;
     }
 
-    public Builder output(Integer output) {
-      this.output = Optional.ofNullable(output);
-      return this;
-    }
-
-    @JsonSetter(
-        value = "total",
-        nulls = Nulls.SKIP
-    )
-    public Builder total(Optional<Integer> total) {
+    /**
+     * <p>Defaults to input+output if not set</p>
+     * <p>Defaults to input+output if not set</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("total")
+    public _FinalStage total(int total) {
       this.total = total;
       return this;
     }
 
-    public Builder total(Integer total) {
-      this.total = Optional.ofNullable(total);
-      return this;
-    }
-
-    @JsonSetter(
-        value = "unit",
-        nulls = Nulls.SKIP
-    )
-    public Builder unit(Optional<ModelUsageUnit> unit) {
-      this.unit = unit;
-      return this;
-    }
-
-    public Builder unit(ModelUsageUnit unit) {
-      this.unit = Optional.ofNullable(unit);
-      return this;
-    }
-
-    @JsonSetter(
-        value = "inputCost",
-        nulls = Nulls.SKIP
-    )
-    public Builder inputCost(Optional<Double> inputCost) {
-      this.inputCost = inputCost;
-      return this;
-    }
-
-    public Builder inputCost(Double inputCost) {
-      this.inputCost = Optional.ofNullable(inputCost);
-      return this;
-    }
-
-    @JsonSetter(
-        value = "outputCost",
-        nulls = Nulls.SKIP
-    )
-    public Builder outputCost(Optional<Double> outputCost) {
-      this.outputCost = outputCost;
-      return this;
-    }
-
-    public Builder outputCost(Double outputCost) {
-      this.outputCost = Optional.ofNullable(outputCost);
-      return this;
-    }
-
-    @JsonSetter(
-        value = "totalCost",
-        nulls = Nulls.SKIP
-    )
-    public Builder totalCost(Optional<Double> totalCost) {
-      this.totalCost = totalCost;
-      return this;
-    }
-
-    public Builder totalCost(Double totalCost) {
+    /**
+     * <p>USD total cost, defaults to input+output</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage totalCost(Double totalCost) {
       this.totalCost = Optional.ofNullable(totalCost);
       return this;
     }
 
+    /**
+     * <p>USD total cost, defaults to input+output</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "totalCost",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage totalCost(Optional<Double> totalCost) {
+      this.totalCost = totalCost;
+      return this;
+    }
+
+    /**
+     * <p>USD output cost</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage outputCost(Double outputCost) {
+      this.outputCost = Optional.ofNullable(outputCost);
+      return this;
+    }
+
+    /**
+     * <p>USD output cost</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "outputCost",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage outputCost(Optional<Double> outputCost) {
+      this.outputCost = outputCost;
+      return this;
+    }
+
+    /**
+     * <p>USD input cost</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage inputCost(Double inputCost) {
+      this.inputCost = Optional.ofNullable(inputCost);
+      return this;
+    }
+
+    /**
+     * <p>USD input cost</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "inputCost",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage inputCost(Optional<Double> inputCost) {
+      this.inputCost = inputCost;
+      return this;
+    }
+
+    /**
+     * <p>Unit of measurement</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage unit(Nullable<String> unit) {
+      if (unit.isNull()) {
+        this.unit = null;
+      }
+      else if (unit.isEmpty()) {
+        this.unit = Optional.empty();
+      }
+      else {
+        this.unit = Optional.of(unit.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>Unit of measurement</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage unit(String unit) {
+      this.unit = Optional.ofNullable(unit);
+      return this;
+    }
+
+    /**
+     * <p>Unit of measurement</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "unit",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage unit(Optional<String> unit) {
+      this.unit = unit;
+      return this;
+    }
+
+    @java.lang.Override
     public Usage build() {
       return new Usage(input, output, total, unit, inputCost, outputCost, totalCost, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

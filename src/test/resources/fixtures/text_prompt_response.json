@@ -1,0 +1,20 @@
+{
+  "id": "62985895-210b-47f1-bedf-34ac28ac6db4",
+  "createdAt": "2026-02-18T14:21:25.156Z",
+  "updatedAt": "2026-02-18T14:21:25.156Z",
+  "projectId": "cm19d32ph000bjx8lvbuc94ev",
+  "createdBy": "cm17uncnj000214d9hu45bx77",
+  "prompt": "Hello World",
+  "name": "test-text-prompt",
+  "version": 1,
+  "type": "text",
+  "isActive": true,
+  "config": {},
+  "tags": [],
+  "labels": [
+    "production",
+    "latest"
+  ],
+  "commitMessage": null,
+  "resolutionGraph": null
+}

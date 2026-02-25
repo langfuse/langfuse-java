@@ -104,6 +104,9 @@ public final class DeletePromptRequest {
       return this;
     }
 
+    /**
+     * <p>Optional label to filter deletion. If specified, deletes all prompt versions that have this label.</p>
+     */
     @JsonSetter(
         value = "label",
         nulls = Nulls.SKIP
@@ -118,6 +121,9 @@ public final class DeletePromptRequest {
       return this;
     }
 
+    /**
+     * <p>Optional version to filter deletion. If specified, deletes only this specific version of the prompt.</p>
+     */
     @JsonSetter(
         value = "version",
         nulls = Nulls.SKIP
@@ -134,6 +140,16 @@ public final class DeletePromptRequest {
 
     public DeletePromptRequest build() {
       return new DeletePromptRequest(label, version, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

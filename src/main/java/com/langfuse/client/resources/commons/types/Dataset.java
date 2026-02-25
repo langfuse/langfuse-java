@@ -6,12 +6,15 @@ package com.langfuse.client.resources.commons.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
 import java.lang.String;
@@ -33,7 +36,7 @@ public final class Dataset {
 
   private final Optional<String> description;
 
-  private final Optional<Object> metadata;
+  private final Object metadata;
 
   private final Optional<Object> inputSchema;
 
@@ -47,7 +50,7 @@ public final class Dataset {
 
   private final Map<String, Object> additionalProperties;
 
-  private Dataset(String id, String name, Optional<String> description, Optional<Object> metadata,
+  private Dataset(String id, String name, Optional<String> description, Object metadata,
       Optional<Object> inputSchema, Optional<Object> expectedOutputSchema, String projectId,
       OffsetDateTime createdAt, OffsetDateTime updatedAt,
       Map<String, Object> additionalProperties) {
@@ -73,29 +76,44 @@ public final class Dataset {
     return name;
   }
 
-  @JsonProperty("description")
+  /**
+   * @return Description of the dataset
+   */
+  @JsonIgnore
   public Optional<String> getDescription() {
+    if (description == null) {
+      return Optional.empty();
+    }
     return description;
   }
 
+  /**
+   * @return Metadata associated with the dataset
+   */
   @JsonProperty("metadata")
-  public Optional<Object> getMetadata() {
+  public Object getMetadata() {
     return metadata;
   }
 
   /**
    * @return JSON Schema for validating dataset item inputs
    */
-  @JsonProperty("inputSchema")
+  @JsonIgnore
   public Optional<Object> getInputSchema() {
+    if (inputSchema == null) {
+      return Optional.empty();
+    }
     return inputSchema;
   }
 
   /**
    * @return JSON Schema for validating dataset item expected outputs
    */
-  @JsonProperty("expectedOutputSchema")
+  @JsonIgnore
   public Optional<Object> getExpectedOutputSchema() {
+    if (expectedOutputSchema == null) {
+      return Optional.empty();
+    }
     return expectedOutputSchema;
   }
 
@@ -112,6 +130,33 @@ public final class Dataset {
   @JsonProperty("updatedAt")
   public OffsetDateTime getUpdatedAt() {
     return updatedAt;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("description")
+  private Optional<String> _getDescription() {
+    return description;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("inputSchema")
+  private Optional<Object> _getInputSchema() {
+    return inputSchema;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("expectedOutputSchema")
+  private Optional<Object> _getExpectedOutputSchema() {
+    return expectedOutputSchema;
   }
 
   @java.lang.Override
@@ -150,7 +195,14 @@ public final class Dataset {
   }
 
   public interface NameStage {
-    ProjectIdStage name(@NotNull String name);
+    MetadataStage name(@NotNull String name);
+  }
+
+  public interface MetadataStage {
+    /**
+     * <p>Metadata associated with the dataset</p>
+     */
+    ProjectIdStage metadata(Object metadata);
   }
 
   public interface ProjectIdStage {
@@ -168,30 +220,47 @@ public final class Dataset {
   public interface _FinalStage {
     Dataset build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Description of the dataset</p>
+     */
     _FinalStage description(Optional<String> description);
 
     _FinalStage description(String description);
 
-    _FinalStage metadata(Optional<Object> metadata);
+    _FinalStage description(Nullable<String> description);
 
-    _FinalStage metadata(Object metadata);
-
+    /**
+     * <p>JSON Schema for validating dataset item inputs</p>
+     */
     _FinalStage inputSchema(Optional<Object> inputSchema);
 
     _FinalStage inputSchema(Object inputSchema);
 
+    _FinalStage inputSchema(Nullable<Object> inputSchema);
+
+    /**
+     * <p>JSON Schema for validating dataset item expected outputs</p>
+     */
     _FinalStage expectedOutputSchema(Optional<Object> expectedOutputSchema);
 
     _FinalStage expectedOutputSchema(Object expectedOutputSchema);
+
+    _FinalStage expectedOutputSchema(Nullable<Object> expectedOutputSchema);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements IdStage, NameStage, ProjectIdStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
+  public static final class Builder implements IdStage, NameStage, MetadataStage, ProjectIdStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
     private String id;
 
     private String name;
+
+    private Object metadata;
 
     private String projectId;
 
@@ -202,8 +271,6 @@ public final class Dataset {
     private Optional<Object> expectedOutputSchema = Optional.empty();
 
     private Optional<Object> inputSchema = Optional.empty();
-
-    private Optional<Object> metadata = Optional.empty();
 
     private Optional<String> description = Optional.empty();
 
@@ -236,8 +303,20 @@ public final class Dataset {
 
     @java.lang.Override
     @JsonSetter("name")
-    public ProjectIdStage name(@NotNull String name) {
+    public MetadataStage name(@NotNull String name) {
       this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Metadata associated with the dataset</p>
+     * <p>Metadata associated with the dataset</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("metadata")
+    public ProjectIdStage metadata(Object metadata) {
+      this.metadata = metadata;
       return this;
     }
 
@@ -267,11 +346,32 @@ public final class Dataset {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage expectedOutputSchema(Nullable<Object> expectedOutputSchema) {
+      if (expectedOutputSchema.isNull()) {
+        this.expectedOutputSchema = null;
+      }
+      else if (expectedOutputSchema.isEmpty()) {
+        this.expectedOutputSchema = Optional.empty();
+      }
+      else {
+        this.expectedOutputSchema = Optional.of(expectedOutputSchema.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>JSON Schema for validating dataset item expected outputs</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage expectedOutputSchema(Object expectedOutputSchema) {
       this.expectedOutputSchema = Optional.ofNullable(expectedOutputSchema);
       return this;
     }
 
+    /**
+     * <p>JSON Schema for validating dataset item expected outputs</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "expectedOutputSchema",
@@ -287,11 +387,32 @@ public final class Dataset {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage inputSchema(Nullable<Object> inputSchema) {
+      if (inputSchema.isNull()) {
+        this.inputSchema = null;
+      }
+      else if (inputSchema.isEmpty()) {
+        this.inputSchema = Optional.empty();
+      }
+      else {
+        this.inputSchema = Optional.of(inputSchema.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>JSON Schema for validating dataset item inputs</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage inputSchema(Object inputSchema) {
       this.inputSchema = Optional.ofNullable(inputSchema);
       return this;
     }
 
+    /**
+     * <p>JSON Schema for validating dataset item inputs</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "inputSchema",
@@ -302,28 +423,37 @@ public final class Dataset {
       return this;
     }
 
+    /**
+     * <p>Description of the dataset</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
-    public _FinalStage metadata(Object metadata) {
-      this.metadata = Optional.ofNullable(metadata);
+    public _FinalStage description(Nullable<String> description) {
+      if (description.isNull()) {
+        this.description = null;
+      }
+      else if (description.isEmpty()) {
+        this.description = Optional.empty();
+      }
+      else {
+        this.description = Optional.of(description.get());
+      }
       return this;
     }
 
-    @java.lang.Override
-    @JsonSetter(
-        value = "metadata",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage metadata(Optional<Object> metadata) {
-      this.metadata = metadata;
-      return this;
-    }
-
+    /**
+     * <p>Description of the dataset</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     public _FinalStage description(String description) {
       this.description = Optional.ofNullable(description);
       return this;
     }
 
+    /**
+     * <p>Description of the dataset</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "description",
@@ -337,6 +467,18 @@ public final class Dataset {
     @java.lang.Override
     public Dataset build() {
       return new Dataset(id, name, description, metadata, inputSchema, expectedOutputSchema, projectId, createdAt, updatedAt, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

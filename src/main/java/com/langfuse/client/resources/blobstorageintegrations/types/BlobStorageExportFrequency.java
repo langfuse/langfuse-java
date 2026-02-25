@@ -4,25 +4,95 @@
 
 package com.langfuse.client.resources.blobstorageintegrations.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum BlobStorageExportFrequency {
-  HOURLY("hourly"),
+public final class BlobStorageExportFrequency {
+  public static final BlobStorageExportFrequency HOURLY = new BlobStorageExportFrequency(Value.HOURLY, "hourly");
 
-  DAILY("daily"),
+  public static final BlobStorageExportFrequency DAILY = new BlobStorageExportFrequency(Value.DAILY, "daily");
 
-  WEEKLY("weekly");
+  public static final BlobStorageExportFrequency WEEKLY = new BlobStorageExportFrequency(Value.WEEKLY, "weekly");
 
-  private final String value;
+  private final Value value;
 
-  BlobStorageExportFrequency(String value) {
+  private final String string;
+
+  BlobStorageExportFrequency(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof BlobStorageExportFrequency && this.string.equals(((BlobStorageExportFrequency) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case HOURLY:
+        return visitor.visitHourly();
+      case DAILY:
+        return visitor.visitDaily();
+      case WEEKLY:
+        return visitor.visitWeekly();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static BlobStorageExportFrequency valueOf(String value) {
+    switch (value) {
+      case "hourly":
+        return HOURLY;
+      case "daily":
+        return DAILY;
+      case "weekly":
+        return WEEKLY;
+      default:
+        return new BlobStorageExportFrequency(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    HOURLY,
+
+    DAILY,
+
+    WEEKLY,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitHourly();
+
+    T visitDaily();
+
+    T visitWeekly();
+
+    T visitUnknown(String unknownType);
   }
 }

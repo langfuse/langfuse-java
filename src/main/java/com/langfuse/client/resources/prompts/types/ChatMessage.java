@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
@@ -17,6 +18,7 @@ import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -28,11 +30,15 @@ public final class ChatMessage {
 
   private final String content;
 
+  private final Optional<ChatMessageType> type;
+
   private final Map<String, Object> additionalProperties;
 
-  private ChatMessage(String role, String content, Map<String, Object> additionalProperties) {
+  private ChatMessage(String role, String content, Optional<ChatMessageType> type,
+      Map<String, Object> additionalProperties) {
     this.role = role;
     this.content = content;
+    this.type = type;
     this.additionalProperties = additionalProperties;
   }
 
@@ -44,6 +50,11 @@ public final class ChatMessage {
   @JsonProperty("content")
   public String getContent() {
     return content;
+  }
+
+  @JsonProperty("type")
+  public Optional<ChatMessageType> getType() {
+    return type;
   }
 
   @java.lang.Override
@@ -58,12 +69,12 @@ public final class ChatMessage {
   }
 
   private boolean equalTo(ChatMessage other) {
-    return role.equals(other.role) && content.equals(other.content);
+    return role.equals(other.role) && content.equals(other.content) && type.equals(other.type);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.role, this.content);
+    return Objects.hash(this.role, this.content, this.type);
   }
 
   @java.lang.Override
@@ -87,6 +98,14 @@ public final class ChatMessage {
 
   public interface _FinalStage {
     ChatMessage build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    _FinalStage type(Optional<ChatMessageType> type);
+
+    _FinalStage type(ChatMessageType type);
   }
 
   @JsonIgnoreProperties(
@@ -96,6 +115,8 @@ public final class ChatMessage {
     private String role;
 
     private String content;
+
+    private Optional<ChatMessageType> type = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -107,6 +128,7 @@ public final class ChatMessage {
     public Builder from(ChatMessage other) {
       role(other.getRole());
       content(other.getContent());
+      type(other.getType());
       return this;
     }
 
@@ -125,8 +147,36 @@ public final class ChatMessage {
     }
 
     @java.lang.Override
+    public _FinalStage type(ChatMessageType type) {
+      this.type = Optional.ofNullable(type);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "type",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage type(Optional<ChatMessageType> type) {
+      this.type = type;
+      return this;
+    }
+
+    @java.lang.Override
     public ChatMessage build() {
-      return new ChatMessage(role, content, additionalProperties);
+      return new ChatMessage(role, content, type, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }
