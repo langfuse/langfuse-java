@@ -15,7 +15,7 @@ The recommended way to install the langfuse-java API client is via Maven Central
 <dependency>
     <groupId>com.langfuse</groupId>
     <artifactId>langfuse-java</artifactId>
-    <version>0.1.3</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
