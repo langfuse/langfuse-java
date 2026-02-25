@@ -15,7 +15,7 @@ The recommended way to install the langfuse-java API client is via Maven Central
 <dependency>
     <groupId>com.langfuse</groupId>
     <artifactId>langfuse-java</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.3</version>
 </dependency>
 ```
 
@@ -34,6 +34,8 @@ LangfuseClient client = LangfuseClient.builder()
         .build();
 ```
 
+An async client is also available via `AsyncLangfuseClient.builder()` with the same configuration options.
+
 Make requests using the clients:
 
 ```java
@@ -43,8 +45,8 @@ import com.langfuse.client.resources.prompts.types.PromptMetaListResponse;
 try {
     PromptMetaListResponse prompts = client.prompts().list();
 } catch (LangfuseClientApiException error) {
-    System.out.println(error.getBody());
-    System.out.println(error.getStatusCode());
+    System.out.println(error.body());
+    System.out.println(error.statusCode());
 }
 ```
 
@@ -104,7 +106,7 @@ To publish to Maven Central, you need to configure the following secrets in your
 2. Setup a new Java fern generator using
    ```yaml
       - name: fernapi/fern-java-sdk
-        version: 2.20.1
+        version: 3.38.1
         output:
           location: local-file-system
           path: ../../../../langfuse-java/src/main/java/com/langfuse/client/
@@ -113,6 +115,6 @@ To publish to Maven Central, you need to configure the following secrets in your
    ```
 3. Generate the new client code using `npx fern-api generate --api server`.
 4. Manually set the `package` across all files to `com.langfuse.client`.
-5. Overwrite `this.clientOptionsBuilder.addHeader("Authorization", "Basic " + encodedToken);` to `Basic` in com.langfuse.client.LangfuseClientBuilder.java.
+5. Verify that `LangfuseClientBuilder.setAuthentication()` uses `Basic` auth (not `Bearer`).
 6. Adjust Javadoc strings with HTML properties as the apidocs package does not support them.
 7. Commit the changes in langfuse-java and push them to the repository.
