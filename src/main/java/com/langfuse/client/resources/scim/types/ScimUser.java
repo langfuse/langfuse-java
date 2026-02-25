@@ -132,6 +132,10 @@ public final class ScimUser {
   public interface _FinalStage {
     ScimUser build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage schemas(List<String> schemas);
 
     _FinalStage addSchemas(String schemas);
@@ -208,7 +212,9 @@ public final class ScimUser {
 
     @java.lang.Override
     public _FinalStage addAllEmails(List<ScimEmail> emails) {
-      this.emails.addAll(emails);
+      if (emails != null) {
+        this.emails.addAll(emails);
+      }
       return this;
     }
 
@@ -225,13 +231,17 @@ public final class ScimUser {
     )
     public _FinalStage emails(List<ScimEmail> emails) {
       this.emails.clear();
-      this.emails.addAll(emails);
+      if (emails != null) {
+        this.emails.addAll(emails);
+      }
       return this;
     }
 
     @java.lang.Override
     public _FinalStage addAllSchemas(List<String> schemas) {
-      this.schemas.addAll(schemas);
+      if (schemas != null) {
+        this.schemas.addAll(schemas);
+      }
       return this;
     }
 
@@ -248,13 +258,27 @@ public final class ScimUser {
     )
     public _FinalStage schemas(List<String> schemas) {
       this.schemas.clear();
-      this.schemas.addAll(schemas);
+      if (schemas != null) {
+        this.schemas.addAll(schemas);
+      }
       return this;
     }
 
     @java.lang.Override
     public ScimUser build() {
       return new ScimUser(schemas, id, userName, name, emails, meta, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

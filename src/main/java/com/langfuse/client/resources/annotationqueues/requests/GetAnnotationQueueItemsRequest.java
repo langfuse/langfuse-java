@@ -119,6 +119,9 @@ public final class GetAnnotationQueueItemsRequest {
       return this;
     }
 
+    /**
+     * <p>Filter by status</p>
+     */
     @JsonSetter(
         value = "status",
         nulls = Nulls.SKIP
@@ -133,6 +136,9 @@ public final class GetAnnotationQueueItemsRequest {
       return this;
     }
 
+    /**
+     * <p>page number, starts at 1</p>
+     */
     @JsonSetter(
         value = "page",
         nulls = Nulls.SKIP
@@ -147,6 +153,9 @@ public final class GetAnnotationQueueItemsRequest {
       return this;
     }
 
+    /**
+     * <p>limit of items per page</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -163,6 +172,16 @@ public final class GetAnnotationQueueItemsRequest {
 
     public GetAnnotationQueueItemsRequest build() {
       return new GetAnnotationQueueItemsRequest(status, page, limit, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

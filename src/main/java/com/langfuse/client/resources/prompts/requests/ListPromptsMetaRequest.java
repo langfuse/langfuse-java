@@ -210,6 +210,9 @@ public final class ListPromptsMetaRequest {
       return this;
     }
 
+    /**
+     * <p>page number, starts at 1</p>
+     */
     @JsonSetter(
         value = "page",
         nulls = Nulls.SKIP
@@ -224,6 +227,9 @@ public final class ListPromptsMetaRequest {
       return this;
     }
 
+    /**
+     * <p>limit of items per page</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -238,6 +244,9 @@ public final class ListPromptsMetaRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include prompt versions created/updated on or after a certain datetime (ISO 8601)</p>
+     */
     @JsonSetter(
         value = "fromUpdatedAt",
         nulls = Nulls.SKIP
@@ -252,6 +261,9 @@ public final class ListPromptsMetaRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include prompt versions created/updated before a certain datetime (ISO 8601)</p>
+     */
     @JsonSetter(
         value = "toUpdatedAt",
         nulls = Nulls.SKIP
@@ -268,6 +280,16 @@ public final class ListPromptsMetaRequest {
 
     public ListPromptsMetaRequest build() {
       return new ListPromptsMetaRequest(name, label, tag, page, limit, fromUpdatedAt, toUpdatedAt, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

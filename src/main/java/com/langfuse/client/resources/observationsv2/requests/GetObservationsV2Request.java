@@ -18,7 +18,9 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,7 +31,11 @@ import com.langfuse.client.resources.commons.types.ObservationLevel;
     builder = GetObservationsV2Request.Builder.class
 )
 public final class GetObservationsV2Request {
+  private final Optional<List<String>> environment;
+
   private final Optional<String> fields;
+
+  private final Optional<String> expandMetadata;
 
   private final Optional<Integer> limit;
 
@@ -49,8 +55,6 @@ public final class GetObservationsV2Request {
 
   private final Optional<String> parentObservationId;
 
-  private final Optional<String> environment;
-
   private final Optional<OffsetDateTime> fromStartTime;
 
   private final Optional<OffsetDateTime> toStartTime;
@@ -61,14 +65,16 @@ public final class GetObservationsV2Request {
 
   private final Map<String, Object> additionalProperties;
 
-  private GetObservationsV2Request(Optional<String> fields, Optional<Integer> limit,
-      Optional<String> cursor, Optional<Boolean> parseIoAsJson, Optional<String> name,
-      Optional<String> userId, Optional<String> type, Optional<String> traceId,
-      Optional<ObservationLevel> level, Optional<String> parentObservationId,
-      Optional<String> environment, Optional<OffsetDateTime> fromStartTime,
+  private GetObservationsV2Request(Optional<List<String>> environment, Optional<String> fields,
+      Optional<String> expandMetadata, Optional<Integer> limit, Optional<String> cursor,
+      Optional<Boolean> parseIoAsJson, Optional<String> name, Optional<String> userId,
+      Optional<String> type, Optional<String> traceId, Optional<ObservationLevel> level,
+      Optional<String> parentObservationId, Optional<OffsetDateTime> fromStartTime,
       Optional<OffsetDateTime> toStartTime, Optional<String> version, Optional<String> filter,
       Map<String, Object> additionalProperties) {
+    this.environment = environment;
     this.fields = fields;
+    this.expandMetadata = expandMetadata;
     this.limit = limit;
     this.cursor = cursor;
     this.parseIoAsJson = parseIoAsJson;
@@ -78,12 +84,19 @@ public final class GetObservationsV2Request {
     this.traceId = traceId;
     this.level = level;
     this.parentObservationId = parentObservationId;
-    this.environment = environment;
     this.fromStartTime = fromStartTime;
     this.toStartTime = toStartTime;
     this.version = version;
     this.filter = filter;
     this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Optional filter for observations where the environment is one of the provided values.
+   */
+  @JsonProperty("environment")
+  public Optional<List<String>> getEnvironment() {
+    return environment;
   }
 
   /**
@@ -95,6 +108,17 @@ public final class GetObservationsV2Request {
   @JsonProperty("fields")
   public Optional<String> getFields() {
     return fields;
+  }
+
+  /**
+   * @return Comma-separated list of metadata keys to return non-truncated.
+   * By default, metadata values over 200 characters are truncated.
+   * Use this parameter to retrieve full values for specific keys.
+   * Example: &quot;key1,key2&quot;
+   */
+  @JsonProperty("expandMetadata")
+  public Optional<String> getExpandMetadata() {
+    return expandMetadata;
   }
 
   /**
@@ -114,8 +138,9 @@ public final class GetObservationsV2Request {
   }
 
   /**
-   * @return Set to <code>true</code> to parse input/output fields as JSON, or <code>false</code> to return raw strings.
-   * Defaults to <code>false</code> if not provided.
+   * @return <strong>Deprecated.</strong> Setting this to <code>true</code> will return a 400 error.
+   * Input/output fields are always returned as raw strings.
+   * Remove this parameter or set it to <code>false</code>.
    */
   @JsonProperty("parseIoAsJson")
   public Optional<Boolean> getParseIoAsJson() {
@@ -156,14 +181,6 @@ public final class GetObservationsV2Request {
   @JsonProperty("parentObservationId")
   public Optional<String> getParentObservationId() {
     return parentObservationId;
-  }
-
-  /**
-   * @return Optional filter for observations where the environment is one of the provided values.
-   */
-  @JsonProperty("environment")
-  public Optional<String> getEnvironment() {
-    return environment;
   }
 
   /**
@@ -210,12 +227,12 @@ public final class GetObservationsV2Request {
   }
 
   private boolean equalTo(GetObservationsV2Request other) {
-    return fields.equals(other.fields) && limit.equals(other.limit) && cursor.equals(other.cursor) && parseIoAsJson.equals(other.parseIoAsJson) && name.equals(other.name) && userId.equals(other.userId) && type.equals(other.type) && traceId.equals(other.traceId) && level.equals(other.level) && parentObservationId.equals(other.parentObservationId) && environment.equals(other.environment) && fromStartTime.equals(other.fromStartTime) && toStartTime.equals(other.toStartTime) && version.equals(other.version) && filter.equals(other.filter);
+    return environment.equals(other.environment) && fields.equals(other.fields) && expandMetadata.equals(other.expandMetadata) && limit.equals(other.limit) && cursor.equals(other.cursor) && parseIoAsJson.equals(other.parseIoAsJson) && name.equals(other.name) && userId.equals(other.userId) && type.equals(other.type) && traceId.equals(other.traceId) && level.equals(other.level) && parentObservationId.equals(other.parentObservationId) && fromStartTime.equals(other.fromStartTime) && toStartTime.equals(other.toStartTime) && version.equals(other.version) && filter.equals(other.filter);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.fields, this.limit, this.cursor, this.parseIoAsJson, this.name, this.userId, this.type, this.traceId, this.level, this.parentObservationId, this.environment, this.fromStartTime, this.toStartTime, this.version, this.filter);
+    return Objects.hash(this.environment, this.fields, this.expandMetadata, this.limit, this.cursor, this.parseIoAsJson, this.name, this.userId, this.type, this.traceId, this.level, this.parentObservationId, this.fromStartTime, this.toStartTime, this.version, this.filter);
   }
 
   @java.lang.Override
@@ -231,7 +248,11 @@ public final class GetObservationsV2Request {
       ignoreUnknown = true
   )
   public static final class Builder {
+    private Optional<List<String>> environment = Optional.empty();
+
     private Optional<String> fields = Optional.empty();
+
+    private Optional<String> expandMetadata = Optional.empty();
 
     private Optional<Integer> limit = Optional.empty();
 
@@ -251,8 +272,6 @@ public final class GetObservationsV2Request {
 
     private Optional<String> parentObservationId = Optional.empty();
 
-    private Optional<String> environment = Optional.empty();
-
     private Optional<OffsetDateTime> fromStartTime = Optional.empty();
 
     private Optional<OffsetDateTime> toStartTime = Optional.empty();
@@ -268,7 +287,9 @@ public final class GetObservationsV2Request {
     }
 
     public Builder from(GetObservationsV2Request other) {
+      environment(other.getEnvironment());
       fields(other.getFields());
+      expandMetadata(other.getExpandMetadata());
       limit(other.getLimit());
       cursor(other.getCursor());
       parseIoAsJson(other.getParseIoAsJson());
@@ -278,7 +299,6 @@ public final class GetObservationsV2Request {
       traceId(other.getTraceId());
       level(other.getLevel());
       parentObservationId(other.getParentObservationId());
-      environment(other.getEnvironment());
       fromStartTime(other.getFromStartTime());
       toStartTime(other.getToStartTime());
       version(other.getVersion());
@@ -286,6 +306,34 @@ public final class GetObservationsV2Request {
       return this;
     }
 
+    /**
+     * <p>Optional filter for observations where the environment is one of the provided values.</p>
+     */
+    @JsonSetter(
+        value = "environment",
+        nulls = Nulls.SKIP
+    )
+    public Builder environment(Optional<List<String>> environment) {
+      this.environment = environment;
+      return this;
+    }
+
+    public Builder environment(List<String> environment) {
+      this.environment = Optional.ofNullable(environment);
+      return this;
+    }
+
+    public Builder environment(String environment) {
+      this.environment = Optional.of(Collections.singletonList(environment));
+      return this;
+    }
+
+    /**
+     * <p>Comma-separated list of field groups to include in the response.
+     * Available groups: core, basic, time, io, metadata, model, usage, prompt, metrics.
+     * If not specified, <code>core</code> and <code>basic</code> field groups are returned.
+     * Example: &quot;basic,usage,model&quot;</p>
+     */
     @JsonSetter(
         value = "fields",
         nulls = Nulls.SKIP
@@ -300,6 +348,29 @@ public final class GetObservationsV2Request {
       return this;
     }
 
+    /**
+     * <p>Comma-separated list of metadata keys to return non-truncated.
+     * By default, metadata values over 200 characters are truncated.
+     * Use this parameter to retrieve full values for specific keys.
+     * Example: &quot;key1,key2&quot;</p>
+     */
+    @JsonSetter(
+        value = "expandMetadata",
+        nulls = Nulls.SKIP
+    )
+    public Builder expandMetadata(Optional<String> expandMetadata) {
+      this.expandMetadata = expandMetadata;
+      return this;
+    }
+
+    public Builder expandMetadata(String expandMetadata) {
+      this.expandMetadata = Optional.ofNullable(expandMetadata);
+      return this;
+    }
+
+    /**
+     * <p>Number of items to return per page. Maximum 1000, default 50.</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -314,6 +385,9 @@ public final class GetObservationsV2Request {
       return this;
     }
 
+    /**
+     * <p>Base64-encoded cursor for pagination. Use the cursor from the previous response to get the next page.</p>
+     */
     @JsonSetter(
         value = "cursor",
         nulls = Nulls.SKIP
@@ -328,6 +402,11 @@ public final class GetObservationsV2Request {
       return this;
     }
 
+    /**
+     * <p><strong>Deprecated.</strong> Setting this to <code>true</code> will return a 400 error.
+     * Input/output fields are always returned as raw strings.
+     * Remove this parameter or set it to <code>false</code>.</p>
+     */
     @JsonSetter(
         value = "parseIoAsJson",
         nulls = Nulls.SKIP
@@ -370,6 +449,9 @@ public final class GetObservationsV2Request {
       return this;
     }
 
+    /**
+     * <p>Filter by observation type (e.g., &quot;GENERATION&quot;, &quot;SPAN&quot;, &quot;EVENT&quot;, &quot;AGENT&quot;, &quot;TOOL&quot;, &quot;CHAIN&quot;, &quot;RETRIEVER&quot;, &quot;EVALUATOR&quot;, &quot;EMBEDDING&quot;, &quot;GUARDRAIL&quot;)</p>
+     */
     @JsonSetter(
         value = "type",
         nulls = Nulls.SKIP
@@ -398,6 +480,9 @@ public final class GetObservationsV2Request {
       return this;
     }
 
+    /**
+     * <p>Optional filter for observations with a specific level (e.g. &quot;DEBUG&quot;, &quot;DEFAULT&quot;, &quot;WARNING&quot;, &quot;ERROR&quot;).</p>
+     */
     @JsonSetter(
         value = "level",
         nulls = Nulls.SKIP
@@ -426,20 +511,9 @@ public final class GetObservationsV2Request {
       return this;
     }
 
-    @JsonSetter(
-        value = "environment",
-        nulls = Nulls.SKIP
-    )
-    public Builder environment(Optional<String> environment) {
-      this.environment = environment;
-      return this;
-    }
-
-    public Builder environment(String environment) {
-      this.environment = Optional.ofNullable(environment);
-      return this;
-    }
-
+    /**
+     * <p>Retrieve only observations with a start_time on or after this datetime (ISO 8601).</p>
+     */
     @JsonSetter(
         value = "fromStartTime",
         nulls = Nulls.SKIP
@@ -454,6 +528,9 @@ public final class GetObservationsV2Request {
       return this;
     }
 
+    /**
+     * <p>Retrieve only observations with a start_time before this datetime (ISO 8601).</p>
+     */
     @JsonSetter(
         value = "toStartTime",
         nulls = Nulls.SKIP
@@ -468,6 +545,9 @@ public final class GetObservationsV2Request {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include observations with a certain version.</p>
+     */
     @JsonSetter(
         value = "version",
         nulls = Nulls.SKIP
@@ -482,6 +562,9 @@ public final class GetObservationsV2Request {
       return this;
     }
 
+    /**
+     * JSON string containing an array of filter conditions. When provided, this takes precedence over query parameter filters (userId, name, type, level, environment, fromStartTime, ...).
+     */
     @JsonSetter(
         value = "filter",
         nulls = Nulls.SKIP
@@ -497,7 +580,17 @@ public final class GetObservationsV2Request {
     }
 
     public GetObservationsV2Request build() {
-      return new GetObservationsV2Request(fields, limit, cursor, parseIoAsJson, name, userId, type, traceId, level, parentObservationId, environment, fromStartTime, toStartTime, version, filter, additionalProperties);
+      return new GetObservationsV2Request(environment, fields, expandMetadata, limit, cursor, parseIoAsJson, name, userId, type, traceId, level, parentObservationId, fromStartTime, toStartTime, version, filter, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

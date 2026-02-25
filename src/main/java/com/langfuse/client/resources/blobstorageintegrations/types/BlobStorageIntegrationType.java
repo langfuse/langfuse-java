@@ -4,25 +4,95 @@
 
 package com.langfuse.client.resources.blobstorageintegrations.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum BlobStorageIntegrationType {
-  S_3("S3"),
+public final class BlobStorageIntegrationType {
+  public static final BlobStorageIntegrationType S3COMPATIBLE = new BlobStorageIntegrationType(Value.S3COMPATIBLE, "S3_COMPATIBLE");
 
-  S_3_COMPATIBLE("S3_COMPATIBLE"),
+  public static final BlobStorageIntegrationType S3 = new BlobStorageIntegrationType(Value.S3, "S3");
 
-  AZURE_BLOB_STORAGE("AZURE_BLOB_STORAGE");
+  public static final BlobStorageIntegrationType AZURE_BLOB_STORAGE = new BlobStorageIntegrationType(Value.AZURE_BLOB_STORAGE, "AZURE_BLOB_STORAGE");
 
-  private final String value;
+  private final Value value;
 
-  BlobStorageIntegrationType(String value) {
+  private final String string;
+
+  BlobStorageIntegrationType(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof BlobStorageIntegrationType && this.string.equals(((BlobStorageIntegrationType) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case S3COMPATIBLE:
+        return visitor.visitS3Compatible();
+      case S3:
+        return visitor.visitS3();
+      case AZURE_BLOB_STORAGE:
+        return visitor.visitAzureBlobStorage();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static BlobStorageIntegrationType valueOf(String value) {
+    switch (value) {
+      case "S3_COMPATIBLE":
+        return S3COMPATIBLE;
+      case "S3":
+        return S3;
+      case "AZURE_BLOB_STORAGE":
+        return AZURE_BLOB_STORAGE;
+      default:
+        return new BlobStorageIntegrationType(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    S3,
+
+    S3COMPATIBLE,
+
+    AZURE_BLOB_STORAGE,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitS3();
+
+    T visitS3Compatible();
+
+    T visitAzureBlobStorage();
+
+    T visitUnknown(String unknownType);
   }
 }

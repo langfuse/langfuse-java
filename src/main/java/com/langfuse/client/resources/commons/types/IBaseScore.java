@@ -34,11 +34,11 @@ public interface IBaseScore {
 
   Optional<String> getComment();
 
-  Optional<Object> getMetadata();
+  Object getMetadata();
 
   Optional<String> getConfigId();
 
   Optional<String> getQueueId();
 
-  Optional<String> getEnvironment();
+  String getEnvironment();
 }

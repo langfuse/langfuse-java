@@ -93,7 +93,9 @@ public final class OrganizationProjectsResponse {
     )
     public Builder projects(List<OrganizationProject> projects) {
       this.projects.clear();
-      this.projects.addAll(projects);
+      if (projects != null) {
+        this.projects.addAll(projects);
+      }
       return this;
     }
 
@@ -103,12 +105,24 @@ public final class OrganizationProjectsResponse {
     }
 
     public Builder addAllProjects(List<OrganizationProject> projects) {
-      this.projects.addAll(projects);
+      if (projects != null) {
+        this.projects.addAll(projects);
+      }
       return this;
     }
 
     public OrganizationProjectsResponse build() {
       return new OrganizationProjectsResponse(projects, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

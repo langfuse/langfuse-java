@@ -157,22 +157,38 @@ public final class BasePrompt implements IBasePrompt {
   public interface _FinalStage {
     BasePrompt build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>List of deployment labels of this prompt version.</p>
+     */
     _FinalStage labels(List<String> labels);
 
     _FinalStage addLabels(String labels);
 
     _FinalStage addAllLabels(List<String> labels);
 
+    /**
+     * <p>List of tags. Used to filter via UI and API. The same across versions of a prompt.</p>
+     */
     _FinalStage tags(List<String> tags);
 
     _FinalStage addTags(String tags);
 
     _FinalStage addAllTags(List<String> tags);
 
+    /**
+     * <p>Commit message for this prompt version.</p>
+     */
     _FinalStage commitMessage(Optional<String> commitMessage);
 
     _FinalStage commitMessage(String commitMessage);
 
+    /**
+     * <p>The dependency resolution graph for the current prompt. Null if prompt has no dependencies.</p>
+     */
     _FinalStage resolutionGraph(Optional<Map<String, Object>> resolutionGraph);
 
     _FinalStage resolutionGraph(Map<String, Object> resolutionGraph);
@@ -245,6 +261,9 @@ public final class BasePrompt implements IBasePrompt {
       return this;
     }
 
+    /**
+     * <p>The dependency resolution graph for the current prompt. Null if prompt has no dependencies.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "resolutionGraph",
@@ -265,6 +284,9 @@ public final class BasePrompt implements IBasePrompt {
       return this;
     }
 
+    /**
+     * <p>Commit message for this prompt version.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "commitMessage",
@@ -281,7 +303,9 @@ public final class BasePrompt implements IBasePrompt {
      */
     @java.lang.Override
     public _FinalStage addAllTags(List<String> tags) {
-      this.tags.addAll(tags);
+      if (tags != null) {
+        this.tags.addAll(tags);
+      }
       return this;
     }
 
@@ -295,6 +319,9 @@ public final class BasePrompt implements IBasePrompt {
       return this;
     }
 
+    /**
+     * <p>List of tags. Used to filter via UI and API. The same across versions of a prompt.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "tags",
@@ -302,7 +329,9 @@ public final class BasePrompt implements IBasePrompt {
     )
     public _FinalStage tags(List<String> tags) {
       this.tags.clear();
-      this.tags.addAll(tags);
+      if (tags != null) {
+        this.tags.addAll(tags);
+      }
       return this;
     }
 
@@ -312,7 +341,9 @@ public final class BasePrompt implements IBasePrompt {
      */
     @java.lang.Override
     public _FinalStage addAllLabels(List<String> labels) {
-      this.labels.addAll(labels);
+      if (labels != null) {
+        this.labels.addAll(labels);
+      }
       return this;
     }
 
@@ -326,6 +357,9 @@ public final class BasePrompt implements IBasePrompt {
       return this;
     }
 
+    /**
+     * <p>List of deployment labels of this prompt version.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "labels",
@@ -333,13 +367,27 @@ public final class BasePrompt implements IBasePrompt {
     )
     public _FinalStage labels(List<String> labels) {
       this.labels.clear();
-      this.labels.addAll(labels);
+      if (labels != null) {
+        this.labels.addAll(labels);
+      }
       return this;
     }
 
     @java.lang.Override
     public BasePrompt build() {
       return new BasePrompt(name, version, config, labels, tags, commitMessage, resolutionGraph, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

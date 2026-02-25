@@ -395,5 +395,15 @@ public final class CreateEventBody implements ICreateEventBody, IOptionalObserva
     public CreateEventBody build() {
       return new CreateEventBody(id, traceId, name, startTime, metadata, input, output, level, statusMessage, parentObservationId, version, environment, additionalProperties);
     }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
   }
 }

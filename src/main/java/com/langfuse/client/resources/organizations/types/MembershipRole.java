@@ -4,27 +4,105 @@
 
 package com.langfuse.client.resources.organizations.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum MembershipRole {
-  OWNER("OWNER"),
+public final class MembershipRole {
+  public static final MembershipRole OWNER = new MembershipRole(Value.OWNER, "OWNER");
 
-  ADMIN("ADMIN"),
+  public static final MembershipRole MEMBER = new MembershipRole(Value.MEMBER, "MEMBER");
 
-  MEMBER("MEMBER"),
+  public static final MembershipRole ADMIN = new MembershipRole(Value.ADMIN, "ADMIN");
 
-  VIEWER("VIEWER");
+  public static final MembershipRole VIEWER = new MembershipRole(Value.VIEWER, "VIEWER");
 
-  private final String value;
+  private final Value value;
 
-  MembershipRole(String value) {
+  private final String string;
+
+  MembershipRole(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof MembershipRole && this.string.equals(((MembershipRole) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case OWNER:
+        return visitor.visitOwner();
+      case MEMBER:
+        return visitor.visitMember();
+      case ADMIN:
+        return visitor.visitAdmin();
+      case VIEWER:
+        return visitor.visitViewer();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static MembershipRole valueOf(String value) {
+    switch (value) {
+      case "OWNER":
+        return OWNER;
+      case "MEMBER":
+        return MEMBER;
+      case "ADMIN":
+        return ADMIN;
+      case "VIEWER":
+        return VIEWER;
+      default:
+        return new MembershipRole(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    OWNER,
+
+    ADMIN,
+
+    MEMBER,
+
+    VIEWER,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitOwner();
+
+    T visitAdmin();
+
+    T visitMember();
+
+    T visitViewer();
+
+    T visitUnknown(String unknownType);
   }
 }

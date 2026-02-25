@@ -4,25 +4,95 @@
 
 package com.langfuse.client.resources.blobstorageintegrations.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum BlobStorageExportMode {
-  FULL_HISTORY("FULL_HISTORY"),
+public final class BlobStorageExportMode {
+  public static final BlobStorageExportMode FULL_HISTORY = new BlobStorageExportMode(Value.FULL_HISTORY, "FULL_HISTORY");
 
-  FROM_TODAY("FROM_TODAY"),
+  public static final BlobStorageExportMode FROM_CUSTOM_DATE = new BlobStorageExportMode(Value.FROM_CUSTOM_DATE, "FROM_CUSTOM_DATE");
 
-  FROM_CUSTOM_DATE("FROM_CUSTOM_DATE");
+  public static final BlobStorageExportMode FROM_TODAY = new BlobStorageExportMode(Value.FROM_TODAY, "FROM_TODAY");
 
-  private final String value;
+  private final Value value;
 
-  BlobStorageExportMode(String value) {
+  private final String string;
+
+  BlobStorageExportMode(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof BlobStorageExportMode && this.string.equals(((BlobStorageExportMode) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case FULL_HISTORY:
+        return visitor.visitFullHistory();
+      case FROM_CUSTOM_DATE:
+        return visitor.visitFromCustomDate();
+      case FROM_TODAY:
+        return visitor.visitFromToday();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static BlobStorageExportMode valueOf(String value) {
+    switch (value) {
+      case "FULL_HISTORY":
+        return FULL_HISTORY;
+      case "FROM_CUSTOM_DATE":
+        return FROM_CUSTOM_DATE;
+      case "FROM_TODAY":
+        return FROM_TODAY;
+      default:
+        return new BlobStorageExportMode(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    FULL_HISTORY,
+
+    FROM_TODAY,
+
+    FROM_CUSTOM_DATE,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitFullHistory();
+
+    T visitFromToday();
+
+    T visitFromCustomDate();
+
+    T visitUnknown(String unknownType);
   }
 }

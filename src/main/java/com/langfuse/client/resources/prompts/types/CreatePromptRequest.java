@@ -4,224 +4,101 @@
 
 package com.langfuse.client.resources.prompts.types;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.langfuse.client.core.ObjectMappers;
+import java.io.IOException;
+import java.lang.IllegalStateException;
 import java.lang.Object;
+import java.lang.RuntimeException;
 import java.lang.String;
+import java.lang.SuppressWarnings;
 import java.util.Objects;
-import java.util.Optional;
 
+@JsonDeserialize(
+    using = CreatePromptRequest.Deserializer.class
+)
 public final class CreatePromptRequest {
-  private final Value value;
+  private final Object value;
 
-  @JsonCreator(
-      mode = JsonCreator.Mode.DELEGATING
-  )
-  private CreatePromptRequest(Value value) {
+  private final int type;
+
+  private CreatePromptRequest(Object value, int type) {
     this.value = value;
-  }
-
-  public <T> T visit(Visitor<T> visitor) {
-    return value.visit(visitor);
-  }
-
-  public static CreatePromptRequest chat(CreateChatPromptRequest value) {
-    return new CreatePromptRequest(new ChatValue(value));
-  }
-
-  public static CreatePromptRequest text(CreateTextPromptRequest value) {
-    return new CreatePromptRequest(new TextValue(value));
-  }
-
-  public boolean isChat() {
-    return value instanceof ChatValue;
-  }
-
-  public boolean isText() {
-    return value instanceof TextValue;
-  }
-
-  public boolean _isUnknown() {
-    return value instanceof _UnknownValue;
-  }
-
-  public Optional<CreateChatPromptRequest> getChat() {
-    if (isChat()) {
-      return Optional.of(((ChatValue) value).value);
-    }
-    return Optional.empty();
-  }
-
-  public Optional<CreateTextPromptRequest> getText() {
-    if (isText()) {
-      return Optional.of(((TextValue) value).value);
-    }
-    return Optional.empty();
-  }
-
-  public Optional<Object> _getUnknown() {
-    if (_isUnknown()) {
-      return Optional.of(((_UnknownValue) value).value);
-    }
-    return Optional.empty();
+    this.type = type;
   }
 
   @JsonValue
-  private Value getValue() {
+  public Object get() {
     return this.value;
   }
 
+  @SuppressWarnings("unchecked")
+  public <T> T visit(Visitor<T> visitor) {
+    if(this.type == 0) {
+      return visitor.visit((CreateChatPromptRequest) this.value);
+    } else if(this.type == 1) {
+      return visitor.visit((CreateTextPromptRequest) this.value);
+    }
+    throw new IllegalStateException("Failed to visit value. This should never happen.");
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CreatePromptRequest && equalTo((CreatePromptRequest) other);
+  }
+
+  private boolean equalTo(CreatePromptRequest other) {
+    return value.equals(other.value);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.value);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return this.value.toString();
+  }
+
+  public static CreatePromptRequest of(CreateChatPromptRequest value) {
+    return new CreatePromptRequest(value, 0);
+  }
+
+  public static CreatePromptRequest of(CreateTextPromptRequest value) {
+    return new CreatePromptRequest(value, 1);
+  }
+
   public interface Visitor<T> {
-    T visitChat(CreateChatPromptRequest chat);
+    T visit(CreateChatPromptRequest value);
 
-    T visitText(CreateTextPromptRequest text);
-
-    T _visitUnknown(Object unknownType);
+    T visit(CreateTextPromptRequest value);
   }
 
-  @JsonTypeInfo(
-      use = JsonTypeInfo.Id.NAME,
-      property = "type",
-      visible = true,
-      defaultImpl = _UnknownValue.class
-  )
-  @JsonSubTypes({
-      @JsonSubTypes.Type(ChatValue.class),
-      @JsonSubTypes.Type(TextValue.class)
-  })
-  @JsonIgnoreProperties(
-      ignoreUnknown = true
-  )
-  private interface Value {
-    <T> T visit(Visitor<T> visitor);
-  }
-
-  @JsonTypeName("chat")
-  @JsonIgnoreProperties("type")
-  private static final class ChatValue implements Value {
-    @JsonUnwrapped
-    private CreateChatPromptRequest value;
-
-    @JsonCreator(
-        mode = JsonCreator.Mode.PROPERTIES
-    )
-    private ChatValue() {
-    }
-
-    private ChatValue(CreateChatPromptRequest value) {
-      this.value = value;
+  static final class Deserializer extends StdDeserializer<CreatePromptRequest> {
+    Deserializer() {
+      super(CreatePromptRequest.class);
     }
 
     @java.lang.Override
-    public <T> T visit(Visitor<T> visitor) {
-      return visitor.visitChat(value);
-    }
-
-    @java.lang.Override
-    public boolean equals(Object other) {
-      if (this == other) return true;
-      return other instanceof ChatValue && equalTo((ChatValue) other);
-    }
-
-    private boolean equalTo(ChatValue other) {
-      return value.equals(other.value);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      return Objects.hash(this.value);
-    }
-
-    @java.lang.Override
-    public String toString() {
-      return "CreatePromptRequest{" + "value: " + value + "}";
-    }
-  }
-
-  @JsonTypeName("text")
-  @JsonIgnoreProperties("type")
-  private static final class TextValue implements Value {
-    @JsonUnwrapped
-    private CreateTextPromptRequest value;
-
-    @JsonCreator(
-        mode = JsonCreator.Mode.PROPERTIES
-    )
-    private TextValue() {
-    }
-
-    private TextValue(CreateTextPromptRequest value) {
-      this.value = value;
-    }
-
-    @java.lang.Override
-    public <T> T visit(Visitor<T> visitor) {
-      return visitor.visitText(value);
-    }
-
-    @java.lang.Override
-    public boolean equals(Object other) {
-      if (this == other) return true;
-      return other instanceof TextValue && equalTo((TextValue) other);
-    }
-
-    private boolean equalTo(TextValue other) {
-      return value.equals(other.value);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      return Objects.hash(this.value);
-    }
-
-    @java.lang.Override
-    public String toString() {
-      return "CreatePromptRequest{" + "value: " + value + "}";
-    }
-  }
-
-  @JsonIgnoreProperties("type")
-  private static final class _UnknownValue implements Value {
-    private String type;
-
-    @JsonValue
-    private Object value;
-
-    @JsonCreator(
-        mode = JsonCreator.Mode.PROPERTIES
-    )
-    private _UnknownValue(@JsonProperty("value") Object value) {
-    }
-
-    @java.lang.Override
-    public <T> T visit(Visitor<T> visitor) {
-      return visitor._visitUnknown(value);
-    }
-
-    @java.lang.Override
-    public boolean equals(Object other) {
-      if (this == other) return true;
-      return other instanceof _UnknownValue && equalTo((_UnknownValue) other);
-    }
-
-    private boolean equalTo(_UnknownValue other) {
-      return type.equals(other.type) && value.equals(other.value);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      return Objects.hash(this.type, this.value);
-    }
-
-    @java.lang.Override
-    public String toString() {
-      return "CreatePromptRequest{" + "type: " + type + ", value: " + value + "}";
+    public CreatePromptRequest deserialize(JsonParser p, DeserializationContext context) throws
+        IOException {
+      Object value = p.readValueAs(Object.class);
+      try {
+        return of(ObjectMappers.JSON_MAPPER.convertValue(value, CreateChatPromptRequest.class));
+      } catch(RuntimeException e) {
+      }
+      try {
+        return of(ObjectMappers.JSON_MAPPER.convertValue(value, CreateTextPromptRequest.class));
+      } catch(RuntimeException e) {
+      }
+      throw new JsonParseException(p, "Failed to deserialize");
     }
   }
 }

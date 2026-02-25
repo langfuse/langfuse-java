@@ -91,13 +91,18 @@ public final class OtelTraceRequest {
       return this;
     }
 
+    /**
+     * <p>Array of resource spans containing trace data as defined in the OTLP specification</p>
+     */
     @JsonSetter(
         value = "resourceSpans",
         nulls = Nulls.SKIP
     )
     public Builder resourceSpans(List<OtelResourceSpan> resourceSpans) {
       this.resourceSpans.clear();
-      this.resourceSpans.addAll(resourceSpans);
+      if (resourceSpans != null) {
+        this.resourceSpans.addAll(resourceSpans);
+      }
       return this;
     }
 
@@ -107,12 +112,24 @@ public final class OtelTraceRequest {
     }
 
     public Builder addAllResourceSpans(List<OtelResourceSpan> resourceSpans) {
-      this.resourceSpans.addAll(resourceSpans);
+      if (resourceSpans != null) {
+        this.resourceSpans.addAll(resourceSpans);
+      }
       return this;
     }
 
     public OtelTraceRequest build() {
       return new OtelTraceRequest(resourceSpans, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

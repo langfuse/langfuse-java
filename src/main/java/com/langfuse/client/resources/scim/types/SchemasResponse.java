@@ -95,6 +95,10 @@ public final class SchemasResponse {
   public interface _FinalStage {
     SchemasResponse build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage schemas(List<String> schemas);
 
     _FinalStage addSchemas(String schemas);
@@ -141,7 +145,9 @@ public final class SchemasResponse {
 
     @java.lang.Override
     public _FinalStage addAllResources(List<SchemaResource> resources) {
-      this.resources.addAll(resources);
+      if (resources != null) {
+        this.resources.addAll(resources);
+      }
       return this;
     }
 
@@ -158,13 +164,17 @@ public final class SchemasResponse {
     )
     public _FinalStage resources(List<SchemaResource> resources) {
       this.resources.clear();
-      this.resources.addAll(resources);
+      if (resources != null) {
+        this.resources.addAll(resources);
+      }
       return this;
     }
 
     @java.lang.Override
     public _FinalStage addAllSchemas(List<String> schemas) {
-      this.schemas.addAll(schemas);
+      if (schemas != null) {
+        this.schemas.addAll(schemas);
+      }
       return this;
     }
 
@@ -181,13 +191,27 @@ public final class SchemasResponse {
     )
     public _FinalStage schemas(List<String> schemas) {
       this.schemas.clear();
-      this.schemas.addAll(schemas);
+      if (schemas != null) {
+        this.schemas.addAll(schemas);
+      }
       return this;
     }
 
     @java.lang.Override
     public SchemasResponse build() {
       return new SchemasResponse(schemas, totalResults, resources, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

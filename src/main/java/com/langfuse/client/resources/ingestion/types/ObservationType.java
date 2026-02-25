@@ -4,39 +4,165 @@
 
 package com.langfuse.client.resources.ingestion.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum ObservationType {
-  SPAN("SPAN"),
+public final class ObservationType {
+  public static final ObservationType AGENT = new ObservationType(Value.AGENT, "AGENT");
 
-  GENERATION("GENERATION"),
+  public static final ObservationType TOOL = new ObservationType(Value.TOOL, "TOOL");
 
-  EVENT("EVENT"),
+  public static final ObservationType CHAIN = new ObservationType(Value.CHAIN, "CHAIN");
 
-  AGENT("AGENT"),
+  public static final ObservationType EVALUATOR = new ObservationType(Value.EVALUATOR, "EVALUATOR");
 
-  TOOL("TOOL"),
+  public static final ObservationType SPAN = new ObservationType(Value.SPAN, "SPAN");
 
-  CHAIN("CHAIN"),
+  public static final ObservationType GENERATION = new ObservationType(Value.GENERATION, "GENERATION");
 
-  RETRIEVER("RETRIEVER"),
+  public static final ObservationType GUARDRAIL = new ObservationType(Value.GUARDRAIL, "GUARDRAIL");
 
-  EVALUATOR("EVALUATOR"),
+  public static final ObservationType EVENT = new ObservationType(Value.EVENT, "EVENT");
 
-  EMBEDDING("EMBEDDING"),
+  public static final ObservationType EMBEDDING = new ObservationType(Value.EMBEDDING, "EMBEDDING");
 
-  GUARDRAIL("GUARDRAIL");
+  public static final ObservationType RETRIEVER = new ObservationType(Value.RETRIEVER, "RETRIEVER");
 
-  private final String value;
+  private final Value value;
 
-  ObservationType(String value) {
+  private final String string;
+
+  ObservationType(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof ObservationType && this.string.equals(((ObservationType) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case AGENT:
+        return visitor.visitAgent();
+      case TOOL:
+        return visitor.visitTool();
+      case CHAIN:
+        return visitor.visitChain();
+      case EVALUATOR:
+        return visitor.visitEvaluator();
+      case SPAN:
+        return visitor.visitSpan();
+      case GENERATION:
+        return visitor.visitGeneration();
+      case GUARDRAIL:
+        return visitor.visitGuardrail();
+      case EVENT:
+        return visitor.visitEvent();
+      case EMBEDDING:
+        return visitor.visitEmbedding();
+      case RETRIEVER:
+        return visitor.visitRetriever();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static ObservationType valueOf(String value) {
+    switch (value) {
+      case "AGENT":
+        return AGENT;
+      case "TOOL":
+        return TOOL;
+      case "CHAIN":
+        return CHAIN;
+      case "EVALUATOR":
+        return EVALUATOR;
+      case "SPAN":
+        return SPAN;
+      case "GENERATION":
+        return GENERATION;
+      case "GUARDRAIL":
+        return GUARDRAIL;
+      case "EVENT":
+        return EVENT;
+      case "EMBEDDING":
+        return EMBEDDING;
+      case "RETRIEVER":
+        return RETRIEVER;
+      default:
+        return new ObservationType(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    SPAN,
+
+    GENERATION,
+
+    EVENT,
+
+    AGENT,
+
+    TOOL,
+
+    CHAIN,
+
+    RETRIEVER,
+
+    EVALUATOR,
+
+    EMBEDDING,
+
+    GUARDRAIL,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitSpan();
+
+    T visitGeneration();
+
+    T visitEvent();
+
+    T visitAgent();
+
+    T visitTool();
+
+    T visitChain();
+
+    T visitRetriever();
+
+    T visitEvaluator();
+
+    T visitEmbedding();
+
+    T visitGuardrail();
+
+    T visitUnknown(String unknownType);
   }
 }

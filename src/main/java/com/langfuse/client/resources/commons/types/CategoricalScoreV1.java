@@ -6,12 +6,15 @@ package com.langfuse.client.resources.commons.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
 import java.lang.String;
@@ -47,13 +50,13 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
 
   private final Optional<String> comment;
 
-  private final Optional<Object> metadata;
+  private final Object metadata;
 
   private final Optional<String> configId;
 
   private final Optional<String> queueId;
 
-  private final Optional<String> environment;
+  private final String environment;
 
   private final double value;
 
@@ -64,9 +67,8 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
   private CategoricalScoreV1(String id, String traceId, String name, ScoreSource source,
       Optional<String> observationId, OffsetDateTime timestamp, OffsetDateTime createdAt,
       OffsetDateTime updatedAt, Optional<String> authorUserId, Optional<String> comment,
-      Optional<Object> metadata, Optional<String> configId, Optional<String> queueId,
-      Optional<String> environment, double value, String stringValue,
-      Map<String, Object> additionalProperties) {
+      Object metadata, Optional<String> configId, Optional<String> queueId, String environment,
+      double value, String stringValue, Map<String, Object> additionalProperties) {
     this.id = id;
     this.traceId = traceId;
     this.name = name;
@@ -110,9 +112,15 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
     return source;
   }
 
-  @JsonProperty("observationId")
+  /**
+   * @return The observation ID associated with the score
+   */
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getObservationId() {
+    if (observationId == null) {
+      return Optional.empty();
+    }
     return observationId;
   }
 
@@ -134,39 +142,60 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
     return updatedAt;
   }
 
-  @JsonProperty("authorUserId")
+  /**
+   * @return The user ID of the author
+   */
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getAuthorUserId() {
+    if (authorUserId == null) {
+      return Optional.empty();
+    }
     return authorUserId;
   }
 
-  @JsonProperty("comment")
+  /**
+   * @return Comment on the score
+   */
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getComment() {
+    if (comment == null) {
+      return Optional.empty();
+    }
     return comment;
   }
 
+  /**
+   * @return Metadata associated with the score
+   */
   @JsonProperty("metadata")
   @java.lang.Override
-  public Optional<Object> getMetadata() {
+  public Object getMetadata() {
     return metadata;
   }
 
   /**
    * @return Reference a score config on a score. When set, config and score name must be equal and value must comply to optionally defined numerical range
    */
-  @JsonProperty("configId")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getConfigId() {
+    if (configId == null) {
+      return Optional.empty();
+    }
     return configId;
   }
 
   /**
    * @return The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.
    */
-  @JsonProperty("queueId")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getQueueId() {
+    if (queueId == null) {
+      return Optional.empty();
+    }
     return queueId;
   }
 
@@ -175,7 +204,7 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
    */
   @JsonProperty("environment")
   @java.lang.Override
-  public Optional<String> getEnvironment() {
+  public String getEnvironment() {
     return environment;
   }
 
@@ -193,6 +222,51 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
   @JsonProperty("stringValue")
   public String getStringValue() {
     return stringValue;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("observationId")
+  private Optional<String> _getObservationId() {
+    return observationId;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("authorUserId")
+  private Optional<String> _getAuthorUserId() {
+    return authorUserId;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("comment")
+  private Optional<String> _getComment() {
+    return comment;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("configId")
+  private Optional<String> _getConfigId() {
+    return configId;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("queueId")
+  private Optional<String> _getQueueId() {
+    return queueId;
   }
 
   @java.lang.Override
@@ -251,53 +325,94 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
   }
 
   public interface UpdatedAtStage {
-    ValueStage updatedAt(@NotNull OffsetDateTime updatedAt);
+    MetadataStage updatedAt(@NotNull OffsetDateTime updatedAt);
+  }
+
+  public interface MetadataStage {
+    /**
+     * <p>Metadata associated with the score</p>
+     */
+    EnvironmentStage metadata(Object metadata);
+  }
+
+  public interface EnvironmentStage {
+    /**
+     * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
+     */
+    ValueStage environment(@NotNull String environment);
   }
 
   public interface ValueStage {
+    /**
+     * <p>Represents the numeric category mapping of the stringValue. If no config is linked, defaults to 0.</p>
+     */
     StringValueStage value(double value);
   }
 
   public interface StringValueStage {
+    /**
+     * <p>The string representation of the score value. If no config is linked, can be any string. Otherwise, must map to a config category</p>
+     */
     _FinalStage stringValue(@NotNull String stringValue);
   }
 
   public interface _FinalStage {
     CategoricalScoreV1 build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>The observation ID associated with the score</p>
+     */
     _FinalStage observationId(Optional<String> observationId);
 
     _FinalStage observationId(String observationId);
 
+    _FinalStage observationId(Nullable<String> observationId);
+
+    /**
+     * <p>The user ID of the author</p>
+     */
     _FinalStage authorUserId(Optional<String> authorUserId);
 
     _FinalStage authorUserId(String authorUserId);
 
+    _FinalStage authorUserId(Nullable<String> authorUserId);
+
+    /**
+     * <p>Comment on the score</p>
+     */
     _FinalStage comment(Optional<String> comment);
 
     _FinalStage comment(String comment);
 
-    _FinalStage metadata(Optional<Object> metadata);
+    _FinalStage comment(Nullable<String> comment);
 
-    _FinalStage metadata(Object metadata);
-
+    /**
+     * <p>Reference a score config on a score. When set, config and score name must be equal and value must comply to optionally defined numerical range</p>
+     */
     _FinalStage configId(Optional<String> configId);
 
     _FinalStage configId(String configId);
 
+    _FinalStage configId(Nullable<String> configId);
+
+    /**
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
+     */
     _FinalStage queueId(Optional<String> queueId);
 
     _FinalStage queueId(String queueId);
 
-    _FinalStage environment(Optional<String> environment);
-
-    _FinalStage environment(String environment);
+    _FinalStage queueId(Nullable<String> queueId);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements IdStage, TraceIdStage, NameStage, SourceStage, TimestampStage, CreatedAtStage, UpdatedAtStage, ValueStage, StringValueStage, _FinalStage {
+  public static final class Builder implements IdStage, TraceIdStage, NameStage, SourceStage, TimestampStage, CreatedAtStage, UpdatedAtStage, MetadataStage, EnvironmentStage, ValueStage, StringValueStage, _FinalStage {
     private String id;
 
     private String traceId;
@@ -312,17 +427,17 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
 
     private OffsetDateTime updatedAt;
 
+    private Object metadata;
+
+    private String environment;
+
     private double value;
 
     private String stringValue;
 
-    private Optional<String> environment = Optional.empty();
-
     private Optional<String> queueId = Optional.empty();
 
     private Optional<String> configId = Optional.empty();
-
-    private Optional<Object> metadata = Optional.empty();
 
     private Optional<String> comment = Optional.empty();
 
@@ -401,12 +516,37 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
 
     @java.lang.Override
     @JsonSetter("updatedAt")
-    public ValueStage updatedAt(@NotNull OffsetDateTime updatedAt) {
+    public MetadataStage updatedAt(@NotNull OffsetDateTime updatedAt) {
       this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
       return this;
     }
 
     /**
+     * <p>Metadata associated with the score</p>
+     * <p>Metadata associated with the score</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("metadata")
+    public EnvironmentStage metadata(Object metadata) {
+      this.metadata = metadata;
+      return this;
+    }
+
+    /**
+     * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
+     * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("environment")
+    public ValueStage environment(@NotNull String environment) {
+      this.environment = Objects.requireNonNull(environment, "environment must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Represents the numeric category mapping of the stringValue. If no config is linked, defaults to 0.</p>
      * <p>Represents the numeric category mapping of the stringValue. If no config is linked, defaults to 0.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -419,6 +559,7 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
 
     /**
      * <p>The string representation of the score value. If no config is linked, can be any string. Otherwise, must map to a config category</p>
+     * <p>The string representation of the score value. If no config is linked, can be any string. Otherwise, must map to a config category</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -429,22 +570,20 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
     }
 
     /**
-     * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage environment(String environment) {
-      this.environment = Optional.ofNullable(environment);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "environment",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage environment(Optional<String> environment) {
-      this.environment = environment;
+    public _FinalStage queueId(Nullable<String> queueId) {
+      if (queueId.isNull()) {
+        this.queueId = null;
+      }
+      else if (queueId.isEmpty()) {
+        this.queueId = Optional.empty();
+      }
+      else {
+        this.queueId = Optional.of(queueId.get());
+      }
       return this;
     }
 
@@ -458,6 +597,9 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
       return this;
     }
 
+    /**
+     * <p>The annotation queue referenced by the score. Indicates if score was initially created while processing annotation queue.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "queueId",
@@ -473,11 +615,32 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage configId(Nullable<String> configId) {
+      if (configId.isNull()) {
+        this.configId = null;
+      }
+      else if (configId.isEmpty()) {
+        this.configId = Optional.empty();
+      }
+      else {
+        this.configId = Optional.of(configId.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>Reference a score config on a score. When set, config and score name must be equal and value must comply to optionally defined numerical range</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage configId(String configId) {
       this.configId = Optional.ofNullable(configId);
       return this;
     }
 
+    /**
+     * <p>Reference a score config on a score. When set, config and score name must be equal and value must comply to optionally defined numerical range</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "configId",
@@ -488,28 +651,37 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
       return this;
     }
 
+    /**
+     * <p>Comment on the score</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
-    public _FinalStage metadata(Object metadata) {
-      this.metadata = Optional.ofNullable(metadata);
+    public _FinalStage comment(Nullable<String> comment) {
+      if (comment.isNull()) {
+        this.comment = null;
+      }
+      else if (comment.isEmpty()) {
+        this.comment = Optional.empty();
+      }
+      else {
+        this.comment = Optional.of(comment.get());
+      }
       return this;
     }
 
-    @java.lang.Override
-    @JsonSetter(
-        value = "metadata",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage metadata(Optional<Object> metadata) {
-      this.metadata = metadata;
-      return this;
-    }
-
+    /**
+     * <p>Comment on the score</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     public _FinalStage comment(String comment) {
       this.comment = Optional.ofNullable(comment);
       return this;
     }
 
+    /**
+     * <p>Comment on the score</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "comment",
@@ -520,12 +692,37 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
       return this;
     }
 
+    /**
+     * <p>The user ID of the author</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage authorUserId(Nullable<String> authorUserId) {
+      if (authorUserId.isNull()) {
+        this.authorUserId = null;
+      }
+      else if (authorUserId.isEmpty()) {
+        this.authorUserId = Optional.empty();
+      }
+      else {
+        this.authorUserId = Optional.of(authorUserId.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The user ID of the author</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     public _FinalStage authorUserId(String authorUserId) {
       this.authorUserId = Optional.ofNullable(authorUserId);
       return this;
     }
 
+    /**
+     * <p>The user ID of the author</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "authorUserId",
@@ -536,12 +733,37 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
       return this;
     }
 
+    /**
+     * <p>The observation ID associated with the score</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage observationId(Nullable<String> observationId) {
+      if (observationId.isNull()) {
+        this.observationId = null;
+      }
+      else if (observationId.isEmpty()) {
+        this.observationId = Optional.empty();
+      }
+      else {
+        this.observationId = Optional.of(observationId.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The observation ID associated with the score</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     public _FinalStage observationId(String observationId) {
       this.observationId = Optional.ofNullable(observationId);
       return this;
     }
 
+    /**
+     * <p>The observation ID associated with the score</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "observationId",
@@ -555,6 +777,18 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
     @java.lang.Override
     public CategoricalScoreV1 build() {
       return new CategoricalScoreV1(id, traceId, name, source, observationId, timestamp, createdAt, updatedAt, authorUserId, comment, metadata, configId, queueId, environment, value, stringValue, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

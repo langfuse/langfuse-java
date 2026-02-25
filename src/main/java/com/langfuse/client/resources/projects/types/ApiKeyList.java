@@ -92,7 +92,9 @@ public final class ApiKeyList {
     )
     public Builder apiKeys(List<ApiKeySummary> apiKeys) {
       this.apiKeys.clear();
-      this.apiKeys.addAll(apiKeys);
+      if (apiKeys != null) {
+        this.apiKeys.addAll(apiKeys);
+      }
       return this;
     }
 
@@ -102,12 +104,24 @@ public final class ApiKeyList {
     }
 
     public Builder addAllApiKeys(List<ApiKeySummary> apiKeys) {
-      this.apiKeys.addAll(apiKeys);
+      if (apiKeys != null) {
+        this.apiKeys.addAll(apiKeys);
+      }
       return this;
     }
 
     public ApiKeyList build() {
       return new ApiKeyList(apiKeys, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

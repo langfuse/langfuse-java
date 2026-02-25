@@ -104,6 +104,9 @@ public final class GetPromptRequest {
       return this;
     }
 
+    /**
+     * <p>Version of the prompt to be retrieved.</p>
+     */
     @JsonSetter(
         value = "version",
         nulls = Nulls.SKIP
@@ -118,6 +121,9 @@ public final class GetPromptRequest {
       return this;
     }
 
+    /**
+     * <p>Label of the prompt to be retrieved. Defaults to &quot;production&quot; if no label or version is set.</p>
+     */
     @JsonSetter(
         value = "label",
         nulls = Nulls.SKIP
@@ -134,6 +140,16 @@ public final class GetPromptRequest {
 
     public GetPromptRequest build() {
       return new GetPromptRequest(version, label, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

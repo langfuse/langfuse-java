@@ -99,6 +99,10 @@ public final class BulkConfig {
 
   public interface _FinalStage {
     BulkConfig build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -149,6 +153,18 @@ public final class BulkConfig {
     @java.lang.Override
     public BulkConfig build() {
       return new BulkConfig(supported, maxOperations, maxPayloadSize, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

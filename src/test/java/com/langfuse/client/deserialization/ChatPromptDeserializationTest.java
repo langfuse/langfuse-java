@@ -6,11 +6,11 @@ import com.langfuse.client.core.ObjectMappers;
 import com.langfuse.client.resources.prompts.types.ChatMessage;
 import com.langfuse.client.resources.prompts.types.ChatMessageWithPlaceholders;
 import com.langfuse.client.resources.prompts.types.ChatPrompt;
+import com.langfuse.client.resources.prompts.types.PlaceholderMessage;
 import com.langfuse.client.resources.prompts.types.Prompt;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -47,23 +47,22 @@ class ChatPromptDeserializationTest {
         assertThat(messages).hasSize(2);
 
         // First entry — chat message (no "type" discriminator in real API response)
-        assertThat(messages.get(0).isChatmessage()).isTrue();
-        Optional<ChatMessage> system = messages.get(0).getChatmessage();
-        assertThat(system).isPresent();
-        assertThat(system.get().getRole()).isNotNull().isEqualTo("system");
-        assertThat(system.get().getContent()).isNotNull().isEqualTo("Hello World");
+        assertThat(messages.get(0).get()).isInstanceOf(ChatMessage.class);
+        ChatMessage system = (ChatMessage) messages.get(0).get();
+        assertThat(system.getRole()).isNotNull().isEqualTo("system");
+        assertThat(system.getContent()).isNotNull().isEqualTo("Hello World");
 
         // Second entry — placeholder (has "type": "placeholder")
-        assertThat(messages.get(1).isPlaceholder()).isTrue();
-        assertThat(messages.get(1).getPlaceholder()).isPresent();
-        assertThat(messages.get(1).getPlaceholder().get().getName()).isEqualTo("username");
+        assertThat(messages.get(1).get()).isInstanceOf(PlaceholderMessage.class);
+        PlaceholderMessage placeholder = (PlaceholderMessage) messages.get(1).get();
+        assertThat(placeholder.getName()).isEqualTo("username");
     }
 
     @Test
     void chatMessageRoundTripSerialization() throws Exception {
         Prompt prompt = deserializeFixture();
         ChatPrompt chatPrompt = prompt.getChat().orElseThrow();
-        ChatMessage original = chatPrompt.getPrompt().get(0).getChatmessage().orElseThrow();
+        ChatMessage original = (ChatMessage) chatPrompt.getPrompt().get(0).get();
 
         // Serialize to JSON and back
         String json = ObjectMappers.JSON_MAPPER.writeValueAsString(original);

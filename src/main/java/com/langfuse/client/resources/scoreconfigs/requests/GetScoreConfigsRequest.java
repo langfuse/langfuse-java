@@ -104,6 +104,9 @@ public final class GetScoreConfigsRequest {
       return this;
     }
 
+    /**
+     * <p>Page number, starts at 1.</p>
+     */
     @JsonSetter(
         value = "page",
         nulls = Nulls.SKIP
@@ -118,6 +121,9 @@ public final class GetScoreConfigsRequest {
       return this;
     }
 
+    /**
+     * <p>Limit of items per page. If you encounter api issues due to too large page sizes, try to reduce the limit</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -134,6 +140,16 @@ public final class GetScoreConfigsRequest {
 
     public GetScoreConfigsRequest build() {
       return new GetScoreConfigsRequest(page, limit, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

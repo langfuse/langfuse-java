@@ -113,6 +113,6 @@ To publish to Maven Central, you need to configure the following secrets in your
    ```
 3. Generate the new client code using `npx fern-api generate --api server`.
 4. Manually set the `package` across all files to `com.langfuse.client`.
-5. Overwrite `this.clientOptionsBuilder.addHeader("Authorization", "Bearer " + encodedToken);` to `Basic` in LangfuseClientBuilder.java.
+5. Overwrite `this.clientOptionsBuilder.addHeader("Authorization", "Basic " + encodedToken);` to `Basic` in com.langfuse.client.LangfuseClientBuilder.java.
 6. Adjust Javadoc strings with HTML properties as the apidocs package does not support them.
 7. Commit the changes in langfuse-java and push them to the repository.

@@ -186,18 +186,30 @@ public final class LlmConnection {
   }
 
   public interface ProviderStage {
+    /**
+     * <p>Provider name (e.g., 'openai', 'my-gateway'). Must be unique in project, used for upserting.</p>
+     */
     AdapterStage provider(@NotNull String provider);
   }
 
   public interface AdapterStage {
+    /**
+     * <p>The adapter used to interface with the LLM</p>
+     */
     DisplaySecretKeyStage adapter(@NotNull String adapter);
   }
 
   public interface DisplaySecretKeyStage {
+    /**
+     * <p>Masked version of the secret key for display purposes</p>
+     */
     WithDefaultModelsStage displaySecretKey(@NotNull String displaySecretKey);
   }
 
   public interface WithDefaultModelsStage {
+    /**
+     * <p>Whether to include default models for this adapter</p>
+     */
     CreatedAtStage withDefaultModels(boolean withDefaultModels);
   }
 
@@ -212,22 +224,38 @@ public final class LlmConnection {
   public interface _FinalStage {
     LlmConnection build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Custom base URL for the LLM API</p>
+     */
     _FinalStage baseUrl(Optional<String> baseUrl);
 
     _FinalStage baseUrl(String baseUrl);
 
+    /**
+     * <p>List of custom model names available for this connection</p>
+     */
     _FinalStage customModels(List<String> customModels);
 
     _FinalStage addCustomModels(String customModels);
 
     _FinalStage addAllCustomModels(List<String> customModels);
 
+    /**
+     * <p>Keys of extra headers sent with requests (values excluded for security)</p>
+     */
     _FinalStage extraHeaderKeys(List<String> extraHeaderKeys);
 
     _FinalStage addExtraHeaderKeys(String extraHeaderKeys);
 
     _FinalStage addAllExtraHeaderKeys(List<String> extraHeaderKeys);
 
+    /**
+     * <p>Adapter-specific configuration. Required for Bedrock (<code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>), optional for VertexAI (<code>{&quot;location&quot;:&quot;us-central1&quot;}</code>), not used by other adapters.</p>
+     */
     _FinalStage config(Optional<Map<String, Object>> config);
 
     _FinalStage config(Map<String, Object> config);
@@ -290,6 +318,7 @@ public final class LlmConnection {
 
     /**
      * <p>Provider name (e.g., 'openai', 'my-gateway'). Must be unique in project, used for upserting.</p>
+     * <p>Provider name (e.g., 'openai', 'my-gateway'). Must be unique in project, used for upserting.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -300,6 +329,7 @@ public final class LlmConnection {
     }
 
     /**
+     * <p>The adapter used to interface with the LLM</p>
      * <p>The adapter used to interface with the LLM</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -312,6 +342,7 @@ public final class LlmConnection {
 
     /**
      * <p>Masked version of the secret key for display purposes</p>
+     * <p>Masked version of the secret key for display purposes</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -322,6 +353,7 @@ public final class LlmConnection {
     }
 
     /**
+     * <p>Whether to include default models for this adapter</p>
      * <p>Whether to include default models for this adapter</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -356,6 +388,9 @@ public final class LlmConnection {
       return this;
     }
 
+    /**
+     * <p>Adapter-specific configuration. Required for Bedrock (<code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>), optional for VertexAI (<code>{&quot;location&quot;:&quot;us-central1&quot;}</code>), not used by other adapters.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "config",
@@ -372,7 +407,9 @@ public final class LlmConnection {
      */
     @java.lang.Override
     public _FinalStage addAllExtraHeaderKeys(List<String> extraHeaderKeys) {
-      this.extraHeaderKeys.addAll(extraHeaderKeys);
+      if (extraHeaderKeys != null) {
+        this.extraHeaderKeys.addAll(extraHeaderKeys);
+      }
       return this;
     }
 
@@ -386,6 +423,9 @@ public final class LlmConnection {
       return this;
     }
 
+    /**
+     * <p>Keys of extra headers sent with requests (values excluded for security)</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "extraHeaderKeys",
@@ -393,7 +433,9 @@ public final class LlmConnection {
     )
     public _FinalStage extraHeaderKeys(List<String> extraHeaderKeys) {
       this.extraHeaderKeys.clear();
-      this.extraHeaderKeys.addAll(extraHeaderKeys);
+      if (extraHeaderKeys != null) {
+        this.extraHeaderKeys.addAll(extraHeaderKeys);
+      }
       return this;
     }
 
@@ -403,7 +445,9 @@ public final class LlmConnection {
      */
     @java.lang.Override
     public _FinalStage addAllCustomModels(List<String> customModels) {
-      this.customModels.addAll(customModels);
+      if (customModels != null) {
+        this.customModels.addAll(customModels);
+      }
       return this;
     }
 
@@ -417,6 +461,9 @@ public final class LlmConnection {
       return this;
     }
 
+    /**
+     * <p>List of custom model names available for this connection</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "customModels",
@@ -424,7 +471,9 @@ public final class LlmConnection {
     )
     public _FinalStage customModels(List<String> customModels) {
       this.customModels.clear();
-      this.customModels.addAll(customModels);
+      if (customModels != null) {
+        this.customModels.addAll(customModels);
+      }
       return this;
     }
 
@@ -438,6 +487,9 @@ public final class LlmConnection {
       return this;
     }
 
+    /**
+     * <p>Custom base URL for the LLM API</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "baseURL",
@@ -451,6 +503,18 @@ public final class LlmConnection {
     @java.lang.Override
     public LlmConnection build() {
       return new LlmConnection(id, provider, adapter, displaySecretKey, baseUrl, customModels, withDefaultModels, extraHeaderKeys, config, createdAt, updatedAt, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

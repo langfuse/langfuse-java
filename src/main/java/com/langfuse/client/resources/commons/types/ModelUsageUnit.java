@@ -4,31 +4,125 @@
 
 package com.langfuse.client.resources.commons.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum ModelUsageUnit {
-  CHARACTERS("CHARACTERS"),
+public final class ModelUsageUnit {
+  public static final ModelUsageUnit IMAGES = new ModelUsageUnit(Value.IMAGES, "IMAGES");
 
-  TOKENS("TOKENS"),
+  public static final ModelUsageUnit SECONDS = new ModelUsageUnit(Value.SECONDS, "SECONDS");
 
-  MILLISECONDS("MILLISECONDS"),
+  public static final ModelUsageUnit TOKENS = new ModelUsageUnit(Value.TOKENS, "TOKENS");
 
-  SECONDS("SECONDS"),
+  public static final ModelUsageUnit CHARACTERS = new ModelUsageUnit(Value.CHARACTERS, "CHARACTERS");
 
-  IMAGES("IMAGES"),
+  public static final ModelUsageUnit MILLISECONDS = new ModelUsageUnit(Value.MILLISECONDS, "MILLISECONDS");
 
-  REQUESTS("REQUESTS");
+  public static final ModelUsageUnit REQUESTS = new ModelUsageUnit(Value.REQUESTS, "REQUESTS");
 
-  private final String value;
+  private final Value value;
 
-  ModelUsageUnit(String value) {
+  private final String string;
+
+  ModelUsageUnit(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof ModelUsageUnit && this.string.equals(((ModelUsageUnit) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case IMAGES:
+        return visitor.visitImages();
+      case SECONDS:
+        return visitor.visitSeconds();
+      case TOKENS:
+        return visitor.visitTokens();
+      case CHARACTERS:
+        return visitor.visitCharacters();
+      case MILLISECONDS:
+        return visitor.visitMilliseconds();
+      case REQUESTS:
+        return visitor.visitRequests();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static ModelUsageUnit valueOf(String value) {
+    switch (value) {
+      case "IMAGES":
+        return IMAGES;
+      case "SECONDS":
+        return SECONDS;
+      case "TOKENS":
+        return TOKENS;
+      case "CHARACTERS":
+        return CHARACTERS;
+      case "MILLISECONDS":
+        return MILLISECONDS;
+      case "REQUESTS":
+        return REQUESTS;
+      default:
+        return new ModelUsageUnit(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    CHARACTERS,
+
+    TOKENS,
+
+    MILLISECONDS,
+
+    SECONDS,
+
+    IMAGES,
+
+    REQUESTS,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitCharacters();
+
+    T visitTokens();
+
+    T visitMilliseconds();
+
+    T visitSeconds();
+
+    T visitImages();
+
+    T visitRequests();
+
+    T visitUnknown(String unknownType);
   }
 }

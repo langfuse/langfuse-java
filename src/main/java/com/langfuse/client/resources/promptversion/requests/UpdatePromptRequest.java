@@ -89,13 +89,18 @@ public final class UpdatePromptRequest {
       return this;
     }
 
+    /**
+     * <p>New labels for the prompt version. Labels are unique across versions. The &quot;latest&quot; label is reserved and managed by Langfuse.</p>
+     */
     @JsonSetter(
         value = "newLabels",
         nulls = Nulls.SKIP
     )
     public Builder newLabels(List<String> newLabels) {
       this.newLabels.clear();
-      this.newLabels.addAll(newLabels);
+      if (newLabels != null) {
+        this.newLabels.addAll(newLabels);
+      }
       return this;
     }
 
@@ -105,12 +110,24 @@ public final class UpdatePromptRequest {
     }
 
     public Builder addAllNewLabels(List<String> newLabels) {
-      this.newLabels.addAll(newLabels);
+      if (newLabels != null) {
+        this.newLabels.addAll(newLabels);
+      }
       return this;
     }
 
     public UpdatePromptRequest build() {
       return new UpdatePromptRequest(newLabels, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

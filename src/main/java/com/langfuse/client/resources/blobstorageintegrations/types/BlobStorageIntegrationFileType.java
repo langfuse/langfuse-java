@@ -4,25 +4,95 @@
 
 package com.langfuse.client.resources.blobstorageintegrations.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum BlobStorageIntegrationFileType {
-  JSON("JSON"),
+public final class BlobStorageIntegrationFileType {
+  public static final BlobStorageIntegrationFileType JSONL = new BlobStorageIntegrationFileType(Value.JSONL, "JSONL");
 
-  CSV("CSV"),
+  public static final BlobStorageIntegrationFileType JSON = new BlobStorageIntegrationFileType(Value.JSON, "JSON");
 
-  JSONL("JSONL");
+  public static final BlobStorageIntegrationFileType CSV = new BlobStorageIntegrationFileType(Value.CSV, "CSV");
 
-  private final String value;
+  private final Value value;
 
-  BlobStorageIntegrationFileType(String value) {
+  private final String string;
+
+  BlobStorageIntegrationFileType(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof BlobStorageIntegrationFileType && this.string.equals(((BlobStorageIntegrationFileType) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case JSONL:
+        return visitor.visitJsonl();
+      case JSON:
+        return visitor.visitJson();
+      case CSV:
+        return visitor.visitCsv();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static BlobStorageIntegrationFileType valueOf(String value) {
+    switch (value) {
+      case "JSONL":
+        return JSONL;
+      case "JSON":
+        return JSON;
+      case "CSV":
+        return CSV;
+      default:
+        return new BlobStorageIntegrationFileType(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    JSON,
+
+    CSV,
+
+    JSONL,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitJson();
+
+    T visitCsv();
+
+    T visitJsonl();
+
+    T visitUnknown(String unknownType);
   }
 }

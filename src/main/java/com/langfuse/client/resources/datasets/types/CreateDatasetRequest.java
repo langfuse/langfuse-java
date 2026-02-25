@@ -118,6 +118,10 @@ public final class CreateDatasetRequest {
   public interface _FinalStage {
     CreateDatasetRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage description(Optional<String> description);
 
     _FinalStage description(String description);
@@ -126,10 +130,16 @@ public final class CreateDatasetRequest {
 
     _FinalStage metadata(Object metadata);
 
+    /**
+     * <p>JSON Schema for validating dataset item inputs. When set, all new and existing dataset items will be validated against this schema.</p>
+     */
     _FinalStage inputSchema(Optional<Object> inputSchema);
 
     _FinalStage inputSchema(Object inputSchema);
 
+    /**
+     * <p>JSON Schema for validating dataset item expected outputs. When set, all new and existing dataset items will be validated against this schema.</p>
+     */
     _FinalStage expectedOutputSchema(Optional<Object> expectedOutputSchema);
 
     _FinalStage expectedOutputSchema(Object expectedOutputSchema);
@@ -182,6 +192,9 @@ public final class CreateDatasetRequest {
       return this;
     }
 
+    /**
+     * <p>JSON Schema for validating dataset item expected outputs. When set, all new and existing dataset items will be validated against this schema.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "expectedOutputSchema",
@@ -202,6 +215,9 @@ public final class CreateDatasetRequest {
       return this;
     }
 
+    /**
+     * <p>JSON Schema for validating dataset item inputs. When set, all new and existing dataset items will be validated against this schema.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "inputSchema",
@@ -247,6 +263,18 @@ public final class CreateDatasetRequest {
     @java.lang.Override
     public CreateDatasetRequest build() {
       return new CreateDatasetRequest(name, description, metadata, inputSchema, expectedOutputSchema, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -104,7 +104,9 @@ public final class IngestionResponse {
     )
     public Builder successes(List<IngestionSuccess> successes) {
       this.successes.clear();
-      this.successes.addAll(successes);
+      if (successes != null) {
+        this.successes.addAll(successes);
+      }
       return this;
     }
 
@@ -114,7 +116,9 @@ public final class IngestionResponse {
     }
 
     public Builder addAllSuccesses(List<IngestionSuccess> successes) {
-      this.successes.addAll(successes);
+      if (successes != null) {
+        this.successes.addAll(successes);
+      }
       return this;
     }
 
@@ -124,7 +128,9 @@ public final class IngestionResponse {
     )
     public Builder errors(List<IngestionError> errors) {
       this.errors.clear();
-      this.errors.addAll(errors);
+      if (errors != null) {
+        this.errors.addAll(errors);
+      }
       return this;
     }
 
@@ -134,12 +140,24 @@ public final class IngestionResponse {
     }
 
     public Builder addAllErrors(List<IngestionError> errors) {
-      this.errors.addAll(errors);
+      if (errors != null) {
+        this.errors.addAll(errors);
+      }
       return this;
     }
 
     public IngestionResponse build() {
       return new IngestionResponse(successes, errors, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

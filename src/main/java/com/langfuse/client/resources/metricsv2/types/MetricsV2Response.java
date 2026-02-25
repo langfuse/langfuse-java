@@ -92,13 +92,20 @@ public final class MetricsV2Response {
       return this;
     }
 
+    /**
+     * <p>The metrics data. Each item in the list contains the metric values and dimensions requested in the query.
+     * Format varies based on the query parameters.
+     * Histograms will return an array with [lower, upper, height] tuples.</p>
+     */
     @JsonSetter(
         value = "data",
         nulls = Nulls.SKIP
     )
     public Builder data(List<Map<String, Object>> data) {
       this.data.clear();
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
@@ -108,12 +115,24 @@ public final class MetricsV2Response {
     }
 
     public Builder addAllData(List<Map<String, Object>> data) {
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
     public MetricsV2Response build() {
       return new MetricsV2Response(data, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

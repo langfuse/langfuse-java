@@ -110,22 +110,38 @@ public final class PatchMediaBody {
   }
 
   public interface UploadedAtStage {
+    /**
+     * <p>The date and time when the media record was uploaded</p>
+     */
     UploadHttpStatusStage uploadedAt(@NotNull OffsetDateTime uploadedAt);
 
     Builder from(PatchMediaBody other);
   }
 
   public interface UploadHttpStatusStage {
+    /**
+     * <p>The HTTP status code of the upload</p>
+     */
     _FinalStage uploadHttpStatus(int uploadHttpStatus);
   }
 
   public interface _FinalStage {
     PatchMediaBody build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>The HTTP error message of the upload</p>
+     */
     _FinalStage uploadHttpError(Optional<String> uploadHttpError);
 
     _FinalStage uploadHttpError(String uploadHttpError);
 
+    /**
+     * <p>The time in milliseconds it took to upload the media record</p>
+     */
     _FinalStage uploadTimeMs(Optional<Integer> uploadTimeMs);
 
     _FinalStage uploadTimeMs(Integer uploadTimeMs);
@@ -160,6 +176,7 @@ public final class PatchMediaBody {
 
     /**
      * <p>The date and time when the media record was uploaded</p>
+     * <p>The date and time when the media record was uploaded</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -170,6 +187,7 @@ public final class PatchMediaBody {
     }
 
     /**
+     * <p>The HTTP status code of the upload</p>
      * <p>The HTTP status code of the upload</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -190,6 +208,9 @@ public final class PatchMediaBody {
       return this;
     }
 
+    /**
+     * <p>The time in milliseconds it took to upload the media record</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "uploadTimeMs",
@@ -210,6 +231,9 @@ public final class PatchMediaBody {
       return this;
     }
 
+    /**
+     * <p>The HTTP error message of the upload</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "uploadHttpError",
@@ -223,6 +247,18 @@ public final class PatchMediaBody {
     @java.lang.Override
     public PatchMediaBody build() {
       return new PatchMediaBody(uploadedAt, uploadHttpStatus, uploadHttpError, uploadTimeMs, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

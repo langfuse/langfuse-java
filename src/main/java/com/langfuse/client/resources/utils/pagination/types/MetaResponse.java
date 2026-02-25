@@ -104,25 +104,41 @@ public final class MetaResponse {
   }
 
   public interface PageStage {
+    /**
+     * <p>current page number</p>
+     */
     LimitStage page(int page);
 
     Builder from(MetaResponse other);
   }
 
   public interface LimitStage {
+    /**
+     * <p>number of items per page</p>
+     */
     TotalItemsStage limit(int limit);
   }
 
   public interface TotalItemsStage {
+    /**
+     * <p>number of total items given the current filters/selection (if any)</p>
+     */
     TotalPagesStage totalItems(int totalItems);
   }
 
   public interface TotalPagesStage {
+    /**
+     * <p>number of total pages given the current limit</p>
+     */
     _FinalStage totalPages(int totalPages);
   }
 
   public interface _FinalStage {
     MetaResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -154,6 +170,7 @@ public final class MetaResponse {
 
     /**
      * <p>current page number</p>
+     * <p>current page number</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -164,6 +181,7 @@ public final class MetaResponse {
     }
 
     /**
+     * <p>number of items per page</p>
      * <p>number of items per page</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -176,6 +194,7 @@ public final class MetaResponse {
 
     /**
      * <p>number of total items given the current filters/selection (if any)</p>
+     * <p>number of total items given the current filters/selection (if any)</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -186,6 +205,7 @@ public final class MetaResponse {
     }
 
     /**
+     * <p>number of total pages given the current limit</p>
      * <p>number of total pages given the current limit</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -199,6 +219,18 @@ public final class MetaResponse {
     @java.lang.Override
     public MetaResponse build() {
       return new MetaResponse(page, limit, totalItems, totalPages, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

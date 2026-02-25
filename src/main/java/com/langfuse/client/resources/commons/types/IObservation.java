@@ -29,17 +29,17 @@ public interface IObservation {
 
   Optional<String> getModel();
 
-  Optional<Map<String, MapValue>> getModelParameters();
+  Object getModelParameters();
 
-  Optional<Object> getInput();
+  Object getInput();
 
   Optional<String> getVersion();
 
-  Optional<Object> getMetadata();
+  Object getMetadata();
 
-  Optional<Object> getOutput();
+  Object getOutput();
 
-  Optional<Usage> getUsage();
+  Usage getUsage();
 
   ObservationLevel getLevel();
 
@@ -49,9 +49,9 @@ public interface IObservation {
 
   Optional<String> getPromptId();
 
-  Optional<Map<String, Integer>> getUsageDetails();
+  Map<String, Integer> getUsageDetails();
 
-  Optional<Map<String, Double>> getCostDetails();
+  Map<String, Double> getCostDetails();
 
-  Optional<String> getEnvironment();
+  String getEnvironment();
 }

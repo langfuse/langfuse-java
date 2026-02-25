@@ -158,6 +158,10 @@ public final class ResourceType {
   public interface _FinalStage {
     ResourceType build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage schemas(Optional<List<String>> schemas);
 
     _FinalStage schemas(List<String> schemas);
@@ -252,7 +256,9 @@ public final class ResourceType {
 
     @java.lang.Override
     public _FinalStage addAllSchemaExtensions(List<SchemaExtension> schemaExtensions) {
-      this.schemaExtensions.addAll(schemaExtensions);
+      if (schemaExtensions != null) {
+        this.schemaExtensions.addAll(schemaExtensions);
+      }
       return this;
     }
 
@@ -269,7 +275,9 @@ public final class ResourceType {
     )
     public _FinalStage schemaExtensions(List<SchemaExtension> schemaExtensions) {
       this.schemaExtensions.clear();
-      this.schemaExtensions.addAll(schemaExtensions);
+      if (schemaExtensions != null) {
+        this.schemaExtensions.addAll(schemaExtensions);
+      }
       return this;
     }
 
@@ -292,6 +300,18 @@ public final class ResourceType {
     @java.lang.Override
     public ResourceType build() {
       return new ResourceType(schemas, id, name, endpoint, description, schema, schemaExtensions, meta, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

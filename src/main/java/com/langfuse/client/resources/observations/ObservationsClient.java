@@ -4,27 +4,9 @@
 
 package com.langfuse.client.resources.observations;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.langfuse.client.core.ClientOptions;
-import com.langfuse.client.core.LangfuseClientApiException;
-import com.langfuse.client.core.LangfuseClientException;
-import com.langfuse.client.core.ObjectMappers;
-import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
-import java.io.IOException;
-import java.lang.Object;
 import java.lang.String;
-import okhttp3.Headers;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-import com.langfuse.client.resources.commons.errors.AccessDeniedError;
-import com.langfuse.client.resources.commons.errors.Error;
-import com.langfuse.client.resources.commons.errors.MethodNotAllowedError;
-import com.langfuse.client.resources.commons.errors.NotFoundError;
-import com.langfuse.client.resources.commons.errors.UnauthorizedError;
 import com.langfuse.client.resources.commons.types.ObservationsView;
 import com.langfuse.client.resources.observations.requests.GetObservationsRequest;
 import com.langfuse.client.resources.observations.types.ObservationsViews;
@@ -32,60 +14,32 @@ import com.langfuse.client.resources.observations.types.ObservationsViews;
 public class ObservationsClient {
   protected final ClientOptions clientOptions;
 
+  private final RawObservationsClient rawClient;
+
   public ObservationsClient(ClientOptions clientOptions) {
     this.clientOptions = clientOptions;
+    this.rawClient = new RawObservationsClient(clientOptions);
+  }
+
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawObservationsClient withRawResponse() {
+    return this.rawClient;
   }
 
   /**
    * Get a observation
    */
   public ObservationsView get(String observationId) {
-    return get(observationId,null);
+    return this.rawClient.get(observationId).body();
   }
 
   /**
    * Get a observation
    */
   public ObservationsView get(String observationId, RequestOptions requestOptions) {
-    HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-      .addPathSegments("api/public")
-      .addPathSegments("observations")
-      .addPathSegment(observationId)
-      .build();
-    Request okhttpRequest = new Request.Builder()
-      .url(httpUrl)
-      .method("GET", null)
-      .headers(Headers.of(clientOptions.headers(requestOptions)))
-      .addHeader("Content-Type", "application/json")
-      .addHeader("Accept", "application/json")
-      .build();
-    OkHttpClient client = clientOptions.httpClient();
-    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-      client = clientOptions.httpClientWithTimeout(requestOptions);
-    }
-    try (Response response = client.newCall(okhttpRequest).execute()) {
-      ResponseBody responseBody = response.body();
-      if (response.isSuccessful()) {
-        return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ObservationsView.class);
-      }
-      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-      try {
-        switch (response.code()) {
-          case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-        }
-      }
-      catch (JsonProcessingException ignored) {
-        // unable to map error response, throwing generic error
-      }
-      throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-    }
-    catch (IOException e) {
-      throw new LangfuseClientException("Network error executing HTTP request", e);
-    }
+    return this.rawClient.get(observationId, requestOptions).body();
   }
 
   /**
@@ -93,7 +47,15 @@ public class ObservationsClient {
    * <p>Consider using the <a href="/api-reference#tag/observationsv2/GET/api/public/v2/observations">v2 observations endpoint</a> for cursor-based pagination and field selection.</p>
    */
   public ObservationsViews getMany() {
-    return getMany(GetObservationsRequest.builder().build());
+    return this.rawClient.getMany().body();
+  }
+
+  /**
+   * Get a list of observations.
+   * <p>Consider using the <a href="/api-reference#tag/observationsv2/GET/api/public/v2/observations">v2 observations endpoint</a> for cursor-based pagination and field selection.</p>
+   */
+  public ObservationsViews getMany(RequestOptions requestOptions) {
+    return this.rawClient.getMany(requestOptions).body();
   }
 
   /**
@@ -101,7 +63,7 @@ public class ObservationsClient {
    * <p>Consider using the <a href="/api-reference#tag/observationsv2/GET/api/public/v2/observations">v2 observations endpoint</a> for cursor-based pagination and field selection.</p>
    */
   public ObservationsViews getMany(GetObservationsRequest request) {
-    return getMany(request,null);
+    return this.rawClient.getMany(request).body();
   }
 
   /**
@@ -109,80 +71,6 @@ public class ObservationsClient {
    * <p>Consider using the <a href="/api-reference#tag/observationsv2/GET/api/public/v2/observations">v2 observations endpoint</a> for cursor-based pagination and field selection.</p>
    */
   public ObservationsViews getMany(GetObservationsRequest request, RequestOptions requestOptions) {
-    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-      .addPathSegments("api/public")
-      .addPathSegments("observations");if (request.getPage().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get().toString(), false);
-      }
-      if (request.getLimit().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get().toString(), false);
-      }
-      if (request.getName().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "name", request.getName().get(), false);
-      }
-      if (request.getUserId().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "userId", request.getUserId().get(), false);
-      }
-      if (request.getType().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "type", request.getType().get(), false);
-      }
-      if (request.getTraceId().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "traceId", request.getTraceId().get(), false);
-      }
-      if (request.getLevel().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "level", request.getLevel().get().toString(), false);
-      }
-      if (request.getParentObservationId().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "parentObservationId", request.getParentObservationId().get(), false);
-      }
-      if (request.getEnvironment().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "environment", request.getEnvironment().get(), false);
-      }
-      if (request.getFromStartTime().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "fromStartTime", request.getFromStartTime().get().toString(), false);
-      }
-      if (request.getToStartTime().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "toStartTime", request.getToStartTime().get().toString(), false);
-      }
-      if (request.getVersion().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "version", request.getVersion().get(), false);
-      }
-      if (request.getFilter().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "filter", request.getFilter().get(), false);
-      }
-      Request.Builder _requestBuilder = new Request.Builder()
-        .url(httpUrl.build())
-        .method("GET", null)
-        .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json");
-      Request okhttpRequest = _requestBuilder.build();
-      OkHttpClient client = clientOptions.httpClient();
-      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-        client = clientOptions.httpClientWithTimeout(requestOptions);
-      }
-      try (Response response = client.newCall(okhttpRequest).execute()) {
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ObservationsViews.class);
-        }
-        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-        try {
-          switch (response.code()) {
-            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-        }
-        catch (JsonProcessingException ignored) {
-          // unable to map error response, throwing generic error
-        }
-        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-      }
-      catch (IOException e) {
-        throw new LangfuseClientException("Network error executing HTTP request", e);
-      }
-    }
+    return this.rawClient.getMany(request, requestOptions).body();
   }
+}

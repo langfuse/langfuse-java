@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
 import java.lang.String;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -38,17 +39,21 @@ public final class CreateDatasetRunItemRequest {
 
   private final Optional<String> traceId;
 
+  private final Optional<OffsetDateTime> datasetVersion;
+
   private final Map<String, Object> additionalProperties;
 
   private CreateDatasetRunItemRequest(String runName, Optional<String> runDescription,
       Optional<Object> metadata, String datasetItemId, Optional<String> observationId,
-      Optional<String> traceId, Map<String, Object> additionalProperties) {
+      Optional<String> traceId, Optional<OffsetDateTime> datasetVersion,
+      Map<String, Object> additionalProperties) {
     this.runName = runName;
     this.runDescription = runDescription;
     this.metadata = metadata;
     this.datasetItemId = datasetItemId;
     this.observationId = observationId;
     this.traceId = traceId;
+    this.datasetVersion = datasetVersion;
     this.additionalProperties = additionalProperties;
   }
 
@@ -91,6 +96,17 @@ public final class CreateDatasetRunItemRequest {
     return traceId;
   }
 
+  /**
+   * @return ISO 8601 timestamp (RFC 3339, Section 5.6) in UTC (e.g., &quot;2026-01-21T14:35:42Z&quot;).
+   * Specifies the dataset version to use for this experiment run.
+   * If provided, the experiment will use dataset items as they existed at or before this timestamp.
+   * If not provided, uses the latest version of dataset items.
+   */
+  @JsonProperty("datasetVersion")
+  public Optional<OffsetDateTime> getDatasetVersion() {
+    return datasetVersion;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -103,12 +119,12 @@ public final class CreateDatasetRunItemRequest {
   }
 
   private boolean equalTo(CreateDatasetRunItemRequest other) {
-    return runName.equals(other.runName) && runDescription.equals(other.runDescription) && metadata.equals(other.metadata) && datasetItemId.equals(other.datasetItemId) && observationId.equals(other.observationId) && traceId.equals(other.traceId);
+    return runName.equals(other.runName) && runDescription.equals(other.runDescription) && metadata.equals(other.metadata) && datasetItemId.equals(other.datasetItemId) && observationId.equals(other.observationId) && traceId.equals(other.traceId) && datasetVersion.equals(other.datasetVersion);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.runName, this.runDescription, this.metadata, this.datasetItemId, this.observationId, this.traceId);
+    return Objects.hash(this.runName, this.runDescription, this.metadata, this.datasetItemId, this.observationId, this.traceId, this.datasetVersion);
   }
 
   @java.lang.Override
@@ -133,10 +149,20 @@ public final class CreateDatasetRunItemRequest {
   public interface _FinalStage {
     CreateDatasetRunItemRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Description of the run. If run exists, description will be updated.</p>
+     */
     _FinalStage runDescription(Optional<String> runDescription);
 
     _FinalStage runDescription(String runDescription);
 
+    /**
+     * <p>Metadata of the dataset run, updates run if run already exists</p>
+     */
     _FinalStage metadata(Optional<Object> metadata);
 
     _FinalStage metadata(Object metadata);
@@ -145,9 +171,22 @@ public final class CreateDatasetRunItemRequest {
 
     _FinalStage observationId(String observationId);
 
+    /**
+     * <p>traceId should always be provided. For compatibility with older SDK versions it can also be inferred from the provided observationId.</p>
+     */
     _FinalStage traceId(Optional<String> traceId);
 
     _FinalStage traceId(String traceId);
+
+    /**
+     * <p>ISO 8601 timestamp (RFC 3339, Section 5.6) in UTC (e.g., &quot;2026-01-21T14:35:42Z&quot;).
+     * Specifies the dataset version to use for this experiment run.
+     * If provided, the experiment will use dataset items as they existed at or before this timestamp.
+     * If not provided, uses the latest version of dataset items.</p>
+     */
+    _FinalStage datasetVersion(Optional<OffsetDateTime> datasetVersion);
+
+    _FinalStage datasetVersion(OffsetDateTime datasetVersion);
   }
 
   @JsonIgnoreProperties(
@@ -157,6 +196,8 @@ public final class CreateDatasetRunItemRequest {
     private String runName;
 
     private String datasetItemId;
+
+    private Optional<OffsetDateTime> datasetVersion = Optional.empty();
 
     private Optional<String> traceId = Optional.empty();
 
@@ -180,6 +221,7 @@ public final class CreateDatasetRunItemRequest {
       datasetItemId(other.getDatasetItemId());
       observationId(other.getObservationId());
       traceId(other.getTraceId());
+      datasetVersion(other.getDatasetVersion());
       return this;
     }
 
@@ -198,6 +240,35 @@ public final class CreateDatasetRunItemRequest {
     }
 
     /**
+     * <p>ISO 8601 timestamp (RFC 3339, Section 5.6) in UTC (e.g., &quot;2026-01-21T14:35:42Z&quot;).
+     * Specifies the dataset version to use for this experiment run.
+     * If provided, the experiment will use dataset items as they existed at or before this timestamp.
+     * If not provided, uses the latest version of dataset items.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage datasetVersion(OffsetDateTime datasetVersion) {
+      this.datasetVersion = Optional.ofNullable(datasetVersion);
+      return this;
+    }
+
+    /**
+     * <p>ISO 8601 timestamp (RFC 3339, Section 5.6) in UTC (e.g., &quot;2026-01-21T14:35:42Z&quot;).
+     * Specifies the dataset version to use for this experiment run.
+     * If provided, the experiment will use dataset items as they existed at or before this timestamp.
+     * If not provided, uses the latest version of dataset items.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "datasetVersion",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage datasetVersion(Optional<OffsetDateTime> datasetVersion) {
+      this.datasetVersion = datasetVersion;
+      return this;
+    }
+
+    /**
      * <p>traceId should always be provided. For compatibility with older SDK versions it can also be inferred from the provided observationId.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -207,6 +278,9 @@ public final class CreateDatasetRunItemRequest {
       return this;
     }
 
+    /**
+     * <p>traceId should always be provided. For compatibility with older SDK versions it can also be inferred from the provided observationId.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "traceId",
@@ -243,6 +317,9 @@ public final class CreateDatasetRunItemRequest {
       return this;
     }
 
+    /**
+     * <p>Metadata of the dataset run, updates run if run already exists</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "metadata",
@@ -263,6 +340,9 @@ public final class CreateDatasetRunItemRequest {
       return this;
     }
 
+    /**
+     * <p>Description of the run. If run exists, description will be updated.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "runDescription",
@@ -275,7 +355,19 @@ public final class CreateDatasetRunItemRequest {
 
     @java.lang.Override
     public CreateDatasetRunItemRequest build() {
-      return new CreateDatasetRunItemRequest(runName, runDescription, metadata, datasetItemId, observationId, traceId, additionalProperties);
+      return new CreateDatasetRunItemRequest(runName, runDescription, metadata, datasetItemId, observationId, traceId, datasetVersion, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

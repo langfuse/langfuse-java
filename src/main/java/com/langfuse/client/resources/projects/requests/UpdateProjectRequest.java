@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.langfuse.client.core.ObjectMappers;
+import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.util.HashMap;
@@ -30,12 +31,12 @@ public final class UpdateProjectRequest {
 
   private final Optional<Map<String, Object>> metadata;
 
-  private final int retention;
+  private final Optional<Integer> retention;
 
   private final Map<String, Object> additionalProperties;
 
-  private UpdateProjectRequest(String name, Optional<Map<String, Object>> metadata, int retention,
-      Map<String, Object> additionalProperties) {
+  private UpdateProjectRequest(String name, Optional<Map<String, Object>> metadata,
+      Optional<Integer> retention, Map<String, Object> additionalProperties) {
     this.name = name;
     this.metadata = metadata;
     this.retention = retention;
@@ -56,10 +57,13 @@ public final class UpdateProjectRequest {
   }
 
   /**
-   * @return Number of days to retain data. Must be 0 or at least 3 days. Requires data-retention entitlement for non-zero values. Optional.
+   * @return Number of days to retain data.
+   * Must be 0 or at least 3 days.
+   * Requires data-retention entitlement for non-zero values.
+   * Optional. Will retain existing retention setting if omitted.
    */
   @JsonProperty("retention")
-  public int getRetention() {
+  public Optional<Integer> getRetention() {
     return retention;
   }
 
@@ -75,7 +79,7 @@ public final class UpdateProjectRequest {
   }
 
   private boolean equalTo(UpdateProjectRequest other) {
-    return name.equals(other.name) && metadata.equals(other.metadata) && retention == other.retention;
+    return name.equals(other.name) && metadata.equals(other.metadata) && retention.equals(other.retention);
   }
 
   @java.lang.Override
@@ -93,30 +97,43 @@ public final class UpdateProjectRequest {
   }
 
   public interface NameStage {
-    RetentionStage name(@NotNull String name);
+    _FinalStage name(@NotNull String name);
 
     Builder from(UpdateProjectRequest other);
-  }
-
-  public interface RetentionStage {
-    _FinalStage retention(int retention);
   }
 
   public interface _FinalStage {
     UpdateProjectRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Optional metadata for the project</p>
+     */
     _FinalStage metadata(Optional<Map<String, Object>> metadata);
 
     _FinalStage metadata(Map<String, Object> metadata);
+
+    /**
+     * <p>Number of days to retain data.
+     * Must be 0 or at least 3 days.
+     * Requires data-retention entitlement for non-zero values.
+     * Optional. Will retain existing retention setting if omitted.</p>
+     */
+    _FinalStage retention(Optional<Integer> retention);
+
+    _FinalStage retention(Integer retention);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements NameStage, RetentionStage, _FinalStage {
+  public static final class Builder implements NameStage, _FinalStage {
     private String name;
 
-    private int retention;
+    private Optional<Integer> retention = Optional.empty();
 
     private Optional<Map<String, Object>> metadata = Optional.empty();
 
@@ -136,18 +153,36 @@ public final class UpdateProjectRequest {
 
     @java.lang.Override
     @JsonSetter("name")
-    public RetentionStage name(@NotNull String name) {
+    public _FinalStage name(@NotNull String name) {
       this.name = Objects.requireNonNull(name, "name must not be null");
       return this;
     }
 
     /**
-     * <p>Number of days to retain data. Must be 0 or at least 3 days. Requires data-retention entitlement for non-zero values. Optional.</p>
+     * <p>Number of days to retain data.
+     * Must be 0 or at least 3 days.
+     * Requires data-retention entitlement for non-zero values.
+     * Optional. Will retain existing retention setting if omitted.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    @JsonSetter("retention")
-    public _FinalStage retention(int retention) {
+    public _FinalStage retention(Integer retention) {
+      this.retention = Optional.ofNullable(retention);
+      return this;
+    }
+
+    /**
+     * <p>Number of days to retain data.
+     * Must be 0 or at least 3 days.
+     * Requires data-retention entitlement for non-zero values.
+     * Optional. Will retain existing retention setting if omitted.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "retention",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage retention(Optional<Integer> retention) {
       this.retention = retention;
       return this;
     }
@@ -162,6 +197,9 @@ public final class UpdateProjectRequest {
       return this;
     }
 
+    /**
+     * <p>Optional metadata for the project</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "metadata",
@@ -175,6 +213,18 @@ public final class UpdateProjectRequest {
     @java.lang.Override
     public UpdateProjectRequest build() {
       return new UpdateProjectRequest(name, metadata, retention, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

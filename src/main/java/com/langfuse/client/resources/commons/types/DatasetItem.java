@@ -6,12 +6,15 @@ package com.langfuse.client.resources.commons.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
 import java.lang.String;
@@ -31,11 +34,11 @@ public final class DatasetItem {
 
   private final DatasetStatus status;
 
-  private final Optional<Object> input;
+  private final Object input;
 
-  private final Optional<Object> expectedOutput;
+  private final Object expectedOutput;
 
-  private final Optional<Object> metadata;
+  private final Object metadata;
 
   private final Optional<String> sourceTraceId;
 
@@ -51,10 +54,9 @@ public final class DatasetItem {
 
   private final Map<String, Object> additionalProperties;
 
-  private DatasetItem(String id, DatasetStatus status, Optional<Object> input,
-      Optional<Object> expectedOutput, Optional<Object> metadata, Optional<String> sourceTraceId,
-      Optional<String> sourceObservationId, String datasetId, String datasetName,
-      OffsetDateTime createdAt, OffsetDateTime updatedAt,
+  private DatasetItem(String id, DatasetStatus status, Object input, Object expectedOutput,
+      Object metadata, Optional<String> sourceTraceId, Optional<String> sourceObservationId,
+      String datasetId, String datasetName, OffsetDateTime createdAt, OffsetDateTime updatedAt,
       Map<String, Object> additionalProperties) {
     this.id = id;
     this.status = status;
@@ -80,28 +82,49 @@ public final class DatasetItem {
     return status;
   }
 
+  /**
+   * @return Input data for the dataset item
+   */
   @JsonProperty("input")
-  public Optional<Object> getInput() {
+  public Object getInput() {
     return input;
   }
 
+  /**
+   * @return Expected output for the dataset item
+   */
   @JsonProperty("expectedOutput")
-  public Optional<Object> getExpectedOutput() {
+  public Object getExpectedOutput() {
     return expectedOutput;
   }
 
+  /**
+   * @return Metadata associated with the dataset item
+   */
   @JsonProperty("metadata")
-  public Optional<Object> getMetadata() {
+  public Object getMetadata() {
     return metadata;
   }
 
-  @JsonProperty("sourceTraceId")
+  /**
+   * @return The trace ID that sourced this dataset item
+   */
+  @JsonIgnore
   public Optional<String> getSourceTraceId() {
+    if (sourceTraceId == null) {
+      return Optional.empty();
+    }
     return sourceTraceId;
   }
 
-  @JsonProperty("sourceObservationId")
+  /**
+   * @return The observation ID that sourced this dataset item
+   */
+  @JsonIgnore
   public Optional<String> getSourceObservationId() {
+    if (sourceObservationId == null) {
+      return Optional.empty();
+    }
     return sourceObservationId;
   }
 
@@ -123,6 +146,24 @@ public final class DatasetItem {
   @JsonProperty("updatedAt")
   public OffsetDateTime getUpdatedAt() {
     return updatedAt;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("sourceTraceId")
+  private Optional<String> _getSourceTraceId() {
+    return sourceTraceId;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("sourceObservationId")
+  private Optional<String> _getSourceObservationId() {
+    return sourceObservationId;
   }
 
   @java.lang.Override
@@ -161,7 +202,28 @@ public final class DatasetItem {
   }
 
   public interface StatusStage {
-    DatasetIdStage status(@NotNull DatasetStatus status);
+    InputStage status(@NotNull DatasetStatus status);
+  }
+
+  public interface InputStage {
+    /**
+     * <p>Input data for the dataset item</p>
+     */
+    ExpectedOutputStage input(Object input);
+  }
+
+  public interface ExpectedOutputStage {
+    /**
+     * <p>Expected output for the dataset item</p>
+     */
+    MetadataStage expectedOutput(Object expectedOutput);
+  }
+
+  public interface MetadataStage {
+    /**
+     * <p>Metadata associated with the dataset item</p>
+     */
+    DatasetIdStage metadata(Object metadata);
   }
 
   public interface DatasetIdStage {
@@ -183,34 +245,42 @@ public final class DatasetItem {
   public interface _FinalStage {
     DatasetItem build();
 
-    _FinalStage input(Optional<Object> input);
+    _FinalStage additionalProperty(String key, Object value);
 
-    _FinalStage input(Object input);
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
-    _FinalStage expectedOutput(Optional<Object> expectedOutput);
-
-    _FinalStage expectedOutput(Object expectedOutput);
-
-    _FinalStage metadata(Optional<Object> metadata);
-
-    _FinalStage metadata(Object metadata);
-
+    /**
+     * <p>The trace ID that sourced this dataset item</p>
+     */
     _FinalStage sourceTraceId(Optional<String> sourceTraceId);
 
     _FinalStage sourceTraceId(String sourceTraceId);
 
+    _FinalStage sourceTraceId(Nullable<String> sourceTraceId);
+
+    /**
+     * <p>The observation ID that sourced this dataset item</p>
+     */
     _FinalStage sourceObservationId(Optional<String> sourceObservationId);
 
     _FinalStage sourceObservationId(String sourceObservationId);
+
+    _FinalStage sourceObservationId(Nullable<String> sourceObservationId);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements IdStage, StatusStage, DatasetIdStage, DatasetNameStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
+  public static final class Builder implements IdStage, StatusStage, InputStage, ExpectedOutputStage, MetadataStage, DatasetIdStage, DatasetNameStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
     private String id;
 
     private DatasetStatus status;
+
+    private Object input;
+
+    private Object expectedOutput;
+
+    private Object metadata;
 
     private String datasetId;
 
@@ -223,12 +293,6 @@ public final class DatasetItem {
     private Optional<String> sourceObservationId = Optional.empty();
 
     private Optional<String> sourceTraceId = Optional.empty();
-
-    private Optional<Object> metadata = Optional.empty();
-
-    private Optional<Object> expectedOutput = Optional.empty();
-
-    private Optional<Object> input = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -261,8 +325,44 @@ public final class DatasetItem {
 
     @java.lang.Override
     @JsonSetter("status")
-    public DatasetIdStage status(@NotNull DatasetStatus status) {
+    public InputStage status(@NotNull DatasetStatus status) {
       this.status = Objects.requireNonNull(status, "status must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Input data for the dataset item</p>
+     * <p>Input data for the dataset item</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("input")
+    public ExpectedOutputStage input(Object input) {
+      this.input = input;
+      return this;
+    }
+
+    /**
+     * <p>Expected output for the dataset item</p>
+     * <p>Expected output for the dataset item</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("expectedOutput")
+    public MetadataStage expectedOutput(Object expectedOutput) {
+      this.expectedOutput = expectedOutput;
+      return this;
+    }
+
+    /**
+     * <p>Metadata associated with the dataset item</p>
+     * <p>Metadata associated with the dataset item</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("metadata")
+    public DatasetIdStage metadata(Object metadata) {
+      this.metadata = metadata;
       return this;
     }
 
@@ -294,12 +394,37 @@ public final class DatasetItem {
       return this;
     }
 
+    /**
+     * <p>The observation ID that sourced this dataset item</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage sourceObservationId(Nullable<String> sourceObservationId) {
+      if (sourceObservationId.isNull()) {
+        this.sourceObservationId = null;
+      }
+      else if (sourceObservationId.isEmpty()) {
+        this.sourceObservationId = Optional.empty();
+      }
+      else {
+        this.sourceObservationId = Optional.of(sourceObservationId.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The observation ID that sourced this dataset item</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     public _FinalStage sourceObservationId(String sourceObservationId) {
       this.sourceObservationId = Optional.ofNullable(sourceObservationId);
       return this;
     }
 
+    /**
+     * <p>The observation ID that sourced this dataset item</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "sourceObservationId",
@@ -310,12 +435,37 @@ public final class DatasetItem {
       return this;
     }
 
+    /**
+     * <p>The trace ID that sourced this dataset item</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage sourceTraceId(Nullable<String> sourceTraceId) {
+      if (sourceTraceId.isNull()) {
+        this.sourceTraceId = null;
+      }
+      else if (sourceTraceId.isEmpty()) {
+        this.sourceTraceId = Optional.empty();
+      }
+      else {
+        this.sourceTraceId = Optional.of(sourceTraceId.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The trace ID that sourced this dataset item</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     public _FinalStage sourceTraceId(String sourceTraceId) {
       this.sourceTraceId = Optional.ofNullable(sourceTraceId);
       return this;
     }
 
+    /**
+     * <p>The trace ID that sourced this dataset item</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "sourceTraceId",
@@ -327,56 +477,20 @@ public final class DatasetItem {
     }
 
     @java.lang.Override
-    public _FinalStage metadata(Object metadata) {
-      this.metadata = Optional.ofNullable(metadata);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "metadata",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage metadata(Optional<Object> metadata) {
-      this.metadata = metadata;
-      return this;
-    }
-
-    @java.lang.Override
-    public _FinalStage expectedOutput(Object expectedOutput) {
-      this.expectedOutput = Optional.ofNullable(expectedOutput);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "expectedOutput",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage expectedOutput(Optional<Object> expectedOutput) {
-      this.expectedOutput = expectedOutput;
-      return this;
-    }
-
-    @java.lang.Override
-    public _FinalStage input(Object input) {
-      this.input = Optional.ofNullable(input);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "input",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage input(Optional<Object> input) {
-      this.input = input;
-      return this;
-    }
-
-    @java.lang.Override
     public DatasetItem build() {
       return new DatasetItem(id, status, input, expectedOutput, metadata, sourceTraceId, sourceObservationId, datasetId, datasetName, createdAt, updatedAt, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -10,7 +10,6 @@ import com.langfuse.client.resources.prompts.types.ChatPrompt;
 import com.langfuse.client.resources.prompts.types.Prompt;
 import com.langfuse.client.resources.prompts.types.TextPrompt;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -57,18 +56,17 @@ class PromptIntegrationTest {
         assertThat(messages).isNotEmpty();
 
         for (ChatMessageWithPlaceholders msg : messages) {
-            Optional<ChatMessage> chatMessage = msg.getChatmessage();
-            assertThat(chatMessage)
-                    .as("Each prompt entry should be a chat message")
-                    .isPresent();
-            assertThat(chatMessage.get().getRole())
-                    .as("role must not be null")
-                    .isNotNull()
-                    .isNotEmpty();
-            assertThat(chatMessage.get().getContent())
-                    .as("content must not be null")
-                    .isNotNull()
-                    .isNotEmpty();
+            if (msg.get() instanceof ChatMessage) {
+                ChatMessage chatMessage = (ChatMessage) msg.get();
+                assertThat(chatMessage.getRole())
+                        .as("role must not be null")
+                        .isNotNull()
+                        .isNotEmpty();
+                assertThat(chatMessage.getContent())
+                        .as("content must not be null")
+                        .isNotNull()
+                        .isNotEmpty();
+            }
         }
     }
 

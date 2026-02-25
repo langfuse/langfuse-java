@@ -6,12 +6,15 @@ package com.langfuse.client.resources.commons.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
 import java.lang.String;
@@ -33,7 +36,7 @@ public final class DatasetRun implements IDatasetRun {
 
   private final Optional<String> description;
 
-  private final Optional<Object> metadata;
+  private final Object metadata;
 
   private final String datasetId;
 
@@ -45,9 +48,9 @@ public final class DatasetRun implements IDatasetRun {
 
   private final Map<String, Object> additionalProperties;
 
-  private DatasetRun(String id, String name, Optional<String> description,
-      Optional<Object> metadata, String datasetId, String datasetName, OffsetDateTime createdAt,
-      OffsetDateTime updatedAt, Map<String, Object> additionalProperties) {
+  private DatasetRun(String id, String name, Optional<String> description, Object metadata,
+      String datasetId, String datasetName, OffsetDateTime createdAt, OffsetDateTime updatedAt,
+      Map<String, Object> additionalProperties) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -80,9 +83,12 @@ public final class DatasetRun implements IDatasetRun {
   /**
    * @return Description of the run
    */
-  @JsonProperty("description")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getDescription() {
+    if (description == null) {
+      return Optional.empty();
+    }
     return description;
   }
 
@@ -91,7 +97,7 @@ public final class DatasetRun implements IDatasetRun {
    */
   @JsonProperty("metadata")
   @java.lang.Override
-  public Optional<Object> getMetadata() {
+  public Object getMetadata() {
     return metadata;
   }
 
@@ -131,6 +137,15 @@ public final class DatasetRun implements IDatasetRun {
     return updatedAt;
   }
 
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("description")
+  private Optional<String> _getDescription() {
+    return description;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -161,50 +176,82 @@ public final class DatasetRun implements IDatasetRun {
   }
 
   public interface IdStage {
+    /**
+     * <p>Unique identifier of the dataset run</p>
+     */
     NameStage id(@NotNull String id);
 
     Builder from(DatasetRun other);
   }
 
   public interface NameStage {
-    DatasetIdStage name(@NotNull String name);
+    /**
+     * <p>Name of the dataset run</p>
+     */
+    MetadataStage name(@NotNull String name);
+  }
+
+  public interface MetadataStage {
+    /**
+     * <p>Metadata of the dataset run</p>
+     */
+    DatasetIdStage metadata(Object metadata);
   }
 
   public interface DatasetIdStage {
+    /**
+     * <p>Id of the associated dataset</p>
+     */
     DatasetNameStage datasetId(@NotNull String datasetId);
   }
 
   public interface DatasetNameStage {
+    /**
+     * <p>Name of the associated dataset</p>
+     */
     CreatedAtStage datasetName(@NotNull String datasetName);
   }
 
   public interface CreatedAtStage {
+    /**
+     * <p>The date and time when the dataset run was created</p>
+     */
     UpdatedAtStage createdAt(@NotNull OffsetDateTime createdAt);
   }
 
   public interface UpdatedAtStage {
+    /**
+     * <p>The date and time when the dataset run was last updated</p>
+     */
     _FinalStage updatedAt(@NotNull OffsetDateTime updatedAt);
   }
 
   public interface _FinalStage {
     DatasetRun build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Description of the run</p>
+     */
     _FinalStage description(Optional<String> description);
 
     _FinalStage description(String description);
 
-    _FinalStage metadata(Optional<Object> metadata);
-
-    _FinalStage metadata(Object metadata);
+    _FinalStage description(Nullable<String> description);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements IdStage, NameStage, DatasetIdStage, DatasetNameStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
+  public static final class Builder implements IdStage, NameStage, MetadataStage, DatasetIdStage, DatasetNameStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
     private String id;
 
     private String name;
+
+    private Object metadata;
 
     private String datasetId;
 
@@ -213,8 +260,6 @@ public final class DatasetRun implements IDatasetRun {
     private OffsetDateTime createdAt;
 
     private OffsetDateTime updatedAt;
-
-    private Optional<Object> metadata = Optional.empty();
 
     private Optional<String> description = Optional.empty();
 
@@ -239,6 +284,7 @@ public final class DatasetRun implements IDatasetRun {
 
     /**
      * <p>Unique identifier of the dataset run</p>
+     * <p>Unique identifier of the dataset run</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -250,16 +296,30 @@ public final class DatasetRun implements IDatasetRun {
 
     /**
      * <p>Name of the dataset run</p>
+     * <p>Name of the dataset run</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
     @JsonSetter("name")
-    public DatasetIdStage name(@NotNull String name) {
+    public MetadataStage name(@NotNull String name) {
       this.name = Objects.requireNonNull(name, "name must not be null");
       return this;
     }
 
     /**
+     * <p>Metadata of the dataset run</p>
+     * <p>Metadata of the dataset run</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("metadata")
+    public DatasetIdStage metadata(Object metadata) {
+      this.metadata = metadata;
+      return this;
+    }
+
+    /**
+     * <p>Id of the associated dataset</p>
      * <p>Id of the associated dataset</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -272,6 +332,7 @@ public final class DatasetRun implements IDatasetRun {
 
     /**
      * <p>Name of the associated dataset</p>
+     * <p>Name of the associated dataset</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -282,6 +343,7 @@ public final class DatasetRun implements IDatasetRun {
     }
 
     /**
+     * <p>The date and time when the dataset run was created</p>
      * <p>The date and time when the dataset run was created</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -294,6 +356,7 @@ public final class DatasetRun implements IDatasetRun {
 
     /**
      * <p>The date and time when the dataset run was last updated</p>
+     * <p>The date and time when the dataset run was last updated</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -304,22 +367,20 @@ public final class DatasetRun implements IDatasetRun {
     }
 
     /**
-     * <p>Metadata of the dataset run</p>
+     * <p>Description of the run</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage metadata(Object metadata) {
-      this.metadata = Optional.ofNullable(metadata);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "metadata",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage metadata(Optional<Object> metadata) {
-      this.metadata = metadata;
+    public _FinalStage description(Nullable<String> description) {
+      if (description.isNull()) {
+        this.description = null;
+      }
+      else if (description.isEmpty()) {
+        this.description = Optional.empty();
+      }
+      else {
+        this.description = Optional.of(description.get());
+      }
       return this;
     }
 
@@ -333,6 +394,9 @@ public final class DatasetRun implements IDatasetRun {
       return this;
     }
 
+    /**
+     * <p>Description of the run</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "description",
@@ -346,6 +410,18 @@ public final class DatasetRun implements IDatasetRun {
     @java.lang.Override
     public DatasetRun build() {
       return new DatasetRun(id, name, description, metadata, datasetId, datasetName, createdAt, updatedAt, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -35,14 +34,14 @@ public final class SessionWithTraces implements ISession {
 
   private final String projectId;
 
-  private final Optional<String> environment;
+  private final String environment;
 
   private final List<Trace> traces;
 
   private final Map<String, Object> additionalProperties;
 
   private SessionWithTraces(String id, OffsetDateTime createdAt, String projectId,
-      Optional<String> environment, List<Trace> traces, Map<String, Object> additionalProperties) {
+      String environment, List<Trace> traces, Map<String, Object> additionalProperties) {
     this.id = id;
     this.createdAt = createdAt;
     this.projectId = projectId;
@@ -74,7 +73,7 @@ public final class SessionWithTraces implements ISession {
    */
   @JsonProperty("environment")
   @java.lang.Override
-  public Optional<String> getEnvironment() {
+  public String getEnvironment() {
     return environment;
   }
 
@@ -123,15 +122,22 @@ public final class SessionWithTraces implements ISession {
   }
 
   public interface ProjectIdStage {
-    _FinalStage projectId(@NotNull String projectId);
+    EnvironmentStage projectId(@NotNull String projectId);
+  }
+
+  public interface EnvironmentStage {
+    /**
+     * <p>The environment from which this session originated.</p>
+     */
+    _FinalStage environment(@NotNull String environment);
   }
 
   public interface _FinalStage {
     SessionWithTraces build();
 
-    _FinalStage environment(Optional<String> environment);
+    _FinalStage additionalProperty(String key, Object value);
 
-    _FinalStage environment(String environment);
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
     _FinalStage traces(List<Trace> traces);
 
@@ -143,16 +149,16 @@ public final class SessionWithTraces implements ISession {
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements IdStage, CreatedAtStage, ProjectIdStage, _FinalStage {
+  public static final class Builder implements IdStage, CreatedAtStage, ProjectIdStage, EnvironmentStage, _FinalStage {
     private String id;
 
     private OffsetDateTime createdAt;
 
     private String projectId;
 
-    private List<Trace> traces = new ArrayList<>();
+    private String environment;
 
-    private Optional<String> environment = Optional.empty();
+    private List<Trace> traces = new ArrayList<>();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -186,14 +192,28 @@ public final class SessionWithTraces implements ISession {
 
     @java.lang.Override
     @JsonSetter("projectId")
-    public _FinalStage projectId(@NotNull String projectId) {
+    public EnvironmentStage projectId(@NotNull String projectId) {
       this.projectId = Objects.requireNonNull(projectId, "projectId must not be null");
+      return this;
+    }
+
+    /**
+     * <p>The environment from which this session originated.</p>
+     * <p>The environment from which this session originated.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("environment")
+    public _FinalStage environment(@NotNull String environment) {
+      this.environment = Objects.requireNonNull(environment, "environment must not be null");
       return this;
     }
 
     @java.lang.Override
     public _FinalStage addAllTraces(List<Trace> traces) {
-      this.traces.addAll(traces);
+      if (traces != null) {
+        this.traces.addAll(traces);
+      }
       return this;
     }
 
@@ -210,33 +230,27 @@ public final class SessionWithTraces implements ISession {
     )
     public _FinalStage traces(List<Trace> traces) {
       this.traces.clear();
-      this.traces.addAll(traces);
-      return this;
-    }
-
-    /**
-     * <p>The environment from which this session originated.</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    public _FinalStage environment(String environment) {
-      this.environment = Optional.ofNullable(environment);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "environment",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage environment(Optional<String> environment) {
-      this.environment = environment;
+      if (traces != null) {
+        this.traces.addAll(traces);
+      }
       return this;
     }
 
     @java.lang.Override
     public SessionWithTraces build() {
       return new SessionWithTraces(id, createdAt, projectId, environment, traces, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

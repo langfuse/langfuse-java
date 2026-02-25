@@ -118,6 +118,9 @@ public final class ListUsersRequest {
       return this;
     }
 
+    /**
+     * <p>Filter expression (e.g. userName eq &quot;value&quot;)</p>
+     */
     @JsonSetter(
         value = "filter",
         nulls = Nulls.SKIP
@@ -132,6 +135,9 @@ public final class ListUsersRequest {
       return this;
     }
 
+    /**
+     * <p>1-based index of the first result to return (default 1)</p>
+     */
     @JsonSetter(
         value = "startIndex",
         nulls = Nulls.SKIP
@@ -146,6 +152,9 @@ public final class ListUsersRequest {
       return this;
     }
 
+    /**
+     * <p>Maximum number of results to return (default 100)</p>
+     */
     @JsonSetter(
         value = "count",
         nulls = Nulls.SKIP
@@ -162,6 +171,16 @@ public final class ListUsersRequest {
 
     public ListUsersRequest build() {
       return new ListUsersRequest(filter, startIndex, count, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

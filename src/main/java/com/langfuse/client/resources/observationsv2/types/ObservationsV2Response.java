@@ -91,6 +91,13 @@ public final class ObservationsV2Response {
   public interface _FinalStage {
     ObservationsV2Response build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Array of observation objects. Fields included depend on the <code>fields</code> parameter in the request.</p>
+     */
     _FinalStage data(List<Map<String, Object>> data);
 
     _FinalStage addData(Map<String, Object> data);
@@ -132,7 +139,9 @@ public final class ObservationsV2Response {
      */
     @java.lang.Override
     public _FinalStage addAllData(List<Map<String, Object>> data) {
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
@@ -146,6 +155,9 @@ public final class ObservationsV2Response {
       return this;
     }
 
+    /**
+     * <p>Array of observation objects. Fields included depend on the <code>fields</code> parameter in the request.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "data",
@@ -153,13 +165,27 @@ public final class ObservationsV2Response {
     )
     public _FinalStage data(List<Map<String, Object>> data) {
       this.data.clear();
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
     @java.lang.Override
     public ObservationsV2Response build() {
       return new ObservationsV2Response(data, meta, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

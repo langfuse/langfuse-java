@@ -118,6 +118,9 @@ public final class OtelScope {
       return this;
     }
 
+    /**
+     * <p>Instrumentation scope name</p>
+     */
     @JsonSetter(
         value = "name",
         nulls = Nulls.SKIP
@@ -132,6 +135,9 @@ public final class OtelScope {
       return this;
     }
 
+    /**
+     * <p>Instrumentation scope version</p>
+     */
     @JsonSetter(
         value = "version",
         nulls = Nulls.SKIP
@@ -146,6 +152,9 @@ public final class OtelScope {
       return this;
     }
 
+    /**
+     * <p>Additional scope attributes</p>
+     */
     @JsonSetter(
         value = "attributes",
         nulls = Nulls.SKIP
@@ -162,6 +171,16 @@ public final class OtelScope {
 
     public OtelScope build() {
       return new OtelScope(name, version, attributes, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

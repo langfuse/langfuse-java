@@ -119,6 +119,10 @@ public final class ScimUsersListResponse {
   public interface _FinalStage {
     ScimUsersListResponse build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage schemas(List<String> schemas);
 
     _FinalStage addSchemas(String schemas);
@@ -185,7 +189,9 @@ public final class ScimUsersListResponse {
 
     @java.lang.Override
     public _FinalStage addAllResources(List<ScimUser> resources) {
-      this.resources.addAll(resources);
+      if (resources != null) {
+        this.resources.addAll(resources);
+      }
       return this;
     }
 
@@ -202,13 +208,17 @@ public final class ScimUsersListResponse {
     )
     public _FinalStage resources(List<ScimUser> resources) {
       this.resources.clear();
-      this.resources.addAll(resources);
+      if (resources != null) {
+        this.resources.addAll(resources);
+      }
       return this;
     }
 
     @java.lang.Override
     public _FinalStage addAllSchemas(List<String> schemas) {
-      this.schemas.addAll(schemas);
+      if (schemas != null) {
+        this.schemas.addAll(schemas);
+      }
       return this;
     }
 
@@ -225,13 +235,27 @@ public final class ScimUsersListResponse {
     )
     public _FinalStage schemas(List<String> schemas) {
       this.schemas.clear();
-      this.schemas.addAll(schemas);
+      if (schemas != null) {
+        this.schemas.addAll(schemas);
+      }
       return this;
     }
 
     @java.lang.Override
     public ScimUsersListResponse build() {
       return new ScimUsersListResponse(schemas, totalResults, startIndex, itemsPerPage, resources, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }
