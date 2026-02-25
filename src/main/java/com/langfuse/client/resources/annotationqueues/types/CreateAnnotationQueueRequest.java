@@ -97,6 +97,10 @@ public final class CreateAnnotationQueueRequest {
   public interface _FinalStage {
     CreateAnnotationQueueRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage description(Optional<String> description);
 
     _FinalStage description(String description);
@@ -141,7 +145,9 @@ public final class CreateAnnotationQueueRequest {
 
     @java.lang.Override
     public _FinalStage addAllScoreConfigIds(List<String> scoreConfigIds) {
-      this.scoreConfigIds.addAll(scoreConfigIds);
+      if (scoreConfigIds != null) {
+        this.scoreConfigIds.addAll(scoreConfigIds);
+      }
       return this;
     }
 
@@ -158,7 +164,9 @@ public final class CreateAnnotationQueueRequest {
     )
     public _FinalStage scoreConfigIds(List<String> scoreConfigIds) {
       this.scoreConfigIds.clear();
-      this.scoreConfigIds.addAll(scoreConfigIds);
+      if (scoreConfigIds != null) {
+        this.scoreConfigIds.addAll(scoreConfigIds);
+      }
       return this;
     }
 
@@ -181,6 +189,18 @@ public final class CreateAnnotationQueueRequest {
     @java.lang.Override
     public CreateAnnotationQueueRequest build() {
       return new CreateAnnotationQueueRequest(name, description, scoreConfigIds, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

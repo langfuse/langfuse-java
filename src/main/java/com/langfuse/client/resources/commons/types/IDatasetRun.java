@@ -16,7 +16,7 @@ public interface IDatasetRun {
 
   Optional<String> getDescription();
 
-  Optional<Object> getMetadata();
+  Object getMetadata();
 
   String getDatasetId();
 

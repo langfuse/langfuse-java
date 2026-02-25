@@ -6,17 +6,20 @@ package com.langfuse.client.resources.commons.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
-import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,18 +52,18 @@ public final class Trace implements ITrace {
 
   private final Optional<Object> metadata;
 
-  private final Optional<List<String>> tags;
+  private final List<String> tags;
 
-  private final Optional<Boolean> public_;
+  private final boolean public_;
 
-  private final Optional<String> environment;
+  private final String environment;
 
   private final Map<String, Object> additionalProperties;
 
   private Trace(String id, OffsetDateTime timestamp, Optional<String> name, Optional<Object> input,
       Optional<Object> output, Optional<String> sessionId, Optional<String> release,
       Optional<String> version, Optional<String> userId, Optional<Object> metadata,
-      Optional<List<String>> tags, Optional<Boolean> public_, Optional<String> environment,
+      List<String> tags, boolean public_, String environment,
       Map<String, Object> additionalProperties) {
     this.id = id;
     this.timestamp = timestamp;
@@ -99,9 +102,12 @@ public final class Trace implements ITrace {
   /**
    * @return The name of the trace
    */
-  @JsonProperty("name")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getName() {
+    if (name == null) {
+      return Optional.empty();
+    }
     return name;
   }
 
@@ -126,36 +132,48 @@ public final class Trace implements ITrace {
   /**
    * @return The session identifier associated with the trace
    */
-  @JsonProperty("sessionId")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getSessionId() {
+    if (sessionId == null) {
+      return Optional.empty();
+    }
     return sessionId;
   }
 
   /**
    * @return The release version of the application when the trace was created
    */
-  @JsonProperty("release")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getRelease() {
+    if (release == null) {
+      return Optional.empty();
+    }
     return release;
   }
 
   /**
    * @return The version of the trace
    */
-  @JsonProperty("version")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getVersion() {
+    if (version == null) {
+      return Optional.empty();
+    }
     return version;
   }
 
   /**
    * @return The user identifier associated with the trace
    */
-  @JsonProperty("userId")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getUserId() {
+    if (userId == null) {
+      return Optional.empty();
+    }
     return userId;
   }
 
@@ -169,11 +187,11 @@ public final class Trace implements ITrace {
   }
 
   /**
-   * @return The tags associated with the trace. Can be an array of strings or null.
+   * @return The tags associated with the trace.
    */
   @JsonProperty("tags")
   @java.lang.Override
-  public Optional<List<String>> getTags() {
+  public List<String> getTags() {
     return tags;
   }
 
@@ -182,7 +200,7 @@ public final class Trace implements ITrace {
    */
   @JsonProperty("public")
   @java.lang.Override
-  public Optional<Boolean> getPublic() {
+  public boolean getPublic() {
     return public_;
   }
 
@@ -191,8 +209,53 @@ public final class Trace implements ITrace {
    */
   @JsonProperty("environment")
   @java.lang.Override
-  public Optional<String> getEnvironment() {
+  public String getEnvironment() {
     return environment;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("name")
+  private Optional<String> _getName() {
+    return name;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("sessionId")
+  private Optional<String> _getSessionId() {
+    return sessionId;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("release")
+  private Optional<String> _getRelease() {
+    return release;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("version")
+  private Optional<String> _getVersion() {
+    return version;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("userId")
+  private Optional<String> _getUserId() {
+    return userId;
   }
 
   @java.lang.Override
@@ -207,7 +270,7 @@ public final class Trace implements ITrace {
   }
 
   private boolean equalTo(Trace other) {
-    return id.equals(other.id) && timestamp.equals(other.timestamp) && name.equals(other.name) && input.equals(other.input) && output.equals(other.output) && sessionId.equals(other.sessionId) && release.equals(other.release) && version.equals(other.version) && userId.equals(other.userId) && metadata.equals(other.metadata) && tags.equals(other.tags) && public_.equals(other.public_) && environment.equals(other.environment);
+    return id.equals(other.id) && timestamp.equals(other.timestamp) && name.equals(other.name) && input.equals(other.input) && output.equals(other.output) && sessionId.equals(other.sessionId) && release.equals(other.release) && version.equals(other.version) && userId.equals(other.userId) && metadata.equals(other.metadata) && tags.equals(other.tags) && public_ == other.public_ && environment.equals(other.environment);
   }
 
   @java.lang.Override
@@ -225,76 +288,131 @@ public final class Trace implements ITrace {
   }
 
   public interface IdStage {
+    /**
+     * <p>The unique identifier of a trace</p>
+     */
     TimestampStage id(@NotNull String id);
 
     Builder from(Trace other);
   }
 
   public interface TimestampStage {
-    _FinalStage timestamp(@NotNull OffsetDateTime timestamp);
+    /**
+     * <p>The timestamp when the trace was created</p>
+     */
+    PublicStage timestamp(@NotNull OffsetDateTime timestamp);
+  }
+
+  public interface PublicStage {
+    /**
+     * <p>Public traces are accessible via url without login</p>
+     */
+    EnvironmentStage public_(boolean public_);
+  }
+
+  public interface EnvironmentStage {
+    /**
+     * <p>The environment from which this trace originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
+     */
+    _FinalStage environment(@NotNull String environment);
   }
 
   public interface _FinalStage {
     Trace build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>The name of the trace</p>
+     */
     _FinalStage name(Optional<String> name);
 
     _FinalStage name(String name);
 
+    _FinalStage name(Nullable<String> name);
+
+    /**
+     * <p>The input data of the trace. Can be any JSON.</p>
+     */
     _FinalStage input(Optional<Object> input);
 
     _FinalStage input(Object input);
 
+    /**
+     * <p>The output data of the trace. Can be any JSON.</p>
+     */
     _FinalStage output(Optional<Object> output);
 
     _FinalStage output(Object output);
 
+    /**
+     * <p>The session identifier associated with the trace</p>
+     */
     _FinalStage sessionId(Optional<String> sessionId);
 
     _FinalStage sessionId(String sessionId);
 
+    _FinalStage sessionId(Nullable<String> sessionId);
+
+    /**
+     * <p>The release version of the application when the trace was created</p>
+     */
     _FinalStage release(Optional<String> release);
 
     _FinalStage release(String release);
 
+    _FinalStage release(Nullable<String> release);
+
+    /**
+     * <p>The version of the trace</p>
+     */
     _FinalStage version(Optional<String> version);
 
     _FinalStage version(String version);
 
+    _FinalStage version(Nullable<String> version);
+
+    /**
+     * <p>The user identifier associated with the trace</p>
+     */
     _FinalStage userId(Optional<String> userId);
 
     _FinalStage userId(String userId);
 
+    _FinalStage userId(Nullable<String> userId);
+
+    /**
+     * <p>The metadata associated with the trace. Can be any JSON.</p>
+     */
     _FinalStage metadata(Optional<Object> metadata);
 
     _FinalStage metadata(Object metadata);
 
-    _FinalStage tags(Optional<List<String>> tags);
-
+    /**
+     * <p>The tags associated with the trace.</p>
+     */
     _FinalStage tags(List<String> tags);
 
-    _FinalStage public_(Optional<Boolean> public_);
+    _FinalStage addTags(String tags);
 
-    _FinalStage public_(Boolean public_);
-
-    _FinalStage environment(Optional<String> environment);
-
-    _FinalStage environment(String environment);
+    _FinalStage addAllTags(List<String> tags);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements IdStage, TimestampStage, _FinalStage {
+  public static final class Builder implements IdStage, TimestampStage, PublicStage, EnvironmentStage, _FinalStage {
     private String id;
 
     private OffsetDateTime timestamp;
 
-    private Optional<String> environment = Optional.empty();
+    private boolean public_;
 
-    private Optional<Boolean> public_ = Optional.empty();
+    private String environment;
 
-    private Optional<List<String>> tags = Optional.empty();
+    private List<String> tags = new ArrayList<>();
 
     private Optional<Object> metadata = Optional.empty();
 
@@ -338,6 +456,7 @@ public final class Trace implements ITrace {
 
     /**
      * <p>The unique identifier of a trace</p>
+     * <p>The unique identifier of a trace</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -349,72 +468,75 @@ public final class Trace implements ITrace {
 
     /**
      * <p>The timestamp when the trace was created</p>
+     * <p>The timestamp when the trace was created</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
     @JsonSetter("timestamp")
-    public _FinalStage timestamp(@NotNull OffsetDateTime timestamp) {
+    public PublicStage timestamp(@NotNull OffsetDateTime timestamp) {
       this.timestamp = Objects.requireNonNull(timestamp, "timestamp must not be null");
       return this;
     }
 
     /**
-     * <p>The environment from which this trace originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    public _FinalStage environment(String environment) {
-      this.environment = Optional.ofNullable(environment);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "environment",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage environment(Optional<String> environment) {
-      this.environment = environment;
-      return this;
-    }
-
-    /**
+     * <p>Public traces are accessible via url without login</p>
      * <p>Public traces are accessible via url without login</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage public_(Boolean public_) {
-      this.public_ = Optional.ofNullable(public_);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "public",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage public_(Optional<Boolean> public_) {
+    @JsonSetter("public")
+    public EnvironmentStage public_(boolean public_) {
       this.public_ = public_;
       return this;
     }
 
     /**
-     * <p>The tags associated with the trace. Can be an array of strings or null.</p>
+     * <p>The environment from which this trace originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
+     * <p>The environment from which this trace originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage tags(List<String> tags) {
-      this.tags = Optional.ofNullable(tags);
+    @JsonSetter("environment")
+    public _FinalStage environment(@NotNull String environment) {
+      this.environment = Objects.requireNonNull(environment, "environment must not be null");
       return this;
     }
 
+    /**
+     * <p>The tags associated with the trace.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addAllTags(List<String> tags) {
+      if (tags != null) {
+        this.tags.addAll(tags);
+      }
+      return this;
+    }
+
+    /**
+     * <p>The tags associated with the trace.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addTags(String tags) {
+      this.tags.add(tags);
+      return this;
+    }
+
+    /**
+     * <p>The tags associated with the trace.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "tags",
         nulls = Nulls.SKIP
     )
-    public _FinalStage tags(Optional<List<String>> tags) {
-      this.tags = tags;
+    public _FinalStage tags(List<String> tags) {
+      this.tags.clear();
+      if (tags != null) {
+        this.tags.addAll(tags);
+      }
       return this;
     }
 
@@ -428,6 +550,9 @@ public final class Trace implements ITrace {
       return this;
     }
 
+    /**
+     * <p>The metadata associated with the trace. Can be any JSON.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "metadata",
@@ -443,11 +568,32 @@ public final class Trace implements ITrace {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage userId(Nullable<String> userId) {
+      if (userId.isNull()) {
+        this.userId = null;
+      }
+      else if (userId.isEmpty()) {
+        this.userId = Optional.empty();
+      }
+      else {
+        this.userId = Optional.of(userId.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The user identifier associated with the trace</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage userId(String userId) {
       this.userId = Optional.ofNullable(userId);
       return this;
     }
 
+    /**
+     * <p>The user identifier associated with the trace</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "userId",
@@ -463,11 +609,32 @@ public final class Trace implements ITrace {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage version(Nullable<String> version) {
+      if (version.isNull()) {
+        this.version = null;
+      }
+      else if (version.isEmpty()) {
+        this.version = Optional.empty();
+      }
+      else {
+        this.version = Optional.of(version.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The version of the trace</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage version(String version) {
       this.version = Optional.ofNullable(version);
       return this;
     }
 
+    /**
+     * <p>The version of the trace</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "version",
@@ -483,11 +650,32 @@ public final class Trace implements ITrace {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage release(Nullable<String> release) {
+      if (release.isNull()) {
+        this.release = null;
+      }
+      else if (release.isEmpty()) {
+        this.release = Optional.empty();
+      }
+      else {
+        this.release = Optional.of(release.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The release version of the application when the trace was created</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage release(String release) {
       this.release = Optional.ofNullable(release);
       return this;
     }
 
+    /**
+     * <p>The release version of the application when the trace was created</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "release",
@@ -503,11 +691,32 @@ public final class Trace implements ITrace {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage sessionId(Nullable<String> sessionId) {
+      if (sessionId.isNull()) {
+        this.sessionId = null;
+      }
+      else if (sessionId.isEmpty()) {
+        this.sessionId = Optional.empty();
+      }
+      else {
+        this.sessionId = Optional.of(sessionId.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The session identifier associated with the trace</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage sessionId(String sessionId) {
       this.sessionId = Optional.ofNullable(sessionId);
       return this;
     }
 
+    /**
+     * <p>The session identifier associated with the trace</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "sessionId",
@@ -528,6 +737,9 @@ public final class Trace implements ITrace {
       return this;
     }
 
+    /**
+     * <p>The output data of the trace. Can be any JSON.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "output",
@@ -548,6 +760,9 @@ public final class Trace implements ITrace {
       return this;
     }
 
+    /**
+     * <p>The input data of the trace. Can be any JSON.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "input",
@@ -563,11 +778,32 @@ public final class Trace implements ITrace {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage name(Nullable<String> name) {
+      if (name.isNull()) {
+        this.name = null;
+      }
+      else if (name.isEmpty()) {
+        this.name = Optional.empty();
+      }
+      else {
+        this.name = Optional.of(name.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The name of the trace</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage name(String name) {
       this.name = Optional.ofNullable(name);
       return this;
     }
 
+    /**
+     * <p>The name of the trace</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "name",
@@ -581,6 +817,18 @@ public final class Trace implements ITrace {
     @java.lang.Override
     public Trace build() {
       return new Trace(id, timestamp, name, input, output, sessionId, release, version, userId, metadata, tags, public_, environment, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

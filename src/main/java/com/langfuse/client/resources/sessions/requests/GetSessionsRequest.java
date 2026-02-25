@@ -17,7 +17,9 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,6 +29,8 @@ import java.util.Optional;
     builder = GetSessionsRequest.Builder.class
 )
 public final class GetSessionsRequest {
+  private final Optional<List<String>> environment;
+
   private final Optional<Integer> page;
 
   private final Optional<Integer> limit;
@@ -35,19 +39,25 @@ public final class GetSessionsRequest {
 
   private final Optional<OffsetDateTime> toTimestamp;
 
-  private final Optional<String> environment;
-
   private final Map<String, Object> additionalProperties;
 
-  private GetSessionsRequest(Optional<Integer> page, Optional<Integer> limit,
-      Optional<OffsetDateTime> fromTimestamp, Optional<OffsetDateTime> toTimestamp,
-      Optional<String> environment, Map<String, Object> additionalProperties) {
+  private GetSessionsRequest(Optional<List<String>> environment, Optional<Integer> page,
+      Optional<Integer> limit, Optional<OffsetDateTime> fromTimestamp,
+      Optional<OffsetDateTime> toTimestamp, Map<String, Object> additionalProperties) {
+    this.environment = environment;
     this.page = page;
     this.limit = limit;
     this.fromTimestamp = fromTimestamp;
     this.toTimestamp = toTimestamp;
-    this.environment = environment;
     this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Optional filter for sessions where the environment is one of the provided values.
+   */
+  @JsonProperty("environment")
+  public Optional<List<String>> getEnvironment() {
+    return environment;
   }
 
   /**
@@ -82,14 +92,6 @@ public final class GetSessionsRequest {
     return toTimestamp;
   }
 
-  /**
-   * @return Optional filter for sessions where the environment is one of the provided values.
-   */
-  @JsonProperty("environment")
-  public Optional<String> getEnvironment() {
-    return environment;
-  }
-
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -102,12 +104,12 @@ public final class GetSessionsRequest {
   }
 
   private boolean equalTo(GetSessionsRequest other) {
-    return page.equals(other.page) && limit.equals(other.limit) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && environment.equals(other.environment);
+    return environment.equals(other.environment) && page.equals(other.page) && limit.equals(other.limit) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.page, this.limit, this.fromTimestamp, this.toTimestamp, this.environment);
+    return Objects.hash(this.environment, this.page, this.limit, this.fromTimestamp, this.toTimestamp);
   }
 
   @java.lang.Override
@@ -123,6 +125,8 @@ public final class GetSessionsRequest {
       ignoreUnknown = true
   )
   public static final class Builder {
+    private Optional<List<String>> environment = Optional.empty();
+
     private Optional<Integer> page = Optional.empty();
 
     private Optional<Integer> limit = Optional.empty();
@@ -131,8 +135,6 @@ public final class GetSessionsRequest {
 
     private Optional<OffsetDateTime> toTimestamp = Optional.empty();
 
-    private Optional<String> environment = Optional.empty();
-
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -140,14 +142,39 @@ public final class GetSessionsRequest {
     }
 
     public Builder from(GetSessionsRequest other) {
+      environment(other.getEnvironment());
       page(other.getPage());
       limit(other.getLimit());
       fromTimestamp(other.getFromTimestamp());
       toTimestamp(other.getToTimestamp());
-      environment(other.getEnvironment());
       return this;
     }
 
+    /**
+     * <p>Optional filter for sessions where the environment is one of the provided values.</p>
+     */
+    @JsonSetter(
+        value = "environment",
+        nulls = Nulls.SKIP
+    )
+    public Builder environment(Optional<List<String>> environment) {
+      this.environment = environment;
+      return this;
+    }
+
+    public Builder environment(List<String> environment) {
+      this.environment = Optional.ofNullable(environment);
+      return this;
+    }
+
+    public Builder environment(String environment) {
+      this.environment = Optional.of(Collections.singletonList(environment));
+      return this;
+    }
+
+    /**
+     * <p>Page number, starts at 1</p>
+     */
     @JsonSetter(
         value = "page",
         nulls = Nulls.SKIP
@@ -162,6 +189,9 @@ public final class GetSessionsRequest {
       return this;
     }
 
+    /**
+     * <p>Limit of items per page. If you encounter api issues due to too large page sizes, try to reduce the limit.</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -176,6 +206,9 @@ public final class GetSessionsRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include sessions created on or after a certain datetime (ISO 8601)</p>
+     */
     @JsonSetter(
         value = "fromTimestamp",
         nulls = Nulls.SKIP
@@ -190,6 +223,9 @@ public final class GetSessionsRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include sessions created before a certain datetime (ISO 8601)</p>
+     */
     @JsonSetter(
         value = "toTimestamp",
         nulls = Nulls.SKIP
@@ -204,22 +240,18 @@ public final class GetSessionsRequest {
       return this;
     }
 
-    @JsonSetter(
-        value = "environment",
-        nulls = Nulls.SKIP
-    )
-    public Builder environment(Optional<String> environment) {
-      this.environment = environment;
-      return this;
-    }
-
-    public Builder environment(String environment) {
-      this.environment = Optional.ofNullable(environment);
-      return this;
-    }
-
     public GetSessionsRequest build() {
-      return new GetSessionsRequest(page, limit, fromTimestamp, toTimestamp, environment, additionalProperties);
+      return new GetSessionsRequest(environment, page, limit, fromTimestamp, toTimestamp, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

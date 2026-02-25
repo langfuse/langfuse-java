@@ -107,6 +107,10 @@ public final class IngestionError {
   public interface _FinalStage {
     IngestionError build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage message(Optional<String> message);
 
     _FinalStage message(String message);
@@ -192,6 +196,18 @@ public final class IngestionError {
     @java.lang.Override
     public IngestionError build() {
       return new IngestionError(id, status, message, error, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

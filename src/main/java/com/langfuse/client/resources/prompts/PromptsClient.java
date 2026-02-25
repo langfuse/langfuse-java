@@ -4,29 +4,9 @@
 
 package com.langfuse.client.resources.prompts;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.langfuse.client.core.ClientOptions;
-import com.langfuse.client.core.LangfuseClientApiException;
-import com.langfuse.client.core.LangfuseClientException;
-import com.langfuse.client.core.MediaTypes;
-import com.langfuse.client.core.ObjectMappers;
-import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
-import java.io.IOException;
-import java.lang.Object;
 import java.lang.String;
-import okhttp3.Headers;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-import com.langfuse.client.resources.commons.errors.AccessDeniedError;
-import com.langfuse.client.resources.commons.errors.Error;
-import com.langfuse.client.resources.commons.errors.MethodNotAllowedError;
-import com.langfuse.client.resources.commons.errors.NotFoundError;
-import com.langfuse.client.resources.commons.errors.UnauthorizedError;
 import com.langfuse.client.resources.prompts.requests.DeletePromptRequest;
 import com.langfuse.client.resources.prompts.requests.GetPromptRequest;
 import com.langfuse.client.resources.prompts.requests.ListPromptsMetaRequest;
@@ -37,269 +17,117 @@ import com.langfuse.client.resources.prompts.types.PromptMetaListResponse;
 public class PromptsClient {
   protected final ClientOptions clientOptions;
 
+  private final RawPromptsClient rawClient;
+
   public PromptsClient(ClientOptions clientOptions) {
     this.clientOptions = clientOptions;
+    this.rawClient = new RawPromptsClient(clientOptions);
+  }
+
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawPromptsClient withRawResponse() {
+    return this.rawClient;
   }
 
   /**
    * Get a prompt
    */
   public Prompt get(String promptName) {
-    return get(promptName,GetPromptRequest.builder().build());
+    return this.rawClient.get(promptName).body();
+  }
+
+  /**
+   * Get a prompt
+   */
+  public Prompt get(String promptName, RequestOptions requestOptions) {
+    return this.rawClient.get(promptName, requestOptions).body();
   }
 
   /**
    * Get a prompt
    */
   public Prompt get(String promptName, GetPromptRequest request) {
-    return get(promptName,request,null);
+    return this.rawClient.get(promptName, request).body();
   }
 
   /**
    * Get a prompt
    */
   public Prompt get(String promptName, GetPromptRequest request, RequestOptions requestOptions) {
-    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-      .addPathSegments("api/public/v2")
-      .addPathSegments("prompts")
-      .addPathSegment(promptName);if (request.getVersion().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "version", request.getVersion().get().toString(), false);
-      }
-      if (request.getLabel().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "label", request.getLabel().get(), false);
-      }
-      Request.Builder _requestBuilder = new Request.Builder()
-        .url(httpUrl.build())
-        .method("GET", null)
-        .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json");
-      Request okhttpRequest = _requestBuilder.build();
-      OkHttpClient client = clientOptions.httpClient();
-      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-        client = clientOptions.httpClientWithTimeout(requestOptions);
-      }
-      try (Response response = client.newCall(okhttpRequest).execute()) {
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), Prompt.class);
-        }
-        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-        try {
-          switch (response.code()) {
-            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-        }
-        catch (JsonProcessingException ignored) {
-          // unable to map error response, throwing generic error
-        }
-        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-      }
-      catch (IOException e) {
-        throw new LangfuseClientException("Network error executing HTTP request", e);
-      }
-    }
+    return this.rawClient.get(promptName, request, requestOptions).body();
+  }
 
-    /**
-     * Get a list of prompt names with versions and labels
-     */
-    public PromptMetaListResponse list() {
-      return list(ListPromptsMetaRequest.builder().build());
-    }
+  /**
+   * Get a list of prompt names with versions and labels
+   */
+  public PromptMetaListResponse list() {
+    return this.rawClient.list().body();
+  }
 
-    /**
-     * Get a list of prompt names with versions and labels
-     */
-    public PromptMetaListResponse list(ListPromptsMetaRequest request) {
-      return list(request,null);
-    }
+  /**
+   * Get a list of prompt names with versions and labels
+   */
+  public PromptMetaListResponse list(RequestOptions requestOptions) {
+    return this.rawClient.list(requestOptions).body();
+  }
 
-    /**
-     * Get a list of prompt names with versions and labels
-     */
-    public PromptMetaListResponse list(ListPromptsMetaRequest request,
-        RequestOptions requestOptions) {
-      HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-        .addPathSegments("api/public/v2")
-        .addPathSegments("prompts");if (request.getName().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "name", request.getName().get(), false);
-        }
-        if (request.getLabel().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "label", request.getLabel().get(), false);
-        }
-        if (request.getTag().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "tag", request.getTag().get(), false);
-        }
-        if (request.getPage().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get().toString(), false);
-        }
-        if (request.getLimit().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get().toString(), false);
-        }
-        if (request.getFromUpdatedAt().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "fromUpdatedAt", request.getFromUpdatedAt().get().toString(), false);
-        }
-        if (request.getToUpdatedAt().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "toUpdatedAt", request.getToUpdatedAt().get().toString(), false);
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-          .url(httpUrl.build())
-          .method("GET", null)
-          .headers(Headers.of(clientOptions.headers(requestOptions)))
-          .addHeader("Content-Type", "application/json")
-          .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-          client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-          ResponseBody responseBody = response.body();
-          if (response.isSuccessful()) {
-            return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), PromptMetaListResponse.class);
-          }
-          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-          try {
-            switch (response.code()) {
-              case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            }
-          }
-          catch (JsonProcessingException ignored) {
-            // unable to map error response, throwing generic error
-          }
-          throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-        }
-        catch (IOException e) {
-          throw new LangfuseClientException("Network error executing HTTP request", e);
-        }
-      }
+  /**
+   * Get a list of prompt names with versions and labels
+   */
+  public PromptMetaListResponse list(ListPromptsMetaRequest request) {
+    return this.rawClient.list(request).body();
+  }
 
-      /**
-       * Create a new version for the prompt with the given <code>name</code>
-       */
-      public Prompt create(CreatePromptRequest request) {
-        return create(request,null);
-      }
+  /**
+   * Get a list of prompt names with versions and labels
+   */
+  public PromptMetaListResponse list(ListPromptsMetaRequest request,
+      RequestOptions requestOptions) {
+    return this.rawClient.list(request, requestOptions).body();
+  }
 
-      /**
-       * Create a new version for the prompt with the given <code>name</code>
-       */
-      public Prompt create(CreatePromptRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-          .addPathSegments("api/public/v2")
-          .addPathSegments("prompts")
-          .build();
-        RequestBody body;
-        try {
-          body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        }
-        catch(JsonProcessingException e) {
-          throw new LangfuseClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-          .url(httpUrl)
-          .method("POST", body)
-          .headers(Headers.of(clientOptions.headers(requestOptions)))
-          .addHeader("Content-Type", "application/json")
-          .addHeader("Accept", "application/json")
-          .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-          client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-          ResponseBody responseBody = response.body();
-          if (response.isSuccessful()) {
-            return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), Prompt.class);
-          }
-          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-          try {
-            switch (response.code()) {
-              case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            }
-          }
-          catch (JsonProcessingException ignored) {
-            // unable to map error response, throwing generic error
-          }
-          throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-        }
-        catch (IOException e) {
-          throw new LangfuseClientException("Network error executing HTTP request", e);
-        }
-      }
+  /**
+   * Create a new version for the prompt with the given <code>name</code>
+   */
+  public Prompt create(CreatePromptRequest request) {
+    return this.rawClient.create(request).body();
+  }
 
-      /**
-       * Delete prompt versions. If neither version nor label is specified, all versions of the prompt are deleted.
-       */
-      public void delete(String promptName) {
-        delete(promptName,DeletePromptRequest.builder().build());
-      }
+  /**
+   * Create a new version for the prompt with the given <code>name</code>
+   */
+  public Prompt create(CreatePromptRequest request, RequestOptions requestOptions) {
+    return this.rawClient.create(request, requestOptions).body();
+  }
 
-      /**
-       * Delete prompt versions. If neither version nor label is specified, all versions of the prompt are deleted.
-       */
-      public void delete(String promptName, DeletePromptRequest request) {
-        delete(promptName,request,null);
-      }
+  /**
+   * Delete prompt versions. If neither version nor label is specified, all versions of the prompt are deleted.
+   */
+  public void delete(String promptName) {
+    this.rawClient.delete(promptName).body();
+  }
 
-      /**
-       * Delete prompt versions. If neither version nor label is specified, all versions of the prompt are deleted.
-       */
-      public void delete(String promptName, DeletePromptRequest request,
-          RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-          .addPathSegments("api/public/v2")
-          .addPathSegments("prompts")
-          .addPathSegment(promptName);if (request.getLabel().isPresent()) {
-            QueryStringMapper.addQueryParameter(httpUrl, "label", request.getLabel().get(), false);
-          }
-          if (request.getVersion().isPresent()) {
-            QueryStringMapper.addQueryParameter(httpUrl, "version", request.getVersion().get().toString(), false);
-          }
-          Request.Builder _requestBuilder = new Request.Builder()
-            .url(httpUrl.build())
-            .method("DELETE", null)
-            .headers(Headers.of(clientOptions.headers(requestOptions)))
-            .addHeader("Accept", "application/json");
-          Request okhttpRequest = _requestBuilder.build();
-          OkHttpClient client = clientOptions.httpClient();
-          if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-          }
-          try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            if (response.isSuccessful()) {
-              return;
-            }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            try {
-              switch (response.code()) {
-                case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-                case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-                case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-                case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-                case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              }
-            }
-            catch (JsonProcessingException ignored) {
-              // unable to map error response, throwing generic error
-            }
-            throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-          catch (IOException e) {
-            throw new LangfuseClientException("Network error executing HTTP request", e);
-          }
-        }
-      }
+  /**
+   * Delete prompt versions. If neither version nor label is specified, all versions of the prompt are deleted.
+   */
+  public void delete(String promptName, RequestOptions requestOptions) {
+    this.rawClient.delete(promptName, requestOptions).body();
+  }
+
+  /**
+   * Delete prompt versions. If neither version nor label is specified, all versions of the prompt are deleted.
+   */
+  public void delete(String promptName, DeletePromptRequest request) {
+    this.rawClient.delete(promptName, request).body();
+  }
+
+  /**
+   * Delete prompt versions. If neither version nor label is specified, all versions of the prompt are deleted.
+   */
+  public void delete(String promptName, DeletePromptRequest request,
+      RequestOptions requestOptions) {
+    this.rawClient.delete(promptName, request, requestOptions).body();
+  }
+}

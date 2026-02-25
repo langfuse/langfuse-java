@@ -88,6 +88,9 @@ public final class ObservationsV2Meta {
       return this;
     }
 
+    /**
+     * <p>Base64-encoded cursor to use for retrieving the next page. If not present, there are no more results.</p>
+     */
     @JsonSetter(
         value = "cursor",
         nulls = Nulls.SKIP
@@ -104,6 +107,16 @@ public final class ObservationsV2Meta {
 
     public ObservationsV2Meta build() {
       return new ObservationsV2Meta(cursor, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

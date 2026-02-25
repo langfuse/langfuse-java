@@ -4,25 +4,95 @@
 
 package com.langfuse.client.resources.commons.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum ScoreConfigDataType {
-  NUMERIC("NUMERIC"),
+public final class ScoreConfigDataType {
+  public static final ScoreConfigDataType CATEGORICAL = new ScoreConfigDataType(Value.CATEGORICAL, "CATEGORICAL");
 
-  BOOLEAN("BOOLEAN"),
+  public static final ScoreConfigDataType NUMERIC = new ScoreConfigDataType(Value.NUMERIC, "NUMERIC");
 
-  CATEGORICAL("CATEGORICAL");
+  public static final ScoreConfigDataType BOOLEAN = new ScoreConfigDataType(Value.BOOLEAN, "BOOLEAN");
 
-  private final String value;
+  private final Value value;
 
-  ScoreConfigDataType(String value) {
+  private final String string;
+
+  ScoreConfigDataType(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof ScoreConfigDataType && this.string.equals(((ScoreConfigDataType) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case CATEGORICAL:
+        return visitor.visitCategorical();
+      case NUMERIC:
+        return visitor.visitNumeric();
+      case BOOLEAN:
+        return visitor.visitBoolean();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static ScoreConfigDataType valueOf(String value) {
+    switch (value) {
+      case "CATEGORICAL":
+        return CATEGORICAL;
+      case "NUMERIC":
+        return NUMERIC;
+      case "BOOLEAN":
+        return BOOLEAN;
+      default:
+        return new ScoreConfigDataType(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    NUMERIC,
+
+    BOOLEAN,
+
+    CATEGORICAL,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitNumeric();
+
+    T visitBoolean();
+
+    T visitCategorical();
+
+    T visitUnknown(String unknownType);
   }
 }

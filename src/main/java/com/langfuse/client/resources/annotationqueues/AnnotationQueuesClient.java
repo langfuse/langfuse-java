@@ -4,24 +4,9 @@
 
 package com.langfuse.client.resources.annotationqueues;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.langfuse.client.core.ClientOptions;
-import com.langfuse.client.core.LangfuseClientApiException;
-import com.langfuse.client.core.LangfuseClientException;
-import com.langfuse.client.core.MediaTypes;
-import com.langfuse.client.core.ObjectMappers;
-import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
-import java.io.IOException;
-import java.lang.Object;
 import java.lang.String;
-import okhttp3.Headers;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 import com.langfuse.client.resources.annotationqueues.requests.GetAnnotationQueueItemsRequest;
 import com.langfuse.client.resources.annotationqueues.requests.GetAnnotationQueuesRequest;
 import com.langfuse.client.resources.annotationqueues.types.AnnotationQueue;
@@ -35,31 +20,43 @@ import com.langfuse.client.resources.annotationqueues.types.DeleteAnnotationQueu
 import com.langfuse.client.resources.annotationqueues.types.PaginatedAnnotationQueueItems;
 import com.langfuse.client.resources.annotationqueues.types.PaginatedAnnotationQueues;
 import com.langfuse.client.resources.annotationqueues.types.UpdateAnnotationQueueItemRequest;
-import com.langfuse.client.resources.commons.errors.AccessDeniedError;
-import com.langfuse.client.resources.commons.errors.Error;
-import com.langfuse.client.resources.commons.errors.MethodNotAllowedError;
-import com.langfuse.client.resources.commons.errors.NotFoundError;
-import com.langfuse.client.resources.commons.errors.UnauthorizedError;
 
 public class AnnotationQueuesClient {
   protected final ClientOptions clientOptions;
 
+  private final RawAnnotationQueuesClient rawClient;
+
   public AnnotationQueuesClient(ClientOptions clientOptions) {
     this.clientOptions = clientOptions;
+    this.rawClient = new RawAnnotationQueuesClient(clientOptions);
+  }
+
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawAnnotationQueuesClient withRawResponse() {
+    return this.rawClient;
   }
 
   /**
    * Get all annotation queues
    */
   public PaginatedAnnotationQueues listQueues() {
-    return listQueues(GetAnnotationQueuesRequest.builder().build());
+    return this.rawClient.listQueues().body();
+  }
+
+  /**
+   * Get all annotation queues
+   */
+  public PaginatedAnnotationQueues listQueues(RequestOptions requestOptions) {
+    return this.rawClient.listQueues(requestOptions).body();
   }
 
   /**
    * Get all annotation queues
    */
   public PaginatedAnnotationQueues listQueues(GetAnnotationQueuesRequest request) {
-    return listQueues(request,null);
+    return this.rawClient.listQueues(request).body();
   }
 
   /**
@@ -67,593 +64,175 @@ public class AnnotationQueuesClient {
    */
   public PaginatedAnnotationQueues listQueues(GetAnnotationQueuesRequest request,
       RequestOptions requestOptions) {
-    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-      .addPathSegments("api/public")
-      .addPathSegments("annotation-queues");if (request.getPage().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get().toString(), false);
-      }
-      if (request.getLimit().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get().toString(), false);
-      }
-      Request.Builder _requestBuilder = new Request.Builder()
-        .url(httpUrl.build())
-        .method("GET", null)
-        .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json");
-      Request okhttpRequest = _requestBuilder.build();
-      OkHttpClient client = clientOptions.httpClient();
-      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-        client = clientOptions.httpClientWithTimeout(requestOptions);
-      }
-      try (Response response = client.newCall(okhttpRequest).execute()) {
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), PaginatedAnnotationQueues.class);
-        }
-        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-        try {
-          switch (response.code()) {
-            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-        }
-        catch (JsonProcessingException ignored) {
-          // unable to map error response, throwing generic error
-        }
-        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-      }
-      catch (IOException e) {
-        throw new LangfuseClientException("Network error executing HTTP request", e);
-      }
-    }
+    return this.rawClient.listQueues(request, requestOptions).body();
+  }
 
-    /**
-     * Create an annotation queue
-     */
-    public AnnotationQueue createQueue(CreateAnnotationQueueRequest request) {
-      return createQueue(request,null);
-    }
+  /**
+   * Create an annotation queue
+   */
+  public AnnotationQueue createQueue(CreateAnnotationQueueRequest request) {
+    return this.rawClient.createQueue(request).body();
+  }
 
-    /**
-     * Create an annotation queue
-     */
-    public AnnotationQueue createQueue(CreateAnnotationQueueRequest request,
-        RequestOptions requestOptions) {
-      HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-        .addPathSegments("api/public")
-        .addPathSegments("annotation-queues")
-        .build();
-      RequestBody body;
-      try {
-        body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-      }
-      catch(JsonProcessingException e) {
-        throw new LangfuseClientException("Failed to serialize request", e);
-      }
-      Request okhttpRequest = new Request.Builder()
-        .url(httpUrl)
-        .method("POST", body)
-        .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json")
-        .build();
-      OkHttpClient client = clientOptions.httpClient();
-      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-        client = clientOptions.httpClientWithTimeout(requestOptions);
-      }
-      try (Response response = client.newCall(okhttpRequest).execute()) {
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AnnotationQueue.class);
-        }
-        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-        try {
-          switch (response.code()) {
-            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-        }
-        catch (JsonProcessingException ignored) {
-          // unable to map error response, throwing generic error
-        }
-        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-      }
-      catch (IOException e) {
-        throw new LangfuseClientException("Network error executing HTTP request", e);
-      }
-    }
+  /**
+   * Create an annotation queue
+   */
+  public AnnotationQueue createQueue(CreateAnnotationQueueRequest request,
+      RequestOptions requestOptions) {
+    return this.rawClient.createQueue(request, requestOptions).body();
+  }
 
-    /**
-     * Get an annotation queue by ID
-     */
-    public AnnotationQueue getQueue(String queueId) {
-      return getQueue(queueId,null);
-    }
+  /**
+   * Get an annotation queue by ID
+   */
+  public AnnotationQueue getQueue(String queueId) {
+    return this.rawClient.getQueue(queueId).body();
+  }
 
-    /**
-     * Get an annotation queue by ID
-     */
-    public AnnotationQueue getQueue(String queueId, RequestOptions requestOptions) {
-      HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-        .addPathSegments("api/public")
-        .addPathSegments("annotation-queues")
-        .addPathSegment(queueId)
-        .build();
-      Request okhttpRequest = new Request.Builder()
-        .url(httpUrl)
-        .method("GET", null)
-        .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json")
-        .build();
-      OkHttpClient client = clientOptions.httpClient();
-      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-        client = clientOptions.httpClientWithTimeout(requestOptions);
-      }
-      try (Response response = client.newCall(okhttpRequest).execute()) {
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AnnotationQueue.class);
-        }
-        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-        try {
-          switch (response.code()) {
-            case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-          }
-        }
-        catch (JsonProcessingException ignored) {
-          // unable to map error response, throwing generic error
-        }
-        throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-      }
-      catch (IOException e) {
-        throw new LangfuseClientException("Network error executing HTTP request", e);
-      }
-    }
+  /**
+   * Get an annotation queue by ID
+   */
+  public AnnotationQueue getQueue(String queueId, RequestOptions requestOptions) {
+    return this.rawClient.getQueue(queueId, requestOptions).body();
+  }
 
-    /**
-     * Get items for a specific annotation queue
-     */
-    public PaginatedAnnotationQueueItems listQueueItems(String queueId) {
-      return listQueueItems(queueId,GetAnnotationQueueItemsRequest.builder().build());
-    }
+  /**
+   * Get items for a specific annotation queue
+   */
+  public PaginatedAnnotationQueueItems listQueueItems(String queueId) {
+    return this.rawClient.listQueueItems(queueId).body();
+  }
 
-    /**
-     * Get items for a specific annotation queue
-     */
-    public PaginatedAnnotationQueueItems listQueueItems(String queueId,
-        GetAnnotationQueueItemsRequest request) {
-      return listQueueItems(queueId,request,null);
-    }
+  /**
+   * Get items for a specific annotation queue
+   */
+  public PaginatedAnnotationQueueItems listQueueItems(String queueId,
+      RequestOptions requestOptions) {
+    return this.rawClient.listQueueItems(queueId, requestOptions).body();
+  }
 
-    /**
-     * Get items for a specific annotation queue
-     */
-    public PaginatedAnnotationQueueItems listQueueItems(String queueId,
-        GetAnnotationQueueItemsRequest request, RequestOptions requestOptions) {
-      HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-        .addPathSegments("api/public")
-        .addPathSegments("annotation-queues")
-        .addPathSegment(queueId)
-        .addPathSegments("items");if (request.getStatus().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "status", request.getStatus().get().toString(), false);
-        }
-        if (request.getPage().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get().toString(), false);
-        }
-        if (request.getLimit().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get().toString(), false);
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-          .url(httpUrl.build())
-          .method("GET", null)
-          .headers(Headers.of(clientOptions.headers(requestOptions)))
-          .addHeader("Content-Type", "application/json")
-          .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-          client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-          ResponseBody responseBody = response.body();
-          if (response.isSuccessful()) {
-            return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), PaginatedAnnotationQueueItems.class);
-          }
-          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-          try {
-            switch (response.code()) {
-              case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            }
-          }
-          catch (JsonProcessingException ignored) {
-            // unable to map error response, throwing generic error
-          }
-          throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-        }
-        catch (IOException e) {
-          throw new LangfuseClientException("Network error executing HTTP request", e);
-        }
-      }
+  /**
+   * Get items for a specific annotation queue
+   */
+  public PaginatedAnnotationQueueItems listQueueItems(String queueId,
+      GetAnnotationQueueItemsRequest request) {
+    return this.rawClient.listQueueItems(queueId, request).body();
+  }
 
-      /**
-       * Get a specific item from an annotation queue
-       */
-      public AnnotationQueueItem getQueueItem(String queueId, String itemId) {
-        return getQueueItem(queueId,itemId,null);
-      }
+  /**
+   * Get items for a specific annotation queue
+   */
+  public PaginatedAnnotationQueueItems listQueueItems(String queueId,
+      GetAnnotationQueueItemsRequest request, RequestOptions requestOptions) {
+    return this.rawClient.listQueueItems(queueId, request, requestOptions).body();
+  }
 
-      /**
-       * Get a specific item from an annotation queue
-       */
-      public AnnotationQueueItem getQueueItem(String queueId, String itemId,
-          RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-          .addPathSegments("api/public")
-          .addPathSegments("annotation-queues")
-          .addPathSegment(queueId)
-          .addPathSegments("items")
-          .addPathSegment(itemId)
-          .build();
-        Request okhttpRequest = new Request.Builder()
-          .url(httpUrl)
-          .method("GET", null)
-          .headers(Headers.of(clientOptions.headers(requestOptions)))
-          .addHeader("Content-Type", "application/json")
-          .addHeader("Accept", "application/json")
-          .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-          client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-          ResponseBody responseBody = response.body();
-          if (response.isSuccessful()) {
-            return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AnnotationQueueItem.class);
-          }
-          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-          try {
-            switch (response.code()) {
-              case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            }
-          }
-          catch (JsonProcessingException ignored) {
-            // unable to map error response, throwing generic error
-          }
-          throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-        }
-        catch (IOException e) {
-          throw new LangfuseClientException("Network error executing HTTP request", e);
-        }
-      }
+  /**
+   * Get a specific item from an annotation queue
+   */
+  public AnnotationQueueItem getQueueItem(String queueId, String itemId) {
+    return this.rawClient.getQueueItem(queueId, itemId).body();
+  }
 
-      /**
-       * Add an item to an annotation queue
-       */
-      public AnnotationQueueItem createQueueItem(String queueId,
-          CreateAnnotationQueueItemRequest request) {
-        return createQueueItem(queueId,request,null);
-      }
+  /**
+   * Get a specific item from an annotation queue
+   */
+  public AnnotationQueueItem getQueueItem(String queueId, String itemId,
+      RequestOptions requestOptions) {
+    return this.rawClient.getQueueItem(queueId, itemId, requestOptions).body();
+  }
 
-      /**
-       * Add an item to an annotation queue
-       */
-      public AnnotationQueueItem createQueueItem(String queueId,
-          CreateAnnotationQueueItemRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-          .addPathSegments("api/public")
-          .addPathSegments("annotation-queues")
-          .addPathSegment(queueId)
-          .addPathSegments("items")
-          .build();
-        RequestBody body;
-        try {
-          body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        }
-        catch(JsonProcessingException e) {
-          throw new LangfuseClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-          .url(httpUrl)
-          .method("POST", body)
-          .headers(Headers.of(clientOptions.headers(requestOptions)))
-          .addHeader("Content-Type", "application/json")
-          .addHeader("Accept", "application/json")
-          .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-          client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-          ResponseBody responseBody = response.body();
-          if (response.isSuccessful()) {
-            return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AnnotationQueueItem.class);
-          }
-          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-          try {
-            switch (response.code()) {
-              case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            }
-          }
-          catch (JsonProcessingException ignored) {
-            // unable to map error response, throwing generic error
-          }
-          throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-        }
-        catch (IOException e) {
-          throw new LangfuseClientException("Network error executing HTTP request", e);
-        }
-      }
+  /**
+   * Add an item to an annotation queue
+   */
+  public AnnotationQueueItem createQueueItem(String queueId,
+      CreateAnnotationQueueItemRequest request) {
+    return this.rawClient.createQueueItem(queueId, request).body();
+  }
 
-      /**
-       * Update an annotation queue item
-       */
-      public AnnotationQueueItem updateQueueItem(String queueId, String itemId) {
-        return updateQueueItem(queueId,itemId,UpdateAnnotationQueueItemRequest.builder().build());
-      }
+  /**
+   * Add an item to an annotation queue
+   */
+  public AnnotationQueueItem createQueueItem(String queueId,
+      CreateAnnotationQueueItemRequest request, RequestOptions requestOptions) {
+    return this.rawClient.createQueueItem(queueId, request, requestOptions).body();
+  }
 
-      /**
-       * Update an annotation queue item
-       */
-      public AnnotationQueueItem updateQueueItem(String queueId, String itemId,
-          UpdateAnnotationQueueItemRequest request) {
-        return updateQueueItem(queueId,itemId,request,null);
-      }
+  /**
+   * Update an annotation queue item
+   */
+  public AnnotationQueueItem updateQueueItem(String queueId, String itemId) {
+    return this.rawClient.updateQueueItem(queueId, itemId).body();
+  }
 
-      /**
-       * Update an annotation queue item
-       */
-      public AnnotationQueueItem updateQueueItem(String queueId, String itemId,
-          UpdateAnnotationQueueItemRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-          .addPathSegments("api/public")
-          .addPathSegments("annotation-queues")
-          .addPathSegment(queueId)
-          .addPathSegments("items")
-          .addPathSegment(itemId)
-          .build();
-        RequestBody body;
-        try {
-          body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        }
-        catch(JsonProcessingException e) {
-          throw new LangfuseClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-          .url(httpUrl)
-          .method("PATCH", body)
-          .headers(Headers.of(clientOptions.headers(requestOptions)))
-          .addHeader("Content-Type", "application/json")
-          .addHeader("Accept", "application/json")
-          .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-          client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-          ResponseBody responseBody = response.body();
-          if (response.isSuccessful()) {
-            return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AnnotationQueueItem.class);
-          }
-          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-          try {
-            switch (response.code()) {
-              case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            }
-          }
-          catch (JsonProcessingException ignored) {
-            // unable to map error response, throwing generic error
-          }
-          throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-        }
-        catch (IOException e) {
-          throw new LangfuseClientException("Network error executing HTTP request", e);
-        }
-      }
+  /**
+   * Update an annotation queue item
+   */
+  public AnnotationQueueItem updateQueueItem(String queueId, String itemId,
+      RequestOptions requestOptions) {
+    return this.rawClient.updateQueueItem(queueId, itemId, requestOptions).body();
+  }
 
-      /**
-       * Remove an item from an annotation queue
-       */
-      public DeleteAnnotationQueueItemResponse deleteQueueItem(String queueId, String itemId) {
-        return deleteQueueItem(queueId,itemId,null);
-      }
+  /**
+   * Update an annotation queue item
+   */
+  public AnnotationQueueItem updateQueueItem(String queueId, String itemId,
+      UpdateAnnotationQueueItemRequest request) {
+    return this.rawClient.updateQueueItem(queueId, itemId, request).body();
+  }
 
-      /**
-       * Remove an item from an annotation queue
-       */
-      public DeleteAnnotationQueueItemResponse deleteQueueItem(String queueId, String itemId,
-          RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-          .addPathSegments("api/public")
-          .addPathSegments("annotation-queues")
-          .addPathSegment(queueId)
-          .addPathSegments("items")
-          .addPathSegment(itemId)
-          .build();
-        Request okhttpRequest = new Request.Builder()
-          .url(httpUrl)
-          .method("DELETE", null)
-          .headers(Headers.of(clientOptions.headers(requestOptions)))
-          .addHeader("Content-Type", "application/json")
-          .addHeader("Accept", "application/json")
-          .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-          client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-          ResponseBody responseBody = response.body();
-          if (response.isSuccessful()) {
-            return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), DeleteAnnotationQueueItemResponse.class);
-          }
-          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-          try {
-            switch (response.code()) {
-              case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            }
-          }
-          catch (JsonProcessingException ignored) {
-            // unable to map error response, throwing generic error
-          }
-          throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-        }
-        catch (IOException e) {
-          throw new LangfuseClientException("Network error executing HTTP request", e);
-        }
-      }
+  /**
+   * Update an annotation queue item
+   */
+  public AnnotationQueueItem updateQueueItem(String queueId, String itemId,
+      UpdateAnnotationQueueItemRequest request, RequestOptions requestOptions) {
+    return this.rawClient.updateQueueItem(queueId, itemId, request, requestOptions).body();
+  }
 
-      /**
-       * Create an assignment for a user to an annotation queue
-       */
-      public CreateAnnotationQueueAssignmentResponse createQueueAssignment(String queueId,
-          AnnotationQueueAssignmentRequest request) {
-        return createQueueAssignment(queueId,request,null);
-      }
+  /**
+   * Remove an item from an annotation queue
+   */
+  public DeleteAnnotationQueueItemResponse deleteQueueItem(String queueId, String itemId) {
+    return this.rawClient.deleteQueueItem(queueId, itemId).body();
+  }
 
-      /**
-       * Create an assignment for a user to an annotation queue
-       */
-      public CreateAnnotationQueueAssignmentResponse createQueueAssignment(String queueId,
-          AnnotationQueueAssignmentRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-          .addPathSegments("api/public")
-          .addPathSegments("annotation-queues")
-          .addPathSegment(queueId)
-          .addPathSegments("assignments")
-          .build();
-        RequestBody body;
-        try {
-          body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        }
-        catch(JsonProcessingException e) {
-          throw new LangfuseClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-          .url(httpUrl)
-          .method("POST", body)
-          .headers(Headers.of(clientOptions.headers(requestOptions)))
-          .addHeader("Content-Type", "application/json")
-          .addHeader("Accept", "application/json")
-          .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-          client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-          ResponseBody responseBody = response.body();
-          if (response.isSuccessful()) {
-            return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CreateAnnotationQueueAssignmentResponse.class);
-          }
-          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-          try {
-            switch (response.code()) {
-              case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            }
-          }
-          catch (JsonProcessingException ignored) {
-            // unable to map error response, throwing generic error
-          }
-          throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-        }
-        catch (IOException e) {
-          throw new LangfuseClientException("Network error executing HTTP request", e);
-        }
-      }
+  /**
+   * Remove an item from an annotation queue
+   */
+  public DeleteAnnotationQueueItemResponse deleteQueueItem(String queueId, String itemId,
+      RequestOptions requestOptions) {
+    return this.rawClient.deleteQueueItem(queueId, itemId, requestOptions).body();
+  }
 
-      /**
-       * Delete an assignment for a user to an annotation queue
-       */
-      public DeleteAnnotationQueueAssignmentResponse deleteQueueAssignment(String queueId,
-          AnnotationQueueAssignmentRequest request) {
-        return deleteQueueAssignment(queueId,request,null);
-      }
+  /**
+   * Create an assignment for a user to an annotation queue
+   */
+  public CreateAnnotationQueueAssignmentResponse createQueueAssignment(String queueId,
+      AnnotationQueueAssignmentRequest request) {
+    return this.rawClient.createQueueAssignment(queueId, request).body();
+  }
 
-      /**
-       * Delete an assignment for a user to an annotation queue
-       */
-      public DeleteAnnotationQueueAssignmentResponse deleteQueueAssignment(String queueId,
-          AnnotationQueueAssignmentRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-          .addPathSegments("api/public")
-          .addPathSegments("annotation-queues")
-          .addPathSegment(queueId)
-          .addPathSegments("assignments")
-          .build();
-        RequestBody body;
-        try {
-          body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        }
-        catch(JsonProcessingException e) {
-          throw new LangfuseClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-          .url(httpUrl)
-          .method("DELETE", body)
-          .headers(Headers.of(clientOptions.headers(requestOptions)))
-          .addHeader("Content-Type", "application/json")
-          .addHeader("Accept", "application/json")
-          .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-          client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-          ResponseBody responseBody = response.body();
-          if (response.isSuccessful()) {
-            return ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), DeleteAnnotationQueueAssignmentResponse.class);
-          }
-          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-          try {
-            switch (response.code()) {
-              case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-              case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-            }
-          }
-          catch (JsonProcessingException ignored) {
-            // unable to map error response, throwing generic error
-          }
-          throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class));
-        }
-        catch (IOException e) {
-          throw new LangfuseClientException("Network error executing HTTP request", e);
-        }
-      }
-    }
+  /**
+   * Create an assignment for a user to an annotation queue
+   */
+  public CreateAnnotationQueueAssignmentResponse createQueueAssignment(String queueId,
+      AnnotationQueueAssignmentRequest request, RequestOptions requestOptions) {
+    return this.rawClient.createQueueAssignment(queueId, request, requestOptions).body();
+  }
+
+  /**
+   * Delete an assignment for a user to an annotation queue
+   */
+  public DeleteAnnotationQueueAssignmentResponse deleteQueueAssignment(String queueId,
+      AnnotationQueueAssignmentRequest request) {
+    return this.rawClient.deleteQueueAssignment(queueId, request).body();
+  }
+
+  /**
+   * Delete an assignment for a user to an annotation queue
+   */
+  public DeleteAnnotationQueueAssignmentResponse deleteQueueAssignment(String queueId,
+      AnnotationQueueAssignmentRequest request, RequestOptions requestOptions) {
+    return this.rawClient.deleteQueueAssignment(queueId, request, requestOptions).body();
+  }
+}

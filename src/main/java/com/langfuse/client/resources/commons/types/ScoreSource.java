@@ -4,25 +4,95 @@
 
 package com.langfuse.client.resources.commons.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum ScoreSource {
-  ANNOTATION("ANNOTATION"),
+public final class ScoreSource {
+  public static final ScoreSource API = new ScoreSource(Value.API, "API");
 
-  API("API"),
+  public static final ScoreSource ANNOTATION = new ScoreSource(Value.ANNOTATION, "ANNOTATION");
 
-  EVAL("EVAL");
+  public static final ScoreSource EVAL = new ScoreSource(Value.EVAL, "EVAL");
 
-  private final String value;
+  private final Value value;
 
-  ScoreSource(String value) {
+  private final String string;
+
+  ScoreSource(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof ScoreSource && this.string.equals(((ScoreSource) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case API:
+        return visitor.visitApi();
+      case ANNOTATION:
+        return visitor.visitAnnotation();
+      case EVAL:
+        return visitor.visitEval();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static ScoreSource valueOf(String value) {
+    switch (value) {
+      case "API":
+        return API;
+      case "ANNOTATION":
+        return ANNOTATION;
+      case "EVAL":
+        return EVAL;
+      default:
+        return new ScoreSource(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    ANNOTATION,
+
+    API,
+
+    EVAL,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitAnnotation();
+
+    T visitApi();
+
+    T visitEval();
+
+    T visitUnknown(String unknownType);
   }
 }

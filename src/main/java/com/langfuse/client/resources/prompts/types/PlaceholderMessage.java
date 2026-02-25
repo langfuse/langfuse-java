@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
@@ -17,6 +18,7 @@ import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -26,16 +28,25 @@ import org.jetbrains.annotations.NotNull;
 public final class PlaceholderMessage {
   private final String name;
 
+  private final Optional<PlaceholderMessageType> type;
+
   private final Map<String, Object> additionalProperties;
 
-  private PlaceholderMessage(String name, Map<String, Object> additionalProperties) {
+  private PlaceholderMessage(String name, Optional<PlaceholderMessageType> type,
+      Map<String, Object> additionalProperties) {
     this.name = name;
+    this.type = type;
     this.additionalProperties = additionalProperties;
   }
 
   @JsonProperty("name")
   public String getName() {
     return name;
+  }
+
+  @JsonProperty("type")
+  public Optional<PlaceholderMessageType> getType() {
+    return type;
   }
 
   @java.lang.Override
@@ -50,12 +61,12 @@ public final class PlaceholderMessage {
   }
 
   private boolean equalTo(PlaceholderMessage other) {
-    return name.equals(other.name);
+    return name.equals(other.name) && type.equals(other.type);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name);
+    return Objects.hash(this.name, this.type);
   }
 
   @java.lang.Override
@@ -75,6 +86,14 @@ public final class PlaceholderMessage {
 
   public interface _FinalStage {
     PlaceholderMessage build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    _FinalStage type(Optional<PlaceholderMessageType> type);
+
+    _FinalStage type(PlaceholderMessageType type);
   }
 
   @JsonIgnoreProperties(
@@ -82,6 +101,8 @@ public final class PlaceholderMessage {
   )
   public static final class Builder implements NameStage, _FinalStage {
     private String name;
+
+    private Optional<PlaceholderMessageType> type = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -92,6 +113,7 @@ public final class PlaceholderMessage {
     @java.lang.Override
     public Builder from(PlaceholderMessage other) {
       name(other.getName());
+      type(other.getType());
       return this;
     }
 
@@ -103,8 +125,36 @@ public final class PlaceholderMessage {
     }
 
     @java.lang.Override
+    public _FinalStage type(PlaceholderMessageType type) {
+      this.type = Optional.ofNullable(type);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "type",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage type(Optional<PlaceholderMessageType> type) {
+      this.type = type;
+      return this;
+    }
+
+    @java.lang.Override
     public PlaceholderMessage build() {
-      return new PlaceholderMessage(name, additionalProperties);
+      return new PlaceholderMessage(name, type, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

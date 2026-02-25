@@ -4,27 +4,105 @@
 
 package com.langfuse.client.resources.commons.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum ObservationLevel {
-  DEBUG("DEBUG"),
+public final class ObservationLevel {
+  public static final ObservationLevel DEBUG = new ObservationLevel(Value.DEBUG, "DEBUG");
 
-  DEFAULT("DEFAULT"),
+  public static final ObservationLevel DEFAULT = new ObservationLevel(Value.DEFAULT, "DEFAULT");
 
-  WARNING("WARNING"),
+  public static final ObservationLevel WARNING = new ObservationLevel(Value.WARNING, "WARNING");
 
-  ERROR("ERROR");
+  public static final ObservationLevel ERROR = new ObservationLevel(Value.ERROR, "ERROR");
 
-  private final String value;
+  private final Value value;
 
-  ObservationLevel(String value) {
+  private final String string;
+
+  ObservationLevel(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof ObservationLevel && this.string.equals(((ObservationLevel) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case DEBUG:
+        return visitor.visitDebug();
+      case DEFAULT:
+        return visitor.visitDefault();
+      case WARNING:
+        return visitor.visitWarning();
+      case ERROR:
+        return visitor.visitError();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static ObservationLevel valueOf(String value) {
+    switch (value) {
+      case "DEBUG":
+        return DEBUG;
+      case "DEFAULT":
+        return DEFAULT;
+      case "WARNING":
+        return WARNING;
+      case "ERROR":
+        return ERROR;
+      default:
+        return new ObservationLevel(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    DEBUG,
+
+    DEFAULT,
+
+    WARNING,
+
+    ERROR,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitDebug();
+
+    T visitDefault();
+
+    T visitWarning();
+
+    T visitError();
+
+    T visitUnknown(String unknownType);
   }
 }

@@ -103,6 +103,9 @@ public final class OtelAttribute {
       return this;
     }
 
+    /**
+     * <p>Attribute key (e.g., &quot;service.name&quot;, &quot;langfuse.observation.type&quot;)</p>
+     */
     @JsonSetter(
         value = "key",
         nulls = Nulls.SKIP
@@ -117,6 +120,9 @@ public final class OtelAttribute {
       return this;
     }
 
+    /**
+     * <p>Attribute value</p>
+     */
     @JsonSetter(
         value = "value",
         nulls = Nulls.SKIP
@@ -133,6 +139,16 @@ public final class OtelAttribute {
 
     public OtelAttribute build() {
       return new OtelAttribute(key, value, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

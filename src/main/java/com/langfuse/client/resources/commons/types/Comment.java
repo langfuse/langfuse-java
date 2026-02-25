@@ -6,12 +6,15 @@ package com.langfuse.client.resources.commons.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
 import java.lang.String;
@@ -94,8 +97,23 @@ public final class Comment {
     return content;
   }
 
-  @JsonProperty("authorUserId")
+  /**
+   * @return The user ID of the comment author
+   */
+  @JsonIgnore
   public Optional<String> getAuthorUserId() {
+    if (authorUserId == null) {
+      return Optional.empty();
+    }
+    return authorUserId;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("authorUserId")
+  private Optional<String> _getAuthorUserId() {
     return authorUserId;
   }
 
@@ -161,9 +179,18 @@ public final class Comment {
   public interface _FinalStage {
     Comment build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>The user ID of the comment author</p>
+     */
     _FinalStage authorUserId(Optional<String> authorUserId);
 
     _FinalStage authorUserId(String authorUserId);
+
+    _FinalStage authorUserId(Nullable<String> authorUserId);
   }
 
   @JsonIgnoreProperties(
@@ -254,12 +281,37 @@ public final class Comment {
       return this;
     }
 
+    /**
+     * <p>The user ID of the comment author</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage authorUserId(Nullable<String> authorUserId) {
+      if (authorUserId.isNull()) {
+        this.authorUserId = null;
+      }
+      else if (authorUserId.isEmpty()) {
+        this.authorUserId = Optional.empty();
+      }
+      else {
+        this.authorUserId = Optional.of(authorUserId.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The user ID of the comment author</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     public _FinalStage authorUserId(String authorUserId) {
       this.authorUserId = Optional.ofNullable(authorUserId);
       return this;
     }
 
+    /**
+     * <p>The user ID of the comment author</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "authorUserId",
@@ -273,6 +325,18 @@ public final class Comment {
     @java.lang.Override
     public Comment build() {
       return new Comment(id, projectId, createdAt, updatedAt, objectType, objectId, content, authorUserId, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -138,28 +138,63 @@ public final class PricingTierInput {
   }
 
   public interface NameStage {
+    /**
+     * <p>Name of the pricing tier for display and identification purposes.</p>
+     * <p>Must be unique within the model. Common patterns: &quot;Standard&quot;, &quot;High Volume Tier&quot;, &quot;Extended Context&quot;</p>
+     */
     IsDefaultStage name(@NotNull String name);
 
     Builder from(PricingTierInput other);
   }
 
   public interface IsDefaultStage {
+    /**
+     * <p>Whether this is the default tier. Exactly one tier per model must be marked as default.</p>
+     * <p>Requirements for default tier:</p>
+     * <ul>
+     * <li>Must have isDefault=true</li>
+     * <li>Must have priority=0</li>
+     * <li>Must have empty conditions array (conditions=[])</li>
+     * </ul>
+     * <p>The default tier acts as a fallback when no conditional tiers match.</p>
+     */
     PriorityStage isDefault(boolean isDefault);
   }
 
   public interface PriorityStage {
+    /**
+     * <p>Priority for tier matching evaluation. Lower numbers = higher priority (evaluated first).</p>
+     * <p>Must be unique within the model. The default tier must have priority=0.
+     * Conditional tiers should use priority 1, 2, 3, etc. based on their specificity.</p>
+     */
     _FinalStage priority(int priority);
   }
 
   public interface _FinalStage {
     PricingTierInput build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Array of conditions that must ALL be met for this tier to match (AND logic).</p>
+     * <p>The default tier must have an empty array (conditions=[]).
+     * Conditional tiers should define one or more conditions that specify when this tier's pricing applies.</p>
+     * <p>Each condition specifies a regex pattern, operator, and threshold value for matching against usage details.</p>
+     */
     _FinalStage conditions(List<PricingTierCondition> conditions);
 
     _FinalStage addConditions(PricingTierCondition conditions);
 
     _FinalStage addAllConditions(List<PricingTierCondition> conditions);
 
+    /**
+     * <p>Prices (USD) by usage type for this tier. At least one price must be defined.</p>
+     * <p>Common usage types: &quot;input&quot;, &quot;output&quot;, &quot;total&quot;, &quot;request&quot;, &quot;image&quot;
+     * Prices are in USD per unit (e.g., per token).</p>
+     * <p>Example: {&quot;input&quot;: 0.000003, &quot;output&quot;: 0.000015} represents $3 per million input tokens and $15 per million output tokens.</p>
+     */
     _FinalStage prices(Map<String, Double> prices);
 
     _FinalStage putAllPrices(Map<String, Double> prices);
@@ -200,6 +235,8 @@ public final class PricingTierInput {
     /**
      * <p>Name of the pricing tier for display and identification purposes.</p>
      * <p>Must be unique within the model. Common patterns: &quot;Standard&quot;, &quot;High Volume Tier&quot;, &quot;Extended Context&quot;</p>
+     * <p>Name of the pricing tier for display and identification purposes.</p>
+     * <p>Must be unique within the model. Common patterns: &quot;Standard&quot;, &quot;High Volume Tier&quot;, &quot;Extended Context&quot;</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -218,6 +255,14 @@ public final class PricingTierInput {
      * <li>Must have empty conditions array (conditions=[])</li>
      * </ul>
      * <p>The default tier acts as a fallback when no conditional tiers match.</p>
+     * <p>Whether this is the default tier. Exactly one tier per model must be marked as default.</p>
+     * <p>Requirements for default tier:</p>
+     * <ul>
+     * <li>Must have isDefault=true</li>
+     * <li>Must have priority=0</li>
+     * <li>Must have empty conditions array (conditions=[])</li>
+     * </ul>
+     * <p>The default tier acts as a fallback when no conditional tiers match.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -228,6 +273,9 @@ public final class PricingTierInput {
     }
 
     /**
+     * <p>Priority for tier matching evaluation. Lower numbers = higher priority (evaluated first).</p>
+     * <p>Must be unique within the model. The default tier must have priority=0.
+     * Conditional tiers should use priority 1, 2, 3, etc. based on their specificity.</p>
      * <p>Priority for tier matching evaluation. Lower numbers = higher priority (evaluated first).</p>
      * <p>Must be unique within the model. The default tier must have priority=0.
      * Conditional tiers should use priority 1, 2, 3, etc. based on their specificity.</p>
@@ -262,10 +310,18 @@ public final class PricingTierInput {
      */
     @java.lang.Override
     public _FinalStage putAllPrices(Map<String, Double> prices) {
-      this.prices.putAll(prices);
+      if (prices != null) {
+        this.prices.putAll(prices);
+      }
       return this;
     }
 
+    /**
+     * <p>Prices (USD) by usage type for this tier. At least one price must be defined.</p>
+     * <p>Common usage types: &quot;input&quot;, &quot;output&quot;, &quot;total&quot;, &quot;request&quot;, &quot;image&quot;
+     * Prices are in USD per unit (e.g., per token).</p>
+     * <p>Example: {&quot;input&quot;: 0.000003, &quot;output&quot;: 0.000015} represents $3 per million input tokens and $15 per million output tokens.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "prices",
@@ -273,7 +329,9 @@ public final class PricingTierInput {
     )
     public _FinalStage prices(Map<String, Double> prices) {
       this.prices.clear();
-      this.prices.putAll(prices);
+      if (prices != null) {
+        this.prices.putAll(prices);
+      }
       return this;
     }
 
@@ -286,7 +344,9 @@ public final class PricingTierInput {
      */
     @java.lang.Override
     public _FinalStage addAllConditions(List<PricingTierCondition> conditions) {
-      this.conditions.addAll(conditions);
+      if (conditions != null) {
+        this.conditions.addAll(conditions);
+      }
       return this;
     }
 
@@ -303,6 +363,12 @@ public final class PricingTierInput {
       return this;
     }
 
+    /**
+     * <p>Array of conditions that must ALL be met for this tier to match (AND logic).</p>
+     * <p>The default tier must have an empty array (conditions=[]).
+     * Conditional tiers should define one or more conditions that specify when this tier's pricing applies.</p>
+     * <p>Each condition specifies a regex pattern, operator, and threshold value for matching against usage details.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "conditions",
@@ -310,13 +376,27 @@ public final class PricingTierInput {
     )
     public _FinalStage conditions(List<PricingTierCondition> conditions) {
       this.conditions.clear();
-      this.conditions.addAll(conditions);
+      if (conditions != null) {
+        this.conditions.addAll(conditions);
+      }
       return this;
     }
 
     @java.lang.Override
     public PricingTierInput build() {
       return new PricingTierInput(name, isDefault, priority, conditions, prices, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

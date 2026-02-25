@@ -121,6 +121,10 @@ public final class OpenAiCompletionUsageSchema {
   public interface _FinalStage {
     OpenAiCompletionUsageSchema build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage promptTokensDetails(Optional<Map<String, Optional<Integer>>> promptTokensDetails);
 
     _FinalStage promptTokensDetails(Map<String, Optional<Integer>> promptTokensDetails);
@@ -220,6 +224,18 @@ public final class OpenAiCompletionUsageSchema {
     @java.lang.Override
     public OpenAiCompletionUsageSchema build() {
       return new OpenAiCompletionUsageSchema(promptTokens, completionTokens, totalTokens, promptTokensDetails, completionTokensDetails, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

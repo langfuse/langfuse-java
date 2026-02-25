@@ -4,27 +4,105 @@
 
 package com.langfuse.client.resources.commons.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum ScoreDataType {
-  NUMERIC("NUMERIC"),
+public final class ScoreDataType {
+  public static final ScoreDataType CATEGORICAL = new ScoreDataType(Value.CATEGORICAL, "CATEGORICAL");
 
-  BOOLEAN("BOOLEAN"),
+  public static final ScoreDataType CORRECTION = new ScoreDataType(Value.CORRECTION, "CORRECTION");
 
-  CATEGORICAL("CATEGORICAL"),
+  public static final ScoreDataType NUMERIC = new ScoreDataType(Value.NUMERIC, "NUMERIC");
 
-  CORRECTION("CORRECTION");
+  public static final ScoreDataType BOOLEAN = new ScoreDataType(Value.BOOLEAN, "BOOLEAN");
 
-  private final String value;
+  private final Value value;
 
-  ScoreDataType(String value) {
+  private final String string;
+
+  ScoreDataType(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof ScoreDataType && this.string.equals(((ScoreDataType) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case CATEGORICAL:
+        return visitor.visitCategorical();
+      case CORRECTION:
+        return visitor.visitCorrection();
+      case NUMERIC:
+        return visitor.visitNumeric();
+      case BOOLEAN:
+        return visitor.visitBoolean();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static ScoreDataType valueOf(String value) {
+    switch (value) {
+      case "CATEGORICAL":
+        return CATEGORICAL;
+      case "CORRECTION":
+        return CORRECTION;
+      case "NUMERIC":
+        return NUMERIC;
+      case "BOOLEAN":
+        return BOOLEAN;
+      default:
+        return new ScoreDataType(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    NUMERIC,
+
+    BOOLEAN,
+
+    CATEGORICAL,
+
+    CORRECTION,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitNumeric();
+
+    T visitBoolean();
+
+    T visitCategorical();
+
+    T visitCorrection();
+
+    T visitUnknown(String unknownType);
   }
 }

@@ -104,6 +104,9 @@ public final class GetDatasetsRequest {
       return this;
     }
 
+    /**
+     * <p>page number, starts at 1</p>
+     */
     @JsonSetter(
         value = "page",
         nulls = Nulls.SKIP
@@ -118,6 +121,9 @@ public final class GetDatasetsRequest {
       return this;
     }
 
+    /**
+     * <p>limit of items per page</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -134,6 +140,16 @@ public final class GetDatasetsRequest {
 
     public GetDatasetsRequest build() {
       return new GetDatasetsRequest(page, limit, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

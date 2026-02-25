@@ -127,6 +127,9 @@ public final class GetMediaUploadUrlRequest {
   }
 
   public interface TraceIdStage {
+    /**
+     * <p>The trace ID associated with the media record</p>
+     */
     ContentTypeStage traceId(@NotNull String traceId);
 
     Builder from(GetMediaUploadUrlRequest other);
@@ -137,20 +140,36 @@ public final class GetMediaUploadUrlRequest {
   }
 
   public interface ContentLengthStage {
+    /**
+     * <p>The size of the media record in bytes</p>
+     */
     Sha256HashStage contentLength(int contentLength);
   }
 
   public interface Sha256HashStage {
+    /**
+     * <p>The SHA-256 hash of the media record</p>
+     */
     FieldStage sha256Hash(@NotNull String sha256Hash);
   }
 
   public interface FieldStage {
+    /**
+     * <p>The trace / observation field the media record is associated with. This can be one of <code>input</code>, <code>output</code>, <code>metadata</code></p>
+     */
     _FinalStage field(@NotNull String field);
   }
 
   public interface _FinalStage {
     GetMediaUploadUrlRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>The observation ID associated with the media record. If the media record is associated directly with a trace, this will be null.</p>
+     */
     _FinalStage observationId(Optional<String> observationId);
 
     _FinalStage observationId(String observationId);
@@ -191,6 +210,7 @@ public final class GetMediaUploadUrlRequest {
 
     /**
      * <p>The trace ID associated with the media record</p>
+     * <p>The trace ID associated with the media record</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -209,6 +229,7 @@ public final class GetMediaUploadUrlRequest {
 
     /**
      * <p>The size of the media record in bytes</p>
+     * <p>The size of the media record in bytes</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -220,6 +241,7 @@ public final class GetMediaUploadUrlRequest {
 
     /**
      * <p>The SHA-256 hash of the media record</p>
+     * <p>The SHA-256 hash of the media record</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -230,6 +252,7 @@ public final class GetMediaUploadUrlRequest {
     }
 
     /**
+     * <p>The trace / observation field the media record is associated with. This can be one of <code>input</code>, <code>output</code>, <code>metadata</code></p>
      * <p>The trace / observation field the media record is associated with. This can be one of <code>input</code>, <code>output</code>, <code>metadata</code></p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -250,6 +273,9 @@ public final class GetMediaUploadUrlRequest {
       return this;
     }
 
+    /**
+     * <p>The observation ID associated with the media record. If the media record is associated directly with a trace, this will be null.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "observationId",
@@ -263,6 +289,18 @@ public final class GetMediaUploadUrlRequest {
     @java.lang.Override
     public GetMediaUploadUrlRequest build() {
       return new GetMediaUploadUrlRequest(traceId, observationId, contentType, contentLength, sha256Hash, field, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

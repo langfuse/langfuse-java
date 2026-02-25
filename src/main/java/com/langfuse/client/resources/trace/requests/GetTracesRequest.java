@@ -17,7 +17,9 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,6 +29,10 @@ import java.util.Optional;
     builder = GetTracesRequest.Builder.class
 )
 public final class GetTracesRequest {
+  private final Optional<List<String>> tags;
+
+  private final Optional<List<String>> environment;
+
   private final Optional<Integer> page;
 
   private final Optional<Integer> limit;
@@ -43,13 +49,9 @@ public final class GetTracesRequest {
 
   private final Optional<String> orderBy;
 
-  private final Optional<String> tags;
-
   private final Optional<String> version;
 
   private final Optional<String> release;
-
-  private final Optional<String> environment;
 
   private final Optional<String> fields;
 
@@ -57,11 +59,14 @@ public final class GetTracesRequest {
 
   private final Map<String, Object> additionalProperties;
 
-  private GetTracesRequest(Optional<Integer> page, Optional<Integer> limit, Optional<String> userId,
+  private GetTracesRequest(Optional<List<String>> tags, Optional<List<String>> environment,
+      Optional<Integer> page, Optional<Integer> limit, Optional<String> userId,
       Optional<String> name, Optional<String> sessionId, Optional<OffsetDateTime> fromTimestamp,
-      Optional<OffsetDateTime> toTimestamp, Optional<String> orderBy, Optional<String> tags,
-      Optional<String> version, Optional<String> release, Optional<String> environment,
-      Optional<String> fields, Optional<String> filter, Map<String, Object> additionalProperties) {
+      Optional<OffsetDateTime> toTimestamp, Optional<String> orderBy, Optional<String> version,
+      Optional<String> release, Optional<String> fields, Optional<String> filter,
+      Map<String, Object> additionalProperties) {
+    this.tags = tags;
+    this.environment = environment;
     this.page = page;
     this.limit = limit;
     this.userId = userId;
@@ -70,13 +75,27 @@ public final class GetTracesRequest {
     this.fromTimestamp = fromTimestamp;
     this.toTimestamp = toTimestamp;
     this.orderBy = orderBy;
-    this.tags = tags;
     this.version = version;
     this.release = release;
-    this.environment = environment;
     this.fields = fields;
     this.filter = filter;
     this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Only traces that include all of these tags will be returned.
+   */
+  @JsonProperty("tags")
+  public Optional<List<String>> getTags() {
+    return tags;
+  }
+
+  /**
+   * @return Optional filter for traces where the environment is one of the provided values.
+   */
+  @JsonProperty("environment")
+  public Optional<List<String>> getEnvironment() {
+    return environment;
   }
 
   /**
@@ -135,14 +154,6 @@ public final class GetTracesRequest {
   }
 
   /**
-   * @return Only traces that include all of these tags will be returned.
-   */
-  @JsonProperty("tags")
-  public Optional<String> getTags() {
-    return tags;
-  }
-
-  /**
    * @return Optional filter to only include traces with a certain version.
    */
   @JsonProperty("version")
@@ -159,14 +170,6 @@ public final class GetTracesRequest {
   }
 
   /**
-   * @return Optional filter for traces where the environment is one of the provided values.
-   */
-  @JsonProperty("environment")
-  public Optional<String> getEnvironment() {
-    return environment;
-  }
-
-  /**
    * @return Comma-separated list of fields to include in the response. Available field groups: 'core' (always included), 'io' (input, output, metadata), 'scores', 'observations', 'metrics'. If not specified, all fields are returned. Example: 'core,scores,metrics'. Note: Excluded 'observations' or 'scores' fields return empty arrays; excluded 'metrics' returns -1 for 'totalCost' and 'latency'.
    */
   @JsonProperty("fields")
@@ -176,6 +179,111 @@ public final class GetTracesRequest {
 
   /**
    * @return JSON string containing an array of filter conditions. When provided, this takes precedence over query parameter filters (userId, name, sessionId, tags, version, release, environment, fromTimestamp, toTimestamp).
+   * <h2>Filter Structure</h2>
+   * <p>Each filter condition has the following structure:</p>
+   * <pre><code class="language-json">[
+   *   {
+   *     &quot;type&quot;: string,           // Required. One of: &quot;datetime&quot;, &quot;string&quot;, &quot;number&quot;, &quot;stringOptions&quot;, &quot;categoryOptions&quot;, &quot;arrayOptions&quot;, &quot;stringObject&quot;, &quot;numberObject&quot;, &quot;boolean&quot;, &quot;null&quot;
+   *     &quot;column&quot;: string,         // Required. Column to filter on (see available columns below)
+   *     &quot;operator&quot;: string,       // Required. Operator based on type:
+   *                               // - datetime: &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+   *                               // - string: &quot;=&quot;, &quot;contains&quot;, &quot;does not contain&quot;, &quot;starts with&quot;, &quot;ends with&quot;
+   *                               // - stringOptions: &quot;any of&quot;, &quot;none of&quot;
+   *                               // - categoryOptions: &quot;any of&quot;, &quot;none of&quot;
+   *                               // - arrayOptions: &quot;any of&quot;, &quot;none of&quot;, &quot;all of&quot;
+   *                               // - number: &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+   *                               // - stringObject: &quot;=&quot;, &quot;contains&quot;, &quot;does not contain&quot;, &quot;starts with&quot;, &quot;ends with&quot;
+   *                               // - numberObject: &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+   *                               // - boolean: &quot;=&quot;, &quot;&lt;&gt;&quot;
+   *                               // - null: &quot;is null&quot;, &quot;is not null&quot;
+   *     &quot;value&quot;: any,             // Required (except for null type). Value to compare against. Type depends on filter type
+   *     &quot;key&quot;: string             // Required only for stringObject, numberObject, and categoryOptions types when filtering on nested fields like metadata
+   *   }
+   * ]
+   * </code></pre>
+   * <h2>Available Columns</h2>
+   * <h3>Core Trace Fields</h3>
+   * <ul>
+   * <li><code>id</code> (string) - Trace ID</li>
+   * <li><code>name</code> (string) - Trace name</li>
+   * <li><code>timestamp</code> (datetime) - Trace timestamp</li>
+   * <li><code>userId</code> (string) - User ID</li>
+   * <li><code>sessionId</code> (string) - Session ID</li>
+   * <li><code>environment</code> (string) - Environment tag</li>
+   * <li><code>version</code> (string) - Version tag</li>
+   * <li><code>release</code> (string) - Release tag</li>
+   * <li><code>tags</code> (arrayOptions) - Array of tags</li>
+   * <li><code>bookmarked</code> (boolean) - Bookmark status</li>
+   * </ul>
+   * <h3>Structured Data</h3>
+   * <ul>
+   * <li><code>metadata</code> (stringObject/numberObject/categoryOptions) - Metadata key-value pairs. Use <code>key</code> parameter to filter on specific metadata keys.</li>
+   * </ul>
+   * <h3>Aggregated Metrics (from observations)</h3>
+   * <p>These metrics are aggregated from all observations within the trace:</p>
+   * <ul>
+   * <li><code>latency</code> (number) - Latency in seconds (time from first observation start to last observation end)</li>
+   * <li><code>inputTokens</code> (number) - Total input tokens across all observations</li>
+   * <li><code>outputTokens</code> (number) - Total output tokens across all observations</li>
+   * <li><code>totalTokens</code> (number) - Total tokens (alias: <code>tokens</code>)</li>
+   * <li><code>inputCost</code> (number) - Total input cost in USD</li>
+   * <li><code>outputCost</code> (number) - Total output cost in USD</li>
+   * <li><code>totalCost</code> (number) - Total cost in USD</li>
+   * </ul>
+   * <h3>Observation Level Aggregations</h3>
+   * <p>These fields aggregate observation levels within the trace:</p>
+   * <ul>
+   * <li><code>level</code> (string) - Highest severity level (ERROR &gt; WARNING &gt; DEFAULT &gt; DEBUG)</li>
+   * <li><code>warningCount</code> (number) - Count of WARNING level observations</li>
+   * <li><code>errorCount</code> (number) - Count of ERROR level observations</li>
+   * <li><code>defaultCount</code> (number) - Count of DEFAULT level observations</li>
+   * <li><code>debugCount</code> (number) - Count of DEBUG level observations</li>
+   * </ul>
+   * <h3>Scores (requires join with scores table)</h3>
+   * <ul>
+   * <li><code>scores_avg</code> (number) - Average of numeric scores (alias: <code>scores</code>)</li>
+   * <li><code>score_categories</code> (categoryOptions) - Categorical score values</li>
+   * </ul>
+   * <h2>Filter Examples</h2>
+   * <pre><code class="language-json">[
+   *   {
+   *     &quot;type&quot;: &quot;datetime&quot;,
+   *     &quot;column&quot;: &quot;timestamp&quot;,
+   *     &quot;operator&quot;: &quot;&gt;=&quot;,
+   *     &quot;value&quot;: &quot;2024-01-01T00:00:00Z&quot;
+   *   },
+   *   {
+   *     &quot;type&quot;: &quot;string&quot;,
+   *     &quot;column&quot;: &quot;userId&quot;,
+   *     &quot;operator&quot;: &quot;=&quot;,
+   *     &quot;value&quot;: &quot;user-123&quot;
+   *   },
+   *   {
+   *     &quot;type&quot;: &quot;number&quot;,
+   *     &quot;column&quot;: &quot;totalCost&quot;,
+   *     &quot;operator&quot;: &quot;&gt;=&quot;,
+   *     &quot;value&quot;: 0.01
+   *   },
+   *   {
+   *     &quot;type&quot;: &quot;arrayOptions&quot;,
+   *     &quot;column&quot;: &quot;tags&quot;,
+   *     &quot;operator&quot;: &quot;all of&quot;,
+   *     &quot;value&quot;: [&quot;production&quot;, &quot;critical&quot;]
+   *   },
+   *   {
+   *     &quot;type&quot;: &quot;stringObject&quot;,
+   *     &quot;column&quot;: &quot;metadata&quot;,
+   *     &quot;key&quot;: &quot;customer_tier&quot;,
+   *     &quot;operator&quot;: &quot;=&quot;,
+   *     &quot;value&quot;: &quot;enterprise&quot;
+   *   }
+   * ]
+   * </code></pre>
+   * <h2>Performance Notes</h2>
+   * <ul>
+   * <li>Filtering on <code>userId</code>, <code>sessionId</code>, or <code>metadata</code> may enable skip indexes for better query performance</li>
+   * <li>Score filters require a join with the scores table and may impact query performance</li>
+   * </ul>
    */
   @JsonProperty("filter")
   public Optional<String> getFilter() {
@@ -194,12 +302,12 @@ public final class GetTracesRequest {
   }
 
   private boolean equalTo(GetTracesRequest other) {
-    return page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && sessionId.equals(other.sessionId) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && orderBy.equals(other.orderBy) && tags.equals(other.tags) && version.equals(other.version) && release.equals(other.release) && environment.equals(other.environment) && fields.equals(other.fields) && filter.equals(other.filter);
+    return tags.equals(other.tags) && environment.equals(other.environment) && page.equals(other.page) && limit.equals(other.limit) && userId.equals(other.userId) && name.equals(other.name) && sessionId.equals(other.sessionId) && fromTimestamp.equals(other.fromTimestamp) && toTimestamp.equals(other.toTimestamp) && orderBy.equals(other.orderBy) && version.equals(other.version) && release.equals(other.release) && fields.equals(other.fields) && filter.equals(other.filter);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.page, this.limit, this.userId, this.name, this.sessionId, this.fromTimestamp, this.toTimestamp, this.orderBy, this.tags, this.version, this.release, this.environment, this.fields, this.filter);
+    return Objects.hash(this.tags, this.environment, this.page, this.limit, this.userId, this.name, this.sessionId, this.fromTimestamp, this.toTimestamp, this.orderBy, this.version, this.release, this.fields, this.filter);
   }
 
   @java.lang.Override
@@ -215,6 +323,10 @@ public final class GetTracesRequest {
       ignoreUnknown = true
   )
   public static final class Builder {
+    private Optional<List<String>> tags = Optional.empty();
+
+    private Optional<List<String>> environment = Optional.empty();
+
     private Optional<Integer> page = Optional.empty();
 
     private Optional<Integer> limit = Optional.empty();
@@ -231,13 +343,9 @@ public final class GetTracesRequest {
 
     private Optional<String> orderBy = Optional.empty();
 
-    private Optional<String> tags = Optional.empty();
-
     private Optional<String> version = Optional.empty();
 
     private Optional<String> release = Optional.empty();
-
-    private Optional<String> environment = Optional.empty();
 
     private Optional<String> fields = Optional.empty();
 
@@ -250,6 +358,8 @@ public final class GetTracesRequest {
     }
 
     public Builder from(GetTracesRequest other) {
+      tags(other.getTags());
+      environment(other.getEnvironment());
       page(other.getPage());
       limit(other.getLimit());
       userId(other.getUserId());
@@ -258,15 +368,60 @@ public final class GetTracesRequest {
       fromTimestamp(other.getFromTimestamp());
       toTimestamp(other.getToTimestamp());
       orderBy(other.getOrderBy());
-      tags(other.getTags());
       version(other.getVersion());
       release(other.getRelease());
-      environment(other.getEnvironment());
       fields(other.getFields());
       filter(other.getFilter());
       return this;
     }
 
+    /**
+     * <p>Only traces that include all of these tags will be returned.</p>
+     */
+    @JsonSetter(
+        value = "tags",
+        nulls = Nulls.SKIP
+    )
+    public Builder tags(Optional<List<String>> tags) {
+      this.tags = tags;
+      return this;
+    }
+
+    public Builder tags(List<String> tags) {
+      this.tags = Optional.ofNullable(tags);
+      return this;
+    }
+
+    public Builder tags(String tags) {
+      this.tags = Optional.of(Collections.singletonList(tags));
+      return this;
+    }
+
+    /**
+     * <p>Optional filter for traces where the environment is one of the provided values.</p>
+     */
+    @JsonSetter(
+        value = "environment",
+        nulls = Nulls.SKIP
+    )
+    public Builder environment(Optional<List<String>> environment) {
+      this.environment = environment;
+      return this;
+    }
+
+    public Builder environment(List<String> environment) {
+      this.environment = Optional.ofNullable(environment);
+      return this;
+    }
+
+    public Builder environment(String environment) {
+      this.environment = Optional.of(Collections.singletonList(environment));
+      return this;
+    }
+
+    /**
+     * <p>Page number, starts at 1</p>
+     */
     @JsonSetter(
         value = "page",
         nulls = Nulls.SKIP
@@ -281,6 +436,9 @@ public final class GetTracesRequest {
       return this;
     }
 
+    /**
+     * <p>Limit of items per page. If you encounter api issues due to too large page sizes, try to reduce the limit.</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -337,6 +495,9 @@ public final class GetTracesRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include traces with a trace.timestamp on or after a certain datetime (ISO 8601)</p>
+     */
     @JsonSetter(
         value = "fromTimestamp",
         nulls = Nulls.SKIP
@@ -351,6 +512,9 @@ public final class GetTracesRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include traces with a trace.timestamp before a certain datetime (ISO 8601)</p>
+     */
     @JsonSetter(
         value = "toTimestamp",
         nulls = Nulls.SKIP
@@ -365,6 +529,9 @@ public final class GetTracesRequest {
       return this;
     }
 
+    /**
+     * <p>Format of the string [field].[asc/desc]. Fields: id, timestamp, name, userId, release, version, public, bookmarked, sessionId. Example: timestamp.asc</p>
+     */
     @JsonSetter(
         value = "orderBy",
         nulls = Nulls.SKIP
@@ -379,20 +546,9 @@ public final class GetTracesRequest {
       return this;
     }
 
-    @JsonSetter(
-        value = "tags",
-        nulls = Nulls.SKIP
-    )
-    public Builder tags(Optional<String> tags) {
-      this.tags = tags;
-      return this;
-    }
-
-    public Builder tags(String tags) {
-      this.tags = Optional.ofNullable(tags);
-      return this;
-    }
-
+    /**
+     * <p>Optional filter to only include traces with a certain version.</p>
+     */
     @JsonSetter(
         value = "version",
         nulls = Nulls.SKIP
@@ -407,6 +563,9 @@ public final class GetTracesRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include traces with a certain release.</p>
+     */
     @JsonSetter(
         value = "release",
         nulls = Nulls.SKIP
@@ -421,20 +580,9 @@ public final class GetTracesRequest {
       return this;
     }
 
-    @JsonSetter(
-        value = "environment",
-        nulls = Nulls.SKIP
-    )
-    public Builder environment(Optional<String> environment) {
-      this.environment = environment;
-      return this;
-    }
-
-    public Builder environment(String environment) {
-      this.environment = Optional.ofNullable(environment);
-      return this;
-    }
-
+    /**
+     * <p>Comma-separated list of fields to include in the response. Available field groups: 'core' (always included), 'io' (input, output, metadata), 'scores', 'observations', 'metrics'. If not specified, all fields are returned. Example: 'core,scores,metrics'. Note: Excluded 'observations' or 'scores' fields return empty arrays; excluded 'metrics' returns -1 for 'totalCost' and 'latency'.</p>
+     */
     @JsonSetter(
         value = "fields",
         nulls = Nulls.SKIP
@@ -449,6 +597,114 @@ public final class GetTracesRequest {
       return this;
     }
 
+    /**
+     * <p>JSON string containing an array of filter conditions. When provided, this takes precedence over query parameter filters (userId, name, sessionId, tags, version, release, environment, fromTimestamp, toTimestamp).</p>
+     * <h2>Filter Structure</h2>
+     * <p>Each filter condition has the following structure:</p>
+     * <pre><code class="language-json">[
+     *   {
+     *     &quot;type&quot;: string,           // Required. One of: &quot;datetime&quot;, &quot;string&quot;, &quot;number&quot;, &quot;stringOptions&quot;, &quot;categoryOptions&quot;, &quot;arrayOptions&quot;, &quot;stringObject&quot;, &quot;numberObject&quot;, &quot;boolean&quot;, &quot;null&quot;
+     *     &quot;column&quot;: string,         // Required. Column to filter on (see available columns below)
+     *     &quot;operator&quot;: string,       // Required. Operator based on type:
+     *                               // - datetime: &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+     *                               // - string: &quot;=&quot;, &quot;contains&quot;, &quot;does not contain&quot;, &quot;starts with&quot;, &quot;ends with&quot;
+     *                               // - stringOptions: &quot;any of&quot;, &quot;none of&quot;
+     *                               // - categoryOptions: &quot;any of&quot;, &quot;none of&quot;
+     *                               // - arrayOptions: &quot;any of&quot;, &quot;none of&quot;, &quot;all of&quot;
+     *                               // - number: &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+     *                               // - stringObject: &quot;=&quot;, &quot;contains&quot;, &quot;does not contain&quot;, &quot;starts with&quot;, &quot;ends with&quot;
+     *                               // - numberObject: &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+     *                               // - boolean: &quot;=&quot;, &quot;&lt;&gt;&quot;
+     *                               // - null: &quot;is null&quot;, &quot;is not null&quot;
+     *     &quot;value&quot;: any,             // Required (except for null type). Value to compare against. Type depends on filter type
+     *     &quot;key&quot;: string             // Required only for stringObject, numberObject, and categoryOptions types when filtering on nested fields like metadata
+     *   }
+     * ]
+     * </code></pre>
+     * <h2>Available Columns</h2>
+     * <h3>Core Trace Fields</h3>
+     * <ul>
+     * <li><code>id</code> (string) - Trace ID</li>
+     * <li><code>name</code> (string) - Trace name</li>
+     * <li><code>timestamp</code> (datetime) - Trace timestamp</li>
+     * <li><code>userId</code> (string) - User ID</li>
+     * <li><code>sessionId</code> (string) - Session ID</li>
+     * <li><code>environment</code> (string) - Environment tag</li>
+     * <li><code>version</code> (string) - Version tag</li>
+     * <li><code>release</code> (string) - Release tag</li>
+     * <li><code>tags</code> (arrayOptions) - Array of tags</li>
+     * <li><code>bookmarked</code> (boolean) - Bookmark status</li>
+     * </ul>
+     * <h3>Structured Data</h3>
+     * <ul>
+     * <li><code>metadata</code> (stringObject/numberObject/categoryOptions) - Metadata key-value pairs. Use <code>key</code> parameter to filter on specific metadata keys.</li>
+     * </ul>
+     * <h3>Aggregated Metrics (from observations)</h3>
+     * <p>These metrics are aggregated from all observations within the trace:</p>
+     * <ul>
+     * <li><code>latency</code> (number) - Latency in seconds (time from first observation start to last observation end)</li>
+     * <li><code>inputTokens</code> (number) - Total input tokens across all observations</li>
+     * <li><code>outputTokens</code> (number) - Total output tokens across all observations</li>
+     * <li><code>totalTokens</code> (number) - Total tokens (alias: <code>tokens</code>)</li>
+     * <li><code>inputCost</code> (number) - Total input cost in USD</li>
+     * <li><code>outputCost</code> (number) - Total output cost in USD</li>
+     * <li><code>totalCost</code> (number) - Total cost in USD</li>
+     * </ul>
+     * <h3>Observation Level Aggregations</h3>
+     * <p>These fields aggregate observation levels within the trace:</p>
+     * <ul>
+     * <li><code>level</code> (string) - Highest severity level (ERROR &gt; WARNING &gt; DEFAULT &gt; DEBUG)</li>
+     * <li><code>warningCount</code> (number) - Count of WARNING level observations</li>
+     * <li><code>errorCount</code> (number) - Count of ERROR level observations</li>
+     * <li><code>defaultCount</code> (number) - Count of DEFAULT level observations</li>
+     * <li><code>debugCount</code> (number) - Count of DEBUG level observations</li>
+     * </ul>
+     * <h3>Scores (requires join with scores table)</h3>
+     * <ul>
+     * <li><code>scores_avg</code> (number) - Average of numeric scores (alias: <code>scores</code>)</li>
+     * <li><code>score_categories</code> (categoryOptions) - Categorical score values</li>
+     * </ul>
+     * <h2>Filter Examples</h2>
+     * <pre><code class="language-json">[
+     *   {
+     *     &quot;type&quot;: &quot;datetime&quot;,
+     *     &quot;column&quot;: &quot;timestamp&quot;,
+     *     &quot;operator&quot;: &quot;&gt;=&quot;,
+     *     &quot;value&quot;: &quot;2024-01-01T00:00:00Z&quot;
+     *   },
+     *   {
+     *     &quot;type&quot;: &quot;string&quot;,
+     *     &quot;column&quot;: &quot;userId&quot;,
+     *     &quot;operator&quot;: &quot;=&quot;,
+     *     &quot;value&quot;: &quot;user-123&quot;
+     *   },
+     *   {
+     *     &quot;type&quot;: &quot;number&quot;,
+     *     &quot;column&quot;: &quot;totalCost&quot;,
+     *     &quot;operator&quot;: &quot;&gt;=&quot;,
+     *     &quot;value&quot;: 0.01
+     *   },
+     *   {
+     *     &quot;type&quot;: &quot;arrayOptions&quot;,
+     *     &quot;column&quot;: &quot;tags&quot;,
+     *     &quot;operator&quot;: &quot;all of&quot;,
+     *     &quot;value&quot;: [&quot;production&quot;, &quot;critical&quot;]
+     *   },
+     *   {
+     *     &quot;type&quot;: &quot;stringObject&quot;,
+     *     &quot;column&quot;: &quot;metadata&quot;,
+     *     &quot;key&quot;: &quot;customer_tier&quot;,
+     *     &quot;operator&quot;: &quot;=&quot;,
+     *     &quot;value&quot;: &quot;enterprise&quot;
+     *   }
+     * ]
+     * </code></pre>
+     * <h2>Performance Notes</h2>
+     * <ul>
+     * <li>Filtering on <code>userId</code>, <code>sessionId</code>, or <code>metadata</code> may enable skip indexes for better query performance</li>
+     * <li>Score filters require a join with the scores table and may impact query performance</li>
+     * </ul>
+     */
     @JsonSetter(
         value = "filter",
         nulls = Nulls.SKIP
@@ -464,7 +720,17 @@ public final class GetTracesRequest {
     }
 
     public GetTracesRequest build() {
-      return new GetTracesRequest(page, limit, userId, name, sessionId, fromTimestamp, toTimestamp, orderBy, tags, version, release, environment, fields, filter, additionalProperties);
+      return new GetTracesRequest(tags, environment, page, limit, userId, name, sessionId, fromTimestamp, toTimestamp, orderBy, version, release, fields, filter, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

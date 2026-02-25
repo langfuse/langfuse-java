@@ -201,46 +201,100 @@ public final class CreateModelRequest {
   }
 
   public interface ModelNameStage {
+    /**
+     * <p>Name of the model definition. If multiple with the same name exist, they are applied in the following order: (1) custom over built-in, (2) newest according to startTime where model.startTime&lt;observation.startTime</p>
+     */
     MatchPatternStage modelName(@NotNull String modelName);
 
     Builder from(CreateModelRequest other);
   }
 
   public interface MatchPatternStage {
+    /**
+     * <p>Regex pattern which matches this model definition to generation.model. Useful in case of fine-tuned models. If you want to exact match, use <code>(?i)^modelname$</code></p>
+     */
     _FinalStage matchPattern(@NotNull String matchPattern);
   }
 
   public interface _FinalStage {
     CreateModelRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Apply only to generations which are newer than this ISO date.</p>
+     */
     _FinalStage startDate(Optional<OffsetDateTime> startDate);
 
     _FinalStage startDate(OffsetDateTime startDate);
 
+    /**
+     * <p>Unit used by this model.</p>
+     */
     _FinalStage unit(Optional<ModelUsageUnit> unit);
 
     _FinalStage unit(ModelUsageUnit unit);
 
+    /**
+     * <p>Deprecated. Use 'pricingTiers' instead. Price (USD) per input unit. Creates a default tier if pricingTiers not provided.</p>
+     */
     _FinalStage inputPrice(Optional<Double> inputPrice);
 
     _FinalStage inputPrice(Double inputPrice);
 
+    /**
+     * <p>Deprecated. Use 'pricingTiers' instead. Price (USD) per output unit. Creates a default tier if pricingTiers not provided.</p>
+     */
     _FinalStage outputPrice(Optional<Double> outputPrice);
 
     _FinalStage outputPrice(Double outputPrice);
 
+    /**
+     * <p>Deprecated. Use 'pricingTiers' instead. Price (USD) per total units. Cannot be set if input or output price is set. Creates a default tier if pricingTiers not provided.</p>
+     */
     _FinalStage totalPrice(Optional<Double> totalPrice);
 
     _FinalStage totalPrice(Double totalPrice);
 
+    /**
+     * <p>Optional. Array of pricing tiers for this model.</p>
+     * <p>Use pricing tiers for all models - both those with threshold-based pricing variations and those with simple flat pricing:</p>
+     * <ul>
+     * <li>
+     * <p>For models with standard flat pricing: Create a single default tier with your prices
+     * (e.g., one tier with isDefault=true, priority=0, conditions=[], and your standard prices)</p>
+     * </li>
+     * <li>
+     * <p>For models with threshold-based pricing: Create a default tier plus additional conditional tiers
+     * (e.g., default tier for standard usage + high-volume tier for usage above certain thresholds)</p>
+     * </li>
+     * </ul>
+     * <p>Requirements:</p>
+     * <ul>
+     * <li>Cannot be provided with flat prices (inputPrice/outputPrice/totalPrice) - use one approach or the other</li>
+     * <li>Must include exactly one default tier with isDefault=true, priority=0, and conditions=[]</li>
+     * <li>All tier names and priorities must be unique within the model</li>
+     * <li>Each tier must define at least one price</li>
+     * </ul>
+     * <p>If omitted, you must provide flat prices instead (inputPrice/outputPrice/totalPrice),
+     * which will automatically create a single default tier named &quot;Standard&quot;.</p>
+     */
     _FinalStage pricingTiers(Optional<List<PricingTierInput>> pricingTiers);
 
     _FinalStage pricingTiers(List<PricingTierInput> pricingTiers);
 
+    /**
+     * <p>Optional. Tokenizer to be applied to observations which match to this model. See docs for more details.</p>
+     */
     _FinalStage tokenizerId(Optional<String> tokenizerId);
 
     _FinalStage tokenizerId(String tokenizerId);
 
+    /**
+     * <p>Optional. Configuration for the selected tokenizer. Needs to be JSON. See docs for more details.</p>
+     */
     _FinalStage tokenizerConfig(Optional<Object> tokenizerConfig);
 
     _FinalStage tokenizerConfig(Object tokenizerConfig);
@@ -293,6 +347,7 @@ public final class CreateModelRequest {
 
     /**
      * <p>Name of the model definition. If multiple with the same name exist, they are applied in the following order: (1) custom over built-in, (2) newest according to startTime where model.startTime&lt;observation.startTime</p>
+     * <p>Name of the model definition. If multiple with the same name exist, they are applied in the following order: (1) custom over built-in, (2) newest according to startTime where model.startTime&lt;observation.startTime</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -303,6 +358,7 @@ public final class CreateModelRequest {
     }
 
     /**
+     * <p>Regex pattern which matches this model definition to generation.model. Useful in case of fine-tuned models. If you want to exact match, use <code>(?i)^modelname$</code></p>
      * <p>Regex pattern which matches this model definition to generation.model. Useful in case of fine-tuned models. If you want to exact match, use <code>(?i)^modelname$</code></p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -323,6 +379,9 @@ public final class CreateModelRequest {
       return this;
     }
 
+    /**
+     * <p>Optional. Configuration for the selected tokenizer. Needs to be JSON. See docs for more details.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "tokenizerConfig",
@@ -343,6 +402,9 @@ public final class CreateModelRequest {
       return this;
     }
 
+    /**
+     * <p>Optional. Tokenizer to be applied to observations which match to this model. See docs for more details.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "tokenizerId",
@@ -383,6 +445,29 @@ public final class CreateModelRequest {
       return this;
     }
 
+    /**
+     * <p>Optional. Array of pricing tiers for this model.</p>
+     * <p>Use pricing tiers for all models - both those with threshold-based pricing variations and those with simple flat pricing:</p>
+     * <ul>
+     * <li>
+     * <p>For models with standard flat pricing: Create a single default tier with your prices
+     * (e.g., one tier with isDefault=true, priority=0, conditions=[], and your standard prices)</p>
+     * </li>
+     * <li>
+     * <p>For models with threshold-based pricing: Create a default tier plus additional conditional tiers
+     * (e.g., default tier for standard usage + high-volume tier for usage above certain thresholds)</p>
+     * </li>
+     * </ul>
+     * <p>Requirements:</p>
+     * <ul>
+     * <li>Cannot be provided with flat prices (inputPrice/outputPrice/totalPrice) - use one approach or the other</li>
+     * <li>Must include exactly one default tier with isDefault=true, priority=0, and conditions=[]</li>
+     * <li>All tier names and priorities must be unique within the model</li>
+     * <li>Each tier must define at least one price</li>
+     * </ul>
+     * <p>If omitted, you must provide flat prices instead (inputPrice/outputPrice/totalPrice),
+     * which will automatically create a single default tier named &quot;Standard&quot;.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "pricingTiers",
@@ -403,6 +488,9 @@ public final class CreateModelRequest {
       return this;
     }
 
+    /**
+     * <p>Deprecated. Use 'pricingTiers' instead. Price (USD) per total units. Cannot be set if input or output price is set. Creates a default tier if pricingTiers not provided.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "totalPrice",
@@ -423,6 +511,9 @@ public final class CreateModelRequest {
       return this;
     }
 
+    /**
+     * <p>Deprecated. Use 'pricingTiers' instead. Price (USD) per output unit. Creates a default tier if pricingTiers not provided.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "outputPrice",
@@ -443,6 +534,9 @@ public final class CreateModelRequest {
       return this;
     }
 
+    /**
+     * <p>Deprecated. Use 'pricingTiers' instead. Price (USD) per input unit. Creates a default tier if pricingTiers not provided.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "inputPrice",
@@ -463,6 +557,9 @@ public final class CreateModelRequest {
       return this;
     }
 
+    /**
+     * <p>Unit used by this model.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "unit",
@@ -483,6 +580,9 @@ public final class CreateModelRequest {
       return this;
     }
 
+    /**
+     * <p>Apply only to generations which are newer than this ISO date.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "startDate",
@@ -496,6 +596,18 @@ public final class CreateModelRequest {
     @java.lang.Override
     public CreateModelRequest build() {
       return new CreateModelRequest(modelName, matchPattern, startDate, unit, inputPrice, outputPrice, totalPrice, pricingTiers, tokenizerId, tokenizerConfig, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

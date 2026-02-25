@@ -110,6 +110,48 @@ public final class GetMetricsRequest {
   }
 
   public interface QueryStage {
+    /**
+     * <p>JSON string containing the query parameters with the following structure:</p>
+     * <pre><code class="language-json">{
+     *   &quot;view&quot;: string,           // Required. One of &quot;traces&quot;, &quot;observations&quot;, &quot;scores-numeric&quot;, &quot;scores-categorical&quot;
+     *   &quot;dimensions&quot;: [           // Optional. Default: []
+     *     {
+     *       &quot;field&quot;: string       // Field to group by, e.g. &quot;name&quot;, &quot;userId&quot;, &quot;sessionId&quot;
+     *     }
+     *   ],
+     *   &quot;metrics&quot;: [              // Required. At least one metric must be provided
+     *     {
+     *       &quot;measure&quot;: string,    // What to measure, e.g. &quot;count&quot;, &quot;latency&quot;, &quot;value&quot;
+     *       &quot;aggregation&quot;: string // How to aggregate, e.g. &quot;count&quot;, &quot;sum&quot;, &quot;avg&quot;, &quot;p95&quot;, &quot;histogram&quot;
+     *     }
+     *   ],
+     *   &quot;filters&quot;: [              // Optional. Default: []
+     *     {
+     *       &quot;column&quot;: string,     // Column to filter on
+     *       &quot;operator&quot;: string,   // Operator, e.g. &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;contains&quot;
+     *       &quot;value&quot;: any,         // Value to compare against
+     *       &quot;type&quot;: string,       // Data type, e.g. &quot;string&quot;, &quot;number&quot;, &quot;stringObject&quot;
+     *       &quot;key&quot;: string         // Required only when filtering on metadata
+     *     }
+     *   ],
+     *   &quot;timeDimension&quot;: {        // Optional. Default: null. If provided, results will be grouped by time
+     *     &quot;granularity&quot;: string   // One of &quot;minute&quot;, &quot;hour&quot;, &quot;day&quot;, &quot;week&quot;, &quot;month&quot;, &quot;auto&quot;
+     *   },
+     *   &quot;fromTimestamp&quot;: string,  // Required. ISO datetime string for start of time range
+     *   &quot;toTimestamp&quot;: string,    // Required. ISO datetime string for end of time range
+     *   &quot;orderBy&quot;: [              // Optional. Default: null
+     *     {
+     *       &quot;field&quot;: string,      // Field to order by
+     *       &quot;direction&quot;: string   // &quot;asc&quot; or &quot;desc&quot;
+     *     }
+     *   ],
+     *   &quot;config&quot;: {               // Optional. Query-specific configuration
+     *     &quot;bins&quot;: number,         // Optional. Number of bins for histogram (1-100), default: 10
+     *     &quot;row_limit&quot;: number     // Optional. Row limit for results (1-1000)
+     *   }
+     * }
+     * </code></pre>
+     */
     _FinalStage query(@NotNull String query);
 
     Builder from(GetMetricsRequest other);
@@ -117,6 +159,10 @@ public final class GetMetricsRequest {
 
   public interface _FinalStage {
     GetMetricsRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -178,6 +224,46 @@ public final class GetMetricsRequest {
      *   }
      * }
      * </code></pre>
+     * <p>JSON string containing the query parameters with the following structure:</p>
+     * <pre><code class="language-json">{
+     *   &quot;view&quot;: string,           // Required. One of &quot;traces&quot;, &quot;observations&quot;, &quot;scores-numeric&quot;, &quot;scores-categorical&quot;
+     *   &quot;dimensions&quot;: [           // Optional. Default: []
+     *     {
+     *       &quot;field&quot;: string       // Field to group by, e.g. &quot;name&quot;, &quot;userId&quot;, &quot;sessionId&quot;
+     *     }
+     *   ],
+     *   &quot;metrics&quot;: [              // Required. At least one metric must be provided
+     *     {
+     *       &quot;measure&quot;: string,    // What to measure, e.g. &quot;count&quot;, &quot;latency&quot;, &quot;value&quot;
+     *       &quot;aggregation&quot;: string // How to aggregate, e.g. &quot;count&quot;, &quot;sum&quot;, &quot;avg&quot;, &quot;p95&quot;, &quot;histogram&quot;
+     *     }
+     *   ],
+     *   &quot;filters&quot;: [              // Optional. Default: []
+     *     {
+     *       &quot;column&quot;: string,     // Column to filter on
+     *       &quot;operator&quot;: string,   // Operator, e.g. &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;contains&quot;
+     *       &quot;value&quot;: any,         // Value to compare against
+     *       &quot;type&quot;: string,       // Data type, e.g. &quot;string&quot;, &quot;number&quot;, &quot;stringObject&quot;
+     *       &quot;key&quot;: string         // Required only when filtering on metadata
+     *     }
+     *   ],
+     *   &quot;timeDimension&quot;: {        // Optional. Default: null. If provided, results will be grouped by time
+     *     &quot;granularity&quot;: string   // One of &quot;minute&quot;, &quot;hour&quot;, &quot;day&quot;, &quot;week&quot;, &quot;month&quot;, &quot;auto&quot;
+     *   },
+     *   &quot;fromTimestamp&quot;: string,  // Required. ISO datetime string for start of time range
+     *   &quot;toTimestamp&quot;: string,    // Required. ISO datetime string for end of time range
+     *   &quot;orderBy&quot;: [              // Optional. Default: null
+     *     {
+     *       &quot;field&quot;: string,      // Field to order by
+     *       &quot;direction&quot;: string   // &quot;asc&quot; or &quot;desc&quot;
+     *     }
+     *   ],
+     *   &quot;config&quot;: {               // Optional. Query-specific configuration
+     *     &quot;bins&quot;: number,         // Optional. Number of bins for histogram (1-100), default: 10
+     *     &quot;row_limit&quot;: number     // Optional. Row limit for results (1-1000)
+     *   }
+     * }
+     * </code></pre>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -190,6 +276,18 @@ public final class GetMetricsRequest {
     @java.lang.Override
     public GetMetricsRequest build() {
       return new GetMetricsRequest(query, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

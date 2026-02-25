@@ -34,6 +34,8 @@ public final class CreateChatPromptRequest {
 
   private final Optional<Object> config;
 
+  private final CreateChatPromptType type;
+
   private final Optional<List<String>> labels;
 
   private final Optional<List<String>> tags;
@@ -43,11 +45,13 @@ public final class CreateChatPromptRequest {
   private final Map<String, Object> additionalProperties;
 
   private CreateChatPromptRequest(String name, List<ChatMessageWithPlaceholders> prompt,
-      Optional<Object> config, Optional<List<String>> labels, Optional<List<String>> tags,
-      Optional<String> commitMessage, Map<String, Object> additionalProperties) {
+      Optional<Object> config, CreateChatPromptType type, Optional<List<String>> labels,
+      Optional<List<String>> tags, Optional<String> commitMessage,
+      Map<String, Object> additionalProperties) {
     this.name = name;
     this.prompt = prompt;
     this.config = config;
+    this.type = type;
     this.labels = labels;
     this.tags = tags;
     this.commitMessage = commitMessage;
@@ -67,6 +71,11 @@ public final class CreateChatPromptRequest {
   @JsonProperty("config")
   public Optional<Object> getConfig() {
     return config;
+  }
+
+  @JsonProperty("type")
+  public CreateChatPromptType getType() {
+    return type;
   }
 
   /**
@@ -105,12 +114,12 @@ public final class CreateChatPromptRequest {
   }
 
   private boolean equalTo(CreateChatPromptRequest other) {
-    return name.equals(other.name) && prompt.equals(other.prompt) && config.equals(other.config) && labels.equals(other.labels) && tags.equals(other.tags) && commitMessage.equals(other.commitMessage);
+    return name.equals(other.name) && prompt.equals(other.prompt) && config.equals(other.config) && type.equals(other.type) && labels.equals(other.labels) && tags.equals(other.tags) && commitMessage.equals(other.commitMessage);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.prompt, this.config, this.labels, this.tags, this.commitMessage);
+    return Objects.hash(this.name, this.prompt, this.config, this.type, this.labels, this.tags, this.commitMessage);
   }
 
   @java.lang.Override
@@ -123,13 +132,21 @@ public final class CreateChatPromptRequest {
   }
 
   public interface NameStage {
-    _FinalStage name(@NotNull String name);
+    TypeStage name(@NotNull String name);
 
     Builder from(CreateChatPromptRequest other);
   }
 
+  public interface TypeStage {
+    _FinalStage type(@NotNull CreateChatPromptType type);
+  }
+
   public interface _FinalStage {
     CreateChatPromptRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
     _FinalStage prompt(List<ChatMessageWithPlaceholders> prompt);
 
@@ -141,14 +158,23 @@ public final class CreateChatPromptRequest {
 
     _FinalStage config(Object config);
 
+    /**
+     * <p>List of deployment labels of this prompt version.</p>
+     */
     _FinalStage labels(Optional<List<String>> labels);
 
     _FinalStage labels(List<String> labels);
 
+    /**
+     * <p>List of tags to apply to all versions of this prompt.</p>
+     */
     _FinalStage tags(Optional<List<String>> tags);
 
     _FinalStage tags(List<String> tags);
 
+    /**
+     * <p>Commit message for this prompt version.</p>
+     */
     _FinalStage commitMessage(Optional<String> commitMessage);
 
     _FinalStage commitMessage(String commitMessage);
@@ -157,8 +183,10 @@ public final class CreateChatPromptRequest {
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements NameStage, _FinalStage {
+  public static final class Builder implements NameStage, TypeStage, _FinalStage {
     private String name;
+
+    private CreateChatPromptType type;
 
     private Optional<String> commitMessage = Optional.empty();
 
@@ -181,6 +209,7 @@ public final class CreateChatPromptRequest {
       name(other.getName());
       prompt(other.getPrompt());
       config(other.getConfig());
+      type(other.getType());
       labels(other.getLabels());
       tags(other.getTags());
       commitMessage(other.getCommitMessage());
@@ -189,8 +218,15 @@ public final class CreateChatPromptRequest {
 
     @java.lang.Override
     @JsonSetter("name")
-    public _FinalStage name(@NotNull String name) {
+    public TypeStage name(@NotNull String name) {
       this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter("type")
+    public _FinalStage type(@NotNull CreateChatPromptType type) {
+      this.type = Objects.requireNonNull(type, "type must not be null");
       return this;
     }
 
@@ -204,6 +240,9 @@ public final class CreateChatPromptRequest {
       return this;
     }
 
+    /**
+     * <p>Commit message for this prompt version.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "commitMessage",
@@ -224,6 +263,9 @@ public final class CreateChatPromptRequest {
       return this;
     }
 
+    /**
+     * <p>List of tags to apply to all versions of this prompt.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "tags",
@@ -244,6 +286,9 @@ public final class CreateChatPromptRequest {
       return this;
     }
 
+    /**
+     * <p>List of deployment labels of this prompt version.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "labels",
@@ -272,7 +317,9 @@ public final class CreateChatPromptRequest {
 
     @java.lang.Override
     public _FinalStage addAllPrompt(List<ChatMessageWithPlaceholders> prompt) {
-      this.prompt.addAll(prompt);
+      if (prompt != null) {
+        this.prompt.addAll(prompt);
+      }
       return this;
     }
 
@@ -289,13 +336,27 @@ public final class CreateChatPromptRequest {
     )
     public _FinalStage prompt(List<ChatMessageWithPlaceholders> prompt) {
       this.prompt.clear();
-      this.prompt.addAll(prompt);
+      if (prompt != null) {
+        this.prompt.addAll(prompt);
+      }
       return this;
     }
 
     @java.lang.Override
     public CreateChatPromptRequest build() {
-      return new CreateChatPromptRequest(name, prompt, config, labels, tags, commitMessage, additionalProperties);
+      return new CreateChatPromptRequest(name, prompt, config, type, labels, tags, commitMessage, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

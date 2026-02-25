@@ -135,6 +135,9 @@ public final class PromptMeta {
   }
 
   public interface TypeStage {
+    /**
+     * <p>Indicates whether the prompt is a text or chat prompt.</p>
+     */
     LastUpdatedAtStage type(@NotNull PromptType type);
   }
 
@@ -143,11 +146,18 @@ public final class PromptMeta {
   }
 
   public interface LastConfigStage {
+    /**
+     * <p>Config object of the most recent prompt version that matches the filters (if any are provided)</p>
+     */
     _FinalStage lastConfig(Object lastConfig);
   }
 
   public interface _FinalStage {
     PromptMeta build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
     _FinalStage versions(List<Integer> versions);
 
@@ -213,6 +223,7 @@ public final class PromptMeta {
 
     /**
      * <p>Indicates whether the prompt is a text or chat prompt.</p>
+     * <p>Indicates whether the prompt is a text or chat prompt.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -231,6 +242,7 @@ public final class PromptMeta {
 
     /**
      * <p>Config object of the most recent prompt version that matches the filters (if any are provided)</p>
+     * <p>Config object of the most recent prompt version that matches the filters (if any are provided)</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -242,7 +254,9 @@ public final class PromptMeta {
 
     @java.lang.Override
     public _FinalStage addAllTags(List<String> tags) {
-      this.tags.addAll(tags);
+      if (tags != null) {
+        this.tags.addAll(tags);
+      }
       return this;
     }
 
@@ -259,13 +273,17 @@ public final class PromptMeta {
     )
     public _FinalStage tags(List<String> tags) {
       this.tags.clear();
-      this.tags.addAll(tags);
+      if (tags != null) {
+        this.tags.addAll(tags);
+      }
       return this;
     }
 
     @java.lang.Override
     public _FinalStage addAllLabels(List<String> labels) {
-      this.labels.addAll(labels);
+      if (labels != null) {
+        this.labels.addAll(labels);
+      }
       return this;
     }
 
@@ -282,13 +300,17 @@ public final class PromptMeta {
     )
     public _FinalStage labels(List<String> labels) {
       this.labels.clear();
-      this.labels.addAll(labels);
+      if (labels != null) {
+        this.labels.addAll(labels);
+      }
       return this;
     }
 
     @java.lang.Override
     public _FinalStage addAllVersions(List<Integer> versions) {
-      this.versions.addAll(versions);
+      if (versions != null) {
+        this.versions.addAll(versions);
+      }
       return this;
     }
 
@@ -305,13 +327,27 @@ public final class PromptMeta {
     )
     public _FinalStage versions(List<Integer> versions) {
       this.versions.clear();
-      this.versions.addAll(versions);
+      if (versions != null) {
+        this.versions.addAll(versions);
+      }
       return this;
     }
 
     @java.lang.Override
     public PromptMeta build() {
       return new PromptMeta(name, type, versions, labels, tags, lastUpdatedAt, lastConfig, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

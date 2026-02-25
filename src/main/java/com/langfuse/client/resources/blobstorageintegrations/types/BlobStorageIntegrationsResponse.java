@@ -93,7 +93,9 @@ public final class BlobStorageIntegrationsResponse {
     )
     public Builder data(List<BlobStorageIntegrationResponse> data) {
       this.data.clear();
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
@@ -103,12 +105,24 @@ public final class BlobStorageIntegrationsResponse {
     }
 
     public Builder addAllData(List<BlobStorageIntegrationResponse> data) {
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
     public BlobStorageIntegrationsResponse build() {
       return new BlobStorageIntegrationsResponse(data, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

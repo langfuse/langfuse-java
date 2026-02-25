@@ -6,6 +6,7 @@ package com.langfuse.client.resources.commons.errors;
 
 import com.langfuse.client.core.LangfuseClientApiException;
 import java.lang.Object;
+import okhttp3.Response;
 
 public final class Error extends LangfuseClientApiException {
   /**
@@ -15,6 +16,11 @@ public final class Error extends LangfuseClientApiException {
 
   public Error(Object body) {
     super("Error", 400, body);
+    this.body = body;
+  }
+
+  public Error(Object body, Response rawResponse) {
+    super("Error", 400, body, rawResponse);
     this.body = body;
   }
 

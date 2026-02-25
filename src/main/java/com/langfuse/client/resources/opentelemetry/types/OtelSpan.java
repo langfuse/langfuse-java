@@ -205,6 +205,9 @@ public final class OtelSpan {
       return this;
     }
 
+    /**
+     * <p>Trace ID (16 bytes, hex-encoded string in JSON or Buffer in binary)</p>
+     */
     @JsonSetter(
         value = "traceId",
         nulls = Nulls.SKIP
@@ -219,6 +222,9 @@ public final class OtelSpan {
       return this;
     }
 
+    /**
+     * <p>Span ID (8 bytes, hex-encoded string in JSON or Buffer in binary)</p>
+     */
     @JsonSetter(
         value = "spanId",
         nulls = Nulls.SKIP
@@ -233,6 +239,9 @@ public final class OtelSpan {
       return this;
     }
 
+    /**
+     * <p>Parent span ID if this is a child span</p>
+     */
     @JsonSetter(
         value = "parentSpanId",
         nulls = Nulls.SKIP
@@ -247,6 +256,9 @@ public final class OtelSpan {
       return this;
     }
 
+    /**
+     * <p>Span name describing the operation</p>
+     */
     @JsonSetter(
         value = "name",
         nulls = Nulls.SKIP
@@ -261,6 +273,9 @@ public final class OtelSpan {
       return this;
     }
 
+    /**
+     * <p>Span kind (1=INTERNAL, 2=SERVER, 3=CLIENT, 4=PRODUCER, 5=CONSUMER)</p>
+     */
     @JsonSetter(
         value = "kind",
         nulls = Nulls.SKIP
@@ -275,6 +290,9 @@ public final class OtelSpan {
       return this;
     }
 
+    /**
+     * <p>Start time in nanoseconds since Unix epoch</p>
+     */
     @JsonSetter(
         value = "startTimeUnixNano",
         nulls = Nulls.SKIP
@@ -289,6 +307,9 @@ public final class OtelSpan {
       return this;
     }
 
+    /**
+     * <p>End time in nanoseconds since Unix epoch</p>
+     */
     @JsonSetter(
         value = "endTimeUnixNano",
         nulls = Nulls.SKIP
@@ -303,6 +324,9 @@ public final class OtelSpan {
       return this;
     }
 
+    /**
+     * <p>Span attributes including Langfuse-specific attributes (langfuse.observation.*)</p>
+     */
     @JsonSetter(
         value = "attributes",
         nulls = Nulls.SKIP
@@ -317,6 +341,9 @@ public final class OtelSpan {
       return this;
     }
 
+    /**
+     * <p>Span status object</p>
+     */
     @JsonSetter(
         value = "status",
         nulls = Nulls.SKIP
@@ -333,6 +360,16 @@ public final class OtelSpan {
 
     public OtelSpan build() {
       return new OtelSpan(traceId, spanId, parentSpanId, name, kind, startTimeUnixNano, endTimeUnixNano, attributes, status, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -5,7 +5,13 @@
 package com.langfuse.client.core;
 
 import java.lang.Object;
+import java.lang.Override;
 import java.lang.String;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import okhttp3.Response;
 
 /**
  * This exception type will be thrown for any non-2XX API responses.
@@ -21,10 +27,26 @@ public class LangfuseClientApiException extends LangfuseClientException {
    */
   private final Object body;
 
+  private final Map<String, List<String>> headers;
+
   public LangfuseClientApiException(String message, int statusCode, Object body) {
     super(message);
     this.statusCode = statusCode;
     this.body = body;
+    this.headers = new HashMap<>();
+  }
+
+  public LangfuseClientApiException(String message, int statusCode, Object body,
+      Response rawResponse) {
+    super(message);
+    this.statusCode = statusCode;
+    this.body = body;
+    this.headers = new HashMap<>();
+    rawResponse.headers().forEach(header -> {
+        String key = header.component1();
+        String value = header.component2();
+        this.headers.computeIfAbsent(key, _str -> new ArrayList<>()).add(value);
+    });
   }
 
   /**
@@ -41,8 +63,15 @@ public class LangfuseClientApiException extends LangfuseClientException {
     return this.body;
   }
 
-  @java.lang.Override
+  /**
+   * @return the headers
+   */
+  public Map<String, List<String>> headers() {
+    return this.headers;
+  }
+
+  @Override
   public String toString() {
-    return "LangfuseClientApiException{" + "message: " + getMessage() + ", statusCode: " + statusCode + ", body: " + body + "}";
+    return "LangfuseClientApiException{" + "message: " + getMessage() + ", statusCode: " + statusCode + ", body: " + ObjectMappers.stringify(body) + "}";
   }
 }

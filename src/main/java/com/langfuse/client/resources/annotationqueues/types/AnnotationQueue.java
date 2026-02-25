@@ -135,6 +135,10 @@ public final class AnnotationQueue {
   public interface _FinalStage {
     AnnotationQueue build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage description(Optional<String> description);
 
     _FinalStage description(String description);
@@ -209,7 +213,9 @@ public final class AnnotationQueue {
 
     @java.lang.Override
     public _FinalStage addAllScoreConfigIds(List<String> scoreConfigIds) {
-      this.scoreConfigIds.addAll(scoreConfigIds);
+      if (scoreConfigIds != null) {
+        this.scoreConfigIds.addAll(scoreConfigIds);
+      }
       return this;
     }
 
@@ -226,7 +232,9 @@ public final class AnnotationQueue {
     )
     public _FinalStage scoreConfigIds(List<String> scoreConfigIds) {
       this.scoreConfigIds.clear();
-      this.scoreConfigIds.addAll(scoreConfigIds);
+      if (scoreConfigIds != null) {
+        this.scoreConfigIds.addAll(scoreConfigIds);
+      }
       return this;
     }
 
@@ -249,6 +257,18 @@ public final class AnnotationQueue {
     @java.lang.Override
     public AnnotationQueue build() {
       return new AnnotationQueue(id, name, description, scoreConfigIds, createdAt, updatedAt, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

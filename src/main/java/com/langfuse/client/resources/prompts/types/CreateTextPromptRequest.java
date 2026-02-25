@@ -33,6 +33,8 @@ public final class CreateTextPromptRequest {
 
   private final Optional<Object> config;
 
+  private final Optional<CreateTextPromptType> type;
+
   private final Optional<List<String>> labels;
 
   private final Optional<List<String>> tags;
@@ -42,11 +44,13 @@ public final class CreateTextPromptRequest {
   private final Map<String, Object> additionalProperties;
 
   private CreateTextPromptRequest(String name, String prompt, Optional<Object> config,
-      Optional<List<String>> labels, Optional<List<String>> tags, Optional<String> commitMessage,
+      Optional<CreateTextPromptType> type, Optional<List<String>> labels,
+      Optional<List<String>> tags, Optional<String> commitMessage,
       Map<String, Object> additionalProperties) {
     this.name = name;
     this.prompt = prompt;
     this.config = config;
+    this.type = type;
     this.labels = labels;
     this.tags = tags;
     this.commitMessage = commitMessage;
@@ -66,6 +70,11 @@ public final class CreateTextPromptRequest {
   @JsonProperty("config")
   public Optional<Object> getConfig() {
     return config;
+  }
+
+  @JsonProperty("type")
+  public Optional<CreateTextPromptType> getType() {
+    return type;
   }
 
   /**
@@ -104,12 +113,12 @@ public final class CreateTextPromptRequest {
   }
 
   private boolean equalTo(CreateTextPromptRequest other) {
-    return name.equals(other.name) && prompt.equals(other.prompt) && config.equals(other.config) && labels.equals(other.labels) && tags.equals(other.tags) && commitMessage.equals(other.commitMessage);
+    return name.equals(other.name) && prompt.equals(other.prompt) && config.equals(other.config) && type.equals(other.type) && labels.equals(other.labels) && tags.equals(other.tags) && commitMessage.equals(other.commitMessage);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.prompt, this.config, this.labels, this.tags, this.commitMessage);
+    return Objects.hash(this.name, this.prompt, this.config, this.type, this.labels, this.tags, this.commitMessage);
   }
 
   @java.lang.Override
@@ -134,18 +143,35 @@ public final class CreateTextPromptRequest {
   public interface _FinalStage {
     CreateTextPromptRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage config(Optional<Object> config);
 
     _FinalStage config(Object config);
 
+    _FinalStage type(Optional<CreateTextPromptType> type);
+
+    _FinalStage type(CreateTextPromptType type);
+
+    /**
+     * <p>List of deployment labels of this prompt version.</p>
+     */
     _FinalStage labels(Optional<List<String>> labels);
 
     _FinalStage labels(List<String> labels);
 
+    /**
+     * <p>List of tags to apply to all versions of this prompt.</p>
+     */
     _FinalStage tags(Optional<List<String>> tags);
 
     _FinalStage tags(List<String> tags);
 
+    /**
+     * <p>Commit message for this prompt version.</p>
+     */
     _FinalStage commitMessage(Optional<String> commitMessage);
 
     _FinalStage commitMessage(String commitMessage);
@@ -165,6 +191,8 @@ public final class CreateTextPromptRequest {
 
     private Optional<List<String>> labels = Optional.empty();
 
+    private Optional<CreateTextPromptType> type = Optional.empty();
+
     private Optional<Object> config = Optional.empty();
 
     @JsonAnySetter
@@ -178,6 +206,7 @@ public final class CreateTextPromptRequest {
       name(other.getName());
       prompt(other.getPrompt());
       config(other.getConfig());
+      type(other.getType());
       labels(other.getLabels());
       tags(other.getTags());
       commitMessage(other.getCommitMessage());
@@ -208,6 +237,9 @@ public final class CreateTextPromptRequest {
       return this;
     }
 
+    /**
+     * <p>Commit message for this prompt version.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "commitMessage",
@@ -228,6 +260,9 @@ public final class CreateTextPromptRequest {
       return this;
     }
 
+    /**
+     * <p>List of tags to apply to all versions of this prompt.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "tags",
@@ -248,6 +283,9 @@ public final class CreateTextPromptRequest {
       return this;
     }
 
+    /**
+     * <p>List of deployment labels of this prompt version.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "labels",
@@ -255,6 +293,22 @@ public final class CreateTextPromptRequest {
     )
     public _FinalStage labels(Optional<List<String>> labels) {
       this.labels = labels;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage type(CreateTextPromptType type) {
+      this.type = Optional.ofNullable(type);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "type",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage type(Optional<CreateTextPromptType> type) {
+      this.type = type;
       return this;
     }
 
@@ -276,7 +330,19 @@ public final class CreateTextPromptRequest {
 
     @java.lang.Override
     public CreateTextPromptRequest build() {
-      return new CreateTextPromptRequest(name, prompt, config, labels, tags, commitMessage, additionalProperties);
+      return new CreateTextPromptRequest(name, prompt, config, type, labels, tags, commitMessage, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

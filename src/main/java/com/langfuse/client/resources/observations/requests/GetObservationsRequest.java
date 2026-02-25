@@ -17,7 +17,9 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,6 +30,8 @@ import com.langfuse.client.resources.commons.types.ObservationLevel;
     builder = GetObservationsRequest.Builder.class
 )
 public final class GetObservationsRequest {
+  private final Optional<List<String>> environment;
+
   private final Optional<Integer> page;
 
   private final Optional<Integer> limit;
@@ -44,8 +48,6 @@ public final class GetObservationsRequest {
 
   private final Optional<String> parentObservationId;
 
-  private final Optional<String> environment;
-
   private final Optional<OffsetDateTime> fromStartTime;
 
   private final Optional<OffsetDateTime> toStartTime;
@@ -56,12 +58,13 @@ public final class GetObservationsRequest {
 
   private final Map<String, Object> additionalProperties;
 
-  private GetObservationsRequest(Optional<Integer> page, Optional<Integer> limit,
-      Optional<String> name, Optional<String> userId, Optional<String> type,
-      Optional<String> traceId, Optional<ObservationLevel> level,
-      Optional<String> parentObservationId, Optional<String> environment,
-      Optional<OffsetDateTime> fromStartTime, Optional<OffsetDateTime> toStartTime,
-      Optional<String> version, Optional<String> filter, Map<String, Object> additionalProperties) {
+  private GetObservationsRequest(Optional<List<String>> environment, Optional<Integer> page,
+      Optional<Integer> limit, Optional<String> name, Optional<String> userId,
+      Optional<String> type, Optional<String> traceId, Optional<ObservationLevel> level,
+      Optional<String> parentObservationId, Optional<OffsetDateTime> fromStartTime,
+      Optional<OffsetDateTime> toStartTime, Optional<String> version, Optional<String> filter,
+      Map<String, Object> additionalProperties) {
+    this.environment = environment;
     this.page = page;
     this.limit = limit;
     this.name = name;
@@ -70,12 +73,19 @@ public final class GetObservationsRequest {
     this.traceId = traceId;
     this.level = level;
     this.parentObservationId = parentObservationId;
-    this.environment = environment;
     this.fromStartTime = fromStartTime;
     this.toStartTime = toStartTime;
     this.version = version;
     this.filter = filter;
     this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Optional filter for observations where the environment is one of the provided values.
+   */
+  @JsonProperty("environment")
+  public Optional<List<String>> getEnvironment() {
+    return environment;
   }
 
   /**
@@ -128,14 +138,6 @@ public final class GetObservationsRequest {
   }
 
   /**
-   * @return Optional filter for observations where the environment is one of the provided values.
-   */
-  @JsonProperty("environment")
-  public Optional<String> getEnvironment() {
-    return environment;
-  }
-
-  /**
    * @return Retrieve only observations with a start_time on or after this datetime (ISO 8601).
    */
   @JsonProperty("fromStartTime")
@@ -161,6 +163,100 @@ public final class GetObservationsRequest {
 
   /**
    * @return JSON string containing an array of filter conditions. When provided, this takes precedence over query parameter filters (userId, name, type, level, environment, fromStartTime, ...).
+   * <h2>Filter Structure</h2>
+   * <p>Each filter condition has the following structure:</p>
+   * <pre><code class="language-json">[
+   *   {
+   *     &quot;type&quot;: string,           // Required. One of: &quot;datetime&quot;, &quot;string&quot;, &quot;number&quot;, &quot;stringOptions&quot;, &quot;categoryOptions&quot;, &quot;arrayOptions&quot;, &quot;stringObject&quot;, &quot;numberObject&quot;, &quot;boolean&quot;, &quot;null&quot;
+   *     &quot;column&quot;: string,         // Required. Column to filter on (see available columns below)
+   *     &quot;operator&quot;: string,       // Required. Operator based on type:
+   *                               // - datetime: &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+   *                               // - string: &quot;=&quot;, &quot;contains&quot;, &quot;does not contain&quot;, &quot;starts with&quot;, &quot;ends with&quot;
+   *                               // - stringOptions: &quot;any of&quot;, &quot;none of&quot;
+   *                               // - categoryOptions: &quot;any of&quot;, &quot;none of&quot;
+   *                               // - arrayOptions: &quot;any of&quot;, &quot;none of&quot;, &quot;all of&quot;
+   *                               // - number: &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+   *                               // - stringObject: &quot;=&quot;, &quot;contains&quot;, &quot;does not contain&quot;, &quot;starts with&quot;, &quot;ends with&quot;
+   *                               // - numberObject: &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+   *                               // - boolean: &quot;=&quot;, &quot;&lt;&gt;&quot;
+   *                               // - null: &quot;is null&quot;, &quot;is not null&quot;
+   *     &quot;value&quot;: any,             // Required (except for null type). Value to compare against. Type depends on filter type
+   *     &quot;key&quot;: string             // Required only for stringObject, numberObject, and categoryOptions types when filtering on nested fields like metadata
+   *   }
+   * ]
+   * </code></pre>
+   * <h2>Available Columns</h2>
+   * <h3>Core Observation Fields</h3>
+   * <ul>
+   * <li><code>id</code> (string) - Observation ID</li>
+   * <li><code>type</code> (string) - Observation type (SPAN, GENERATION, EVENT)</li>
+   * <li><code>name</code> (string) - Observation name</li>
+   * <li><code>traceId</code> (string) - Associated trace ID</li>
+   * <li><code>startTime</code> (datetime) - Observation start time</li>
+   * <li><code>endTime</code> (datetime) - Observation end time</li>
+   * <li><code>environment</code> (string) - Environment tag</li>
+   * <li><code>level</code> (string) - Log level (DEBUG, DEFAULT, WARNING, ERROR)</li>
+   * <li><code>statusMessage</code> (string) - Status message</li>
+   * <li><code>version</code> (string) - Version tag</li>
+   * </ul>
+   * <h3>Performance Metrics</h3>
+   * <ul>
+   * <li><code>latency</code> (number) - Latency in seconds (calculated: end_time - start_time)</li>
+   * <li><code>timeToFirstToken</code> (number) - Time to first token in seconds</li>
+   * <li><code>tokensPerSecond</code> (number) - Output tokens per second</li>
+   * </ul>
+   * <h3>Token Usage</h3>
+   * <ul>
+   * <li><code>inputTokens</code> (number) - Number of input tokens</li>
+   * <li><code>outputTokens</code> (number) - Number of output tokens</li>
+   * <li><code>totalTokens</code> (number) - Total tokens (alias: <code>tokens</code>)</li>
+   * </ul>
+   * <h3>Cost Metrics</h3>
+   * <ul>
+   * <li><code>inputCost</code> (number) - Input cost in USD</li>
+   * <li><code>outputCost</code> (number) - Output cost in USD</li>
+   * <li><code>totalCost</code> (number) - Total cost in USD</li>
+   * </ul>
+   * <h3>Model Information</h3>
+   * <ul>
+   * <li><code>model</code> (string) - Provided model name</li>
+   * <li><code>promptName</code> (string) - Associated prompt name</li>
+   * <li><code>promptVersion</code> (number) - Associated prompt version</li>
+   * </ul>
+   * <h3>Structured Data</h3>
+   * <ul>
+   * <li><code>metadata</code> (stringObject/numberObject/categoryOptions) - Metadata key-value pairs. Use <code>key</code> parameter to filter on specific metadata keys.</li>
+   * </ul>
+   * <h3>Associated Trace Fields (requires join with traces table)</h3>
+   * <ul>
+   * <li><code>userId</code> (string) - User ID from associated trace</li>
+   * <li><code>traceName</code> (string) - Name from associated trace</li>
+   * <li><code>traceEnvironment</code> (string) - Environment from associated trace</li>
+   * <li><code>traceTags</code> (arrayOptions) - Tags from associated trace</li>
+   * </ul>
+   * <h2>Filter Examples</h2>
+   * <pre><code class="language-json">[
+   *   {
+   *     &quot;type&quot;: &quot;string&quot;,
+   *     &quot;column&quot;: &quot;type&quot;,
+   *     &quot;operator&quot;: &quot;=&quot;,
+   *     &quot;value&quot;: &quot;GENERATION&quot;
+   *   },
+   *   {
+   *     &quot;type&quot;: &quot;number&quot;,
+   *     &quot;column&quot;: &quot;latency&quot;,
+   *     &quot;operator&quot;: &quot;&gt;=&quot;,
+   *     &quot;value&quot;: 2.5
+   *   },
+   *   {
+   *     &quot;type&quot;: &quot;stringObject&quot;,
+   *     &quot;column&quot;: &quot;metadata&quot;,
+   *     &quot;key&quot;: &quot;environment&quot;,
+   *     &quot;operator&quot;: &quot;=&quot;,
+   *     &quot;value&quot;: &quot;production&quot;
+   *   }
+   * ]
+   * </code></pre>
    */
   @JsonProperty("filter")
   public Optional<String> getFilter() {
@@ -179,12 +275,12 @@ public final class GetObservationsRequest {
   }
 
   private boolean equalTo(GetObservationsRequest other) {
-    return page.equals(other.page) && limit.equals(other.limit) && name.equals(other.name) && userId.equals(other.userId) && type.equals(other.type) && traceId.equals(other.traceId) && level.equals(other.level) && parentObservationId.equals(other.parentObservationId) && environment.equals(other.environment) && fromStartTime.equals(other.fromStartTime) && toStartTime.equals(other.toStartTime) && version.equals(other.version) && filter.equals(other.filter);
+    return environment.equals(other.environment) && page.equals(other.page) && limit.equals(other.limit) && name.equals(other.name) && userId.equals(other.userId) && type.equals(other.type) && traceId.equals(other.traceId) && level.equals(other.level) && parentObservationId.equals(other.parentObservationId) && fromStartTime.equals(other.fromStartTime) && toStartTime.equals(other.toStartTime) && version.equals(other.version) && filter.equals(other.filter);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.page, this.limit, this.name, this.userId, this.type, this.traceId, this.level, this.parentObservationId, this.environment, this.fromStartTime, this.toStartTime, this.version, this.filter);
+    return Objects.hash(this.environment, this.page, this.limit, this.name, this.userId, this.type, this.traceId, this.level, this.parentObservationId, this.fromStartTime, this.toStartTime, this.version, this.filter);
   }
 
   @java.lang.Override
@@ -200,6 +296,8 @@ public final class GetObservationsRequest {
       ignoreUnknown = true
   )
   public static final class Builder {
+    private Optional<List<String>> environment = Optional.empty();
+
     private Optional<Integer> page = Optional.empty();
 
     private Optional<Integer> limit = Optional.empty();
@@ -216,8 +314,6 @@ public final class GetObservationsRequest {
 
     private Optional<String> parentObservationId = Optional.empty();
 
-    private Optional<String> environment = Optional.empty();
-
     private Optional<OffsetDateTime> fromStartTime = Optional.empty();
 
     private Optional<OffsetDateTime> toStartTime = Optional.empty();
@@ -233,6 +329,7 @@ public final class GetObservationsRequest {
     }
 
     public Builder from(GetObservationsRequest other) {
+      environment(other.getEnvironment());
       page(other.getPage());
       limit(other.getLimit());
       name(other.getName());
@@ -241,7 +338,6 @@ public final class GetObservationsRequest {
       traceId(other.getTraceId());
       level(other.getLevel());
       parentObservationId(other.getParentObservationId());
-      environment(other.getEnvironment());
       fromStartTime(other.getFromStartTime());
       toStartTime(other.getToStartTime());
       version(other.getVersion());
@@ -249,6 +345,31 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter for observations where the environment is one of the provided values.</p>
+     */
+    @JsonSetter(
+        value = "environment",
+        nulls = Nulls.SKIP
+    )
+    public Builder environment(Optional<List<String>> environment) {
+      this.environment = environment;
+      return this;
+    }
+
+    public Builder environment(List<String> environment) {
+      this.environment = Optional.ofNullable(environment);
+      return this;
+    }
+
+    public Builder environment(String environment) {
+      this.environment = Optional.of(Collections.singletonList(environment));
+      return this;
+    }
+
+    /**
+     * <p>Page number, starts at 1.</p>
+     */
     @JsonSetter(
         value = "page",
         nulls = Nulls.SKIP
@@ -263,6 +384,9 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    /**
+     * <p>Limit of items per page. If you encounter api issues due to too large page sizes, try to reduce the limit.</p>
+     */
     @JsonSetter(
         value = "limit",
         nulls = Nulls.SKIP
@@ -333,6 +457,9 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter for observations with a specific level (e.g. &quot;DEBUG&quot;, &quot;DEFAULT&quot;, &quot;WARNING&quot;, &quot;ERROR&quot;).</p>
+     */
     @JsonSetter(
         value = "level",
         nulls = Nulls.SKIP
@@ -361,20 +488,9 @@ public final class GetObservationsRequest {
       return this;
     }
 
-    @JsonSetter(
-        value = "environment",
-        nulls = Nulls.SKIP
-    )
-    public Builder environment(Optional<String> environment) {
-      this.environment = environment;
-      return this;
-    }
-
-    public Builder environment(String environment) {
-      this.environment = Optional.ofNullable(environment);
-      return this;
-    }
-
+    /**
+     * <p>Retrieve only observations with a start_time on or after this datetime (ISO 8601).</p>
+     */
     @JsonSetter(
         value = "fromStartTime",
         nulls = Nulls.SKIP
@@ -389,6 +505,9 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    /**
+     * <p>Retrieve only observations with a start_time before this datetime (ISO 8601).</p>
+     */
     @JsonSetter(
         value = "toStartTime",
         nulls = Nulls.SKIP
@@ -403,6 +522,9 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    /**
+     * <p>Optional filter to only include observations with a certain version.</p>
+     */
     @JsonSetter(
         value = "version",
         nulls = Nulls.SKIP
@@ -417,6 +539,103 @@ public final class GetObservationsRequest {
       return this;
     }
 
+    /**
+     * <p>JSON string containing an array of filter conditions. When provided, this takes precedence over query parameter filters (userId, name, type, level, environment, fromStartTime, ...).</p>
+     * <h2>Filter Structure</h2>
+     * <p>Each filter condition has the following structure:</p>
+     * <pre><code class="language-json">[
+     *   {
+     *     &quot;type&quot;: string,           // Required. One of: &quot;datetime&quot;, &quot;string&quot;, &quot;number&quot;, &quot;stringOptions&quot;, &quot;categoryOptions&quot;, &quot;arrayOptions&quot;, &quot;stringObject&quot;, &quot;numberObject&quot;, &quot;boolean&quot;, &quot;null&quot;
+     *     &quot;column&quot;: string,         // Required. Column to filter on (see available columns below)
+     *     &quot;operator&quot;: string,       // Required. Operator based on type:
+     *                               // - datetime: &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+     *                               // - string: &quot;=&quot;, &quot;contains&quot;, &quot;does not contain&quot;, &quot;starts with&quot;, &quot;ends with&quot;
+     *                               // - stringOptions: &quot;any of&quot;, &quot;none of&quot;
+     *                               // - categoryOptions: &quot;any of&quot;, &quot;none of&quot;
+     *                               // - arrayOptions: &quot;any of&quot;, &quot;none of&quot;, &quot;all of&quot;
+     *                               // - number: &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+     *                               // - stringObject: &quot;=&quot;, &quot;contains&quot;, &quot;does not contain&quot;, &quot;starts with&quot;, &quot;ends with&quot;
+     *                               // - numberObject: &quot;=&quot;, &quot;&gt;&quot;, &quot;&lt;&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;
+     *                               // - boolean: &quot;=&quot;, &quot;&lt;&gt;&quot;
+     *                               // - null: &quot;is null&quot;, &quot;is not null&quot;
+     *     &quot;value&quot;: any,             // Required (except for null type). Value to compare against. Type depends on filter type
+     *     &quot;key&quot;: string             // Required only for stringObject, numberObject, and categoryOptions types when filtering on nested fields like metadata
+     *   }
+     * ]
+     * </code></pre>
+     * <h2>Available Columns</h2>
+     * <h3>Core Observation Fields</h3>
+     * <ul>
+     * <li><code>id</code> (string) - Observation ID</li>
+     * <li><code>type</code> (string) - Observation type (SPAN, GENERATION, EVENT)</li>
+     * <li><code>name</code> (string) - Observation name</li>
+     * <li><code>traceId</code> (string) - Associated trace ID</li>
+     * <li><code>startTime</code> (datetime) - Observation start time</li>
+     * <li><code>endTime</code> (datetime) - Observation end time</li>
+     * <li><code>environment</code> (string) - Environment tag</li>
+     * <li><code>level</code> (string) - Log level (DEBUG, DEFAULT, WARNING, ERROR)</li>
+     * <li><code>statusMessage</code> (string) - Status message</li>
+     * <li><code>version</code> (string) - Version tag</li>
+     * </ul>
+     * <h3>Performance Metrics</h3>
+     * <ul>
+     * <li><code>latency</code> (number) - Latency in seconds (calculated: end_time - start_time)</li>
+     * <li><code>timeToFirstToken</code> (number) - Time to first token in seconds</li>
+     * <li><code>tokensPerSecond</code> (number) - Output tokens per second</li>
+     * </ul>
+     * <h3>Token Usage</h3>
+     * <ul>
+     * <li><code>inputTokens</code> (number) - Number of input tokens</li>
+     * <li><code>outputTokens</code> (number) - Number of output tokens</li>
+     * <li><code>totalTokens</code> (number) - Total tokens (alias: <code>tokens</code>)</li>
+     * </ul>
+     * <h3>Cost Metrics</h3>
+     * <ul>
+     * <li><code>inputCost</code> (number) - Input cost in USD</li>
+     * <li><code>outputCost</code> (number) - Output cost in USD</li>
+     * <li><code>totalCost</code> (number) - Total cost in USD</li>
+     * </ul>
+     * <h3>Model Information</h3>
+     * <ul>
+     * <li><code>model</code> (string) - Provided model name</li>
+     * <li><code>promptName</code> (string) - Associated prompt name</li>
+     * <li><code>promptVersion</code> (number) - Associated prompt version</li>
+     * </ul>
+     * <h3>Structured Data</h3>
+     * <ul>
+     * <li><code>metadata</code> (stringObject/numberObject/categoryOptions) - Metadata key-value pairs. Use <code>key</code> parameter to filter on specific metadata keys.</li>
+     * </ul>
+     * <h3>Associated Trace Fields (requires join with traces table)</h3>
+     * <ul>
+     * <li><code>userId</code> (string) - User ID from associated trace</li>
+     * <li><code>traceName</code> (string) - Name from associated trace</li>
+     * <li><code>traceEnvironment</code> (string) - Environment from associated trace</li>
+     * <li><code>traceTags</code> (arrayOptions) - Tags from associated trace</li>
+     * </ul>
+     * <h2>Filter Examples</h2>
+     * <pre><code class="language-json">[
+     *   {
+     *     &quot;type&quot;: &quot;string&quot;,
+     *     &quot;column&quot;: &quot;type&quot;,
+     *     &quot;operator&quot;: &quot;=&quot;,
+     *     &quot;value&quot;: &quot;GENERATION&quot;
+     *   },
+     *   {
+     *     &quot;type&quot;: &quot;number&quot;,
+     *     &quot;column&quot;: &quot;latency&quot;,
+     *     &quot;operator&quot;: &quot;&gt;=&quot;,
+     *     &quot;value&quot;: 2.5
+     *   },
+     *   {
+     *     &quot;type&quot;: &quot;stringObject&quot;,
+     *     &quot;column&quot;: &quot;metadata&quot;,
+     *     &quot;key&quot;: &quot;environment&quot;,
+     *     &quot;operator&quot;: &quot;=&quot;,
+     *     &quot;value&quot;: &quot;production&quot;
+     *   }
+     * ]
+     * </code></pre>
+     */
     @JsonSetter(
         value = "filter",
         nulls = Nulls.SKIP
@@ -432,7 +651,17 @@ public final class GetObservationsRequest {
     }
 
     public GetObservationsRequest build() {
-      return new GetObservationsRequest(page, limit, name, userId, type, traceId, level, parentObservationId, environment, fromStartTime, toStartTime, version, filter, additionalProperties);
+      return new GetObservationsRequest(environment, page, limit, name, userId, type, traceId, level, parentObservationId, fromStartTime, toStartTime, version, filter, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

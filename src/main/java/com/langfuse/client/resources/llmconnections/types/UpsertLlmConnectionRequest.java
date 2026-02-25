@@ -155,38 +155,66 @@ public final class UpsertLlmConnectionRequest {
   }
 
   public interface ProviderStage {
+    /**
+     * <p>Provider name (e.g., 'openai', 'my-gateway'). Must be unique in project, used for upserting.</p>
+     */
     AdapterStage provider(@NotNull String provider);
 
     Builder from(UpsertLlmConnectionRequest other);
   }
 
   public interface AdapterStage {
+    /**
+     * <p>The adapter used to interface with the LLM</p>
+     */
     SecretKeyStage adapter(@NotNull LlmAdapter adapter);
   }
 
   public interface SecretKeyStage {
+    /**
+     * <p>Secret key for the LLM API.</p>
+     */
     _FinalStage secretKey(@NotNull String secretKey);
   }
 
   public interface _FinalStage {
     UpsertLlmConnectionRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Custom base URL for the LLM API</p>
+     */
     _FinalStage baseUrl(Optional<String> baseUrl);
 
     _FinalStage baseUrl(String baseUrl);
 
+    /**
+     * <p>List of custom model names</p>
+     */
     _FinalStage customModels(Optional<List<String>> customModels);
 
     _FinalStage customModels(List<String> customModels);
 
+    /**
+     * <p>Whether to include default models. Default is true.</p>
+     */
     _FinalStage withDefaultModels(Optional<Boolean> withDefaultModels);
 
     _FinalStage withDefaultModels(Boolean withDefaultModels);
 
+    /**
+     * <p>Extra headers to send with requests</p>
+     */
     _FinalStage extraHeaders(Optional<Map<String, String>> extraHeaders);
 
     _FinalStage extraHeaders(Map<String, String> extraHeaders);
 
+    /**
+     * <p>Adapter-specific configuration. Validation rules: - <strong>Bedrock</strong>: Required. Must be <code>{&quot;region&quot;: &quot;&lt;aws-region&gt;&quot;}</code> (e.g., <code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>) - <strong>VertexAI</strong>: Optional. If provided, must be <code>{&quot;location&quot;: &quot;&lt;gcp-location&gt;&quot;}</code> (e.g., <code>{&quot;location&quot;:&quot;us-central1&quot;}</code>) - <strong>Other adapters</strong>: Not supported. Omit this field or set to null.</p>
+     */
     _FinalStage config(Optional<Map<String, Object>> config);
 
     _FinalStage config(Map<String, Object> config);
@@ -233,6 +261,7 @@ public final class UpsertLlmConnectionRequest {
 
     /**
      * <p>Provider name (e.g., 'openai', 'my-gateway'). Must be unique in project, used for upserting.</p>
+     * <p>Provider name (e.g., 'openai', 'my-gateway'). Must be unique in project, used for upserting.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -244,6 +273,7 @@ public final class UpsertLlmConnectionRequest {
 
     /**
      * <p>The adapter used to interface with the LLM</p>
+     * <p>The adapter used to interface with the LLM</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -254,6 +284,7 @@ public final class UpsertLlmConnectionRequest {
     }
 
     /**
+     * <p>Secret key for the LLM API.</p>
      * <p>Secret key for the LLM API.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -274,6 +305,9 @@ public final class UpsertLlmConnectionRequest {
       return this;
     }
 
+    /**
+     * <p>Adapter-specific configuration. Validation rules: - <strong>Bedrock</strong>: Required. Must be <code>{&quot;region&quot;: &quot;&lt;aws-region&gt;&quot;}</code> (e.g., <code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>) - <strong>VertexAI</strong>: Optional. If provided, must be <code>{&quot;location&quot;: &quot;&lt;gcp-location&gt;&quot;}</code> (e.g., <code>{&quot;location&quot;:&quot;us-central1&quot;}</code>) - <strong>Other adapters</strong>: Not supported. Omit this field or set to null.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "config",
@@ -294,6 +328,9 @@ public final class UpsertLlmConnectionRequest {
       return this;
     }
 
+    /**
+     * <p>Extra headers to send with requests</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "extraHeaders",
@@ -314,6 +351,9 @@ public final class UpsertLlmConnectionRequest {
       return this;
     }
 
+    /**
+     * <p>Whether to include default models. Default is true.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "withDefaultModels",
@@ -334,6 +374,9 @@ public final class UpsertLlmConnectionRequest {
       return this;
     }
 
+    /**
+     * <p>List of custom model names</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "customModels",
@@ -354,6 +397,9 @@ public final class UpsertLlmConnectionRequest {
       return this;
     }
 
+    /**
+     * <p>Custom base URL for the LLM API</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "baseURL",
@@ -367,6 +413,18 @@ public final class UpsertLlmConnectionRequest {
     @java.lang.Override
     public UpsertLlmConnectionRequest build() {
       return new UpsertLlmConnectionRequest(provider, adapter, secretKey, baseUrl, customModels, withDefaultModels, extraHeaders, config, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

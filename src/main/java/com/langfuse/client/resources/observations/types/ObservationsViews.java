@@ -90,6 +90,10 @@ public final class ObservationsViews {
   public interface _FinalStage {
     ObservationsViews build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage data(List<ObservationsView> data);
 
     _FinalStage addData(ObservationsView data);
@@ -127,7 +131,9 @@ public final class ObservationsViews {
 
     @java.lang.Override
     public _FinalStage addAllData(List<ObservationsView> data) {
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
@@ -144,13 +150,27 @@ public final class ObservationsViews {
     )
     public _FinalStage data(List<ObservationsView> data) {
       this.data.clear();
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
     @java.lang.Override
     public ObservationsViews build() {
       return new ObservationsViews(data, meta, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

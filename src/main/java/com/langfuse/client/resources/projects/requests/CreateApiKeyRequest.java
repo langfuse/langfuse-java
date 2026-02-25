@@ -117,6 +117,9 @@ public final class CreateApiKeyRequest {
       return this;
     }
 
+    /**
+     * <p>Optional note for the API key</p>
+     */
     @JsonSetter(
         value = "note",
         nulls = Nulls.SKIP
@@ -131,6 +134,9 @@ public final class CreateApiKeyRequest {
       return this;
     }
 
+    /**
+     * <p>Optional predefined public key. Must start with 'pk-lf-'. If provided, secretKey must also be provided.</p>
+     */
     @JsonSetter(
         value = "publicKey",
         nulls = Nulls.SKIP
@@ -145,6 +151,9 @@ public final class CreateApiKeyRequest {
       return this;
     }
 
+    /**
+     * <p>Optional predefined secret key. Must start with 'sk-lf-'. If provided, publicKey must also be provided.</p>
+     */
     @JsonSetter(
         value = "secretKey",
         nulls = Nulls.SKIP
@@ -161,6 +170,16 @@ public final class CreateApiKeyRequest {
 
     public CreateApiKeyRequest build() {
       return new CreateApiKeyRequest(note, publicKey, secretKey, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

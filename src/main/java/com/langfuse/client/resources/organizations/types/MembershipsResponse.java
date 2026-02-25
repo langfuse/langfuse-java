@@ -93,7 +93,9 @@ public final class MembershipsResponse {
     )
     public Builder memberships(List<MembershipResponse> memberships) {
       this.memberships.clear();
-      this.memberships.addAll(memberships);
+      if (memberships != null) {
+        this.memberships.addAll(memberships);
+      }
       return this;
     }
 
@@ -103,12 +105,24 @@ public final class MembershipsResponse {
     }
 
     public Builder addAllMemberships(List<MembershipResponse> memberships) {
-      this.memberships.addAll(memberships);
+      if (memberships != null) {
+        this.memberships.addAll(memberships);
+      }
       return this;
     }
 
     public MembershipsResponse build() {
       return new MembershipsResponse(memberships, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

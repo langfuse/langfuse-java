@@ -4,123 +4,585 @@
 
 package com.langfuse.client.resources.media.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum MediaContentType {
-  IMAGE_PNG("image/png"),
+public final class MediaContentType {
+  public static final MediaContentType APPLICATION_OPENXML_SPREADSHEET = new MediaContentType(Value.APPLICATION_OPENXML_SPREADSHEET, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
-  IMAGE_JPEG("image/jpeg"),
+  public static final MediaContentType VIDEO_MP4 = new MediaContentType(Value.VIDEO_MP4, "video/mp4");
 
-  IMAGE_JPG("image/jpg"),
+  public static final MediaContentType APPLICATION_RTF = new MediaContentType(Value.APPLICATION_RTF, "application/rtf");
 
-  IMAGE_WEBP("image/webp"),
+  public static final MediaContentType AUDIO_OPUS = new MediaContentType(Value.AUDIO_OPUS, "audio/opus");
 
-  IMAGE_GIF("image/gif"),
+  public static final MediaContentType AUDIO_MP3 = new MediaContentType(Value.AUDIO_MP3, "audio/mp3");
 
-  IMAGE_SVG_XML("image/svg+xml"),
+  public static final MediaContentType IMAGE_TIFF = new MediaContentType(Value.IMAGE_TIFF, "image/tiff");
 
-  IMAGE_TIFF("image/tiff"),
+  public static final MediaContentType APPLICATION_XML = new MediaContentType(Value.APPLICATION_XML, "application/xml");
 
-  IMAGE_BMP("image/bmp"),
+  public static final MediaContentType AUDIO_MP4 = new MediaContentType(Value.AUDIO_MP4, "audio/mp4");
 
-  IMAGE_AVIF("image/avif"),
+  public static final MediaContentType TEXT_X_PYTHON = new MediaContentType(Value.TEXT_X_PYTHON, "text/x-python");
 
-  IMAGE_HEIC("image/heic"),
+  public static final MediaContentType AUDIO_WEBM = new MediaContentType(Value.AUDIO_WEBM, "audio/webm");
 
-  AUDIO_MPEG("audio/mpeg"),
+  public static final MediaContentType AUDIO_MPEG = new MediaContentType(Value.AUDIO_MPEG, "audio/mpeg");
 
-  AUDIO_MP_3("audio/mp3"),
+  public static final MediaContentType IMAGE_JPG = new MediaContentType(Value.IMAGE_JPG, "image/jpg");
 
-  AUDIO_WAV("audio/wav"),
+  public static final MediaContentType APPLICATION_X_TAR = new MediaContentType(Value.APPLICATION_X_TAR, "application/x-tar");
 
-  AUDIO_OGG("audio/ogg"),
+  public static final MediaContentType TEXT_CSS = new MediaContentType(Value.TEXT_CSS, "text/css");
 
-  AUDIO_OGA("audio/oga"),
+  public static final MediaContentType VIDEO_X_MATROSKA = new MediaContentType(Value.VIDEO_X_MATROSKA, "video/x-matroska");
 
-  AUDIO_AAC("audio/aac"),
+  public static final MediaContentType AUDIO_FLAC = new MediaContentType(Value.AUDIO_FLAC, "audio/flac");
 
-  AUDIO_MP_4("audio/mp4"),
+  public static final MediaContentType AUDIO_AAC = new MediaContentType(Value.AUDIO_AAC, "audio/aac");
 
-  AUDIO_FLAC("audio/flac"),
+  public static final MediaContentType IMAGE_JPEG = new MediaContentType(Value.IMAGE_JPEG, "image/jpeg");
 
-  AUDIO_OPUS("audio/opus"),
+  public static final MediaContentType VIDEO_X_MSVIDEO = new MediaContentType(Value.VIDEO_X_MSVIDEO, "video/x-msvideo");
 
-  AUDIO_WEBM("audio/webm"),
+  public static final MediaContentType AUDIO_WAV = new MediaContentType(Value.AUDIO_WAV, "audio/wav");
 
-  VIDEO_MP_4("video/mp4"),
+  public static final MediaContentType IMAGE_AVIF = new MediaContentType(Value.IMAGE_AVIF, "image/avif");
 
-  VIDEO_WEBM("video/webm"),
+  public static final MediaContentType APPLICATION_X_YAML = new MediaContentType(Value.APPLICATION_X_YAML, "application/x-yaml");
 
-  VIDEO_OGG("video/ogg"),
+  public static final MediaContentType APPLICATION_X_NDJSON = new MediaContentType(Value.APPLICATION_X_NDJSON, "application/x-ndjson");
 
-  VIDEO_MPEG("video/mpeg"),
+  public static final MediaContentType IMAGE_GIF = new MediaContentType(Value.IMAGE_GIF, "image/gif");
 
-  VIDEO_QUICKTIME("video/quicktime"),
+  public static final MediaContentType IMAGE_BMP = new MediaContentType(Value.IMAGE_BMP, "image/bmp");
 
-  VIDEO_X_MSVIDEO("video/x-msvideo"),
+  public static final MediaContentType APPLICATION_X7Z_COMPRESSED = new MediaContentType(Value.APPLICATION_X7Z_COMPRESSED, "application/x-7z-compressed");
 
-  VIDEO_X_MATROSKA("video/x-matroska"),
+  public static final MediaContentType TEXT_HTML = new MediaContentType(Value.TEXT_HTML, "text/html");
 
-  TEXT_PLAIN("text/plain"),
+  public static final MediaContentType VIDEO_QUICKTIME = new MediaContentType(Value.VIDEO_QUICKTIME, "video/quicktime");
 
-  TEXT_HTML("text/html"),
+  public static final MediaContentType VIDEO_OGG = new MediaContentType(Value.VIDEO_OGG, "video/ogg");
 
-  TEXT_CSS("text/css"),
+  public static final MediaContentType IMAGE_WEBP = new MediaContentType(Value.IMAGE_WEBP, "image/webp");
 
-  TEXT_CSV("text/csv"),
+  public static final MediaContentType APPLICATION_PARQUET = new MediaContentType(Value.APPLICATION_PARQUET, "application/vnd.apache.parquet");
 
-  TEXT_MARKDOWN("text/markdown"),
+  public static final MediaContentType APPLICATION_GZIP = new MediaContentType(Value.APPLICATION_GZIP, "application/gzip");
 
-  TEXT_X_PYTHON("text/x-python"),
+  public static final MediaContentType APPLICATION_ZIP = new MediaContentType(Value.APPLICATION_ZIP, "application/zip");
 
-  APPLICATION_JAVASCRIPT("application/javascript"),
+  public static final MediaContentType IMAGE_PNG = new MediaContentType(Value.IMAGE_PNG, "image/png");
 
-  TEXT_X_TYPESCRIPT("text/x-typescript"),
+  public static final MediaContentType VIDEO_MPEG = new MediaContentType(Value.VIDEO_MPEG, "video/mpeg");
 
-  APPLICATION_X_YAML("application/x-yaml"),
+  public static final MediaContentType IMAGE_SVG_XML = new MediaContentType(Value.IMAGE_SVG_XML, "image/svg+xml");
 
-  APPLICATION_PDF("application/pdf"),
+  public static final MediaContentType TEXT_MARKDOWN = new MediaContentType(Value.TEXT_MARKDOWN, "text/markdown");
 
-  APPLICATION_MSWORD("application/msword"),
+  public static final MediaContentType TEXT_PLAIN = new MediaContentType(Value.TEXT_PLAIN, "text/plain");
 
-  APPLICATION_MS_EXCEL("application/vnd.ms-excel"),
+  public static final MediaContentType APPLICATION_PDF = new MediaContentType(Value.APPLICATION_PDF, "application/pdf");
 
-  APPLICATION_OPENXML_SPREADSHEET("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+  public static final MediaContentType AUDIO_OGG = new MediaContentType(Value.AUDIO_OGG, "audio/ogg");
 
-  APPLICATION_ZIP("application/zip"),
+  public static final MediaContentType APPLICATION_JSON = new MediaContentType(Value.APPLICATION_JSON, "application/json");
 
-  APPLICATION_JSON("application/json"),
+  public static final MediaContentType APPLICATION_OPENXML_PRESENTATION = new MediaContentType(Value.APPLICATION_OPENXML_PRESENTATION, "application/vnd.openxmlformats-officedocument.presentationml.presentation");
 
-  APPLICATION_XML("application/xml"),
+  public static final MediaContentType APPLICATION_MS_EXCEL = new MediaContentType(Value.APPLICATION_MS_EXCEL, "application/vnd.ms-excel");
 
-  APPLICATION_OCTET_STREAM("application/octet-stream"),
+  public static final MediaContentType IMAGE_HEIC = new MediaContentType(Value.IMAGE_HEIC, "image/heic");
 
-  APPLICATION_OPENXML_WORD("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+  public static final MediaContentType APPLICATION_JAVASCRIPT = new MediaContentType(Value.APPLICATION_JAVASCRIPT, "application/javascript");
 
-  APPLICATION_OPENXML_PRESENTATION("application/vnd.openxmlformats-officedocument.presentationml.presentation"),
+  public static final MediaContentType AUDIO_OGA = new MediaContentType(Value.AUDIO_OGA, "audio/oga");
 
-  APPLICATION_RTF("application/rtf"),
+  public static final MediaContentType APPLICATION_OPENXML_WORD = new MediaContentType(Value.APPLICATION_OPENXML_WORD, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 
-  APPLICATION_X_NDJSON("application/x-ndjson"),
+  public static final MediaContentType APPLICATION_OCTET_STREAM = new MediaContentType(Value.APPLICATION_OCTET_STREAM, "application/octet-stream");
 
-  APPLICATION_PARQUET("application/vnd.apache.parquet"),
+  public static final MediaContentType VIDEO_WEBM = new MediaContentType(Value.VIDEO_WEBM, "video/webm");
 
-  APPLICATION_GZIP("application/gzip"),
+  public static final MediaContentType TEXT_CSV = new MediaContentType(Value.TEXT_CSV, "text/csv");
 
-  APPLICATION_X_TAR("application/x-tar"),
+  public static final MediaContentType APPLICATION_MSWORD = new MediaContentType(Value.APPLICATION_MSWORD, "application/msword");
 
-  APPLICATION_X_7_Z_COMPRESSED("application/x-7z-compressed");
+  public static final MediaContentType TEXT_X_TYPESCRIPT = new MediaContentType(Value.TEXT_X_TYPESCRIPT, "text/x-typescript");
 
-  private final String value;
+  private final Value value;
 
-  MediaContentType(String value) {
+  private final String string;
+
+  MediaContentType(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof MediaContentType && this.string.equals(((MediaContentType) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case APPLICATION_OPENXML_SPREADSHEET:
+        return visitor.visitApplicationOpenxmlSpreadsheet();
+      case VIDEO_MP4:
+        return visitor.visitVideoMp4();
+      case APPLICATION_RTF:
+        return visitor.visitApplicationRtf();
+      case AUDIO_OPUS:
+        return visitor.visitAudioOpus();
+      case AUDIO_MP3:
+        return visitor.visitAudioMp3();
+      case IMAGE_TIFF:
+        return visitor.visitImageTiff();
+      case APPLICATION_XML:
+        return visitor.visitApplicationXml();
+      case AUDIO_MP4:
+        return visitor.visitAudioMp4();
+      case TEXT_X_PYTHON:
+        return visitor.visitTextXPython();
+      case AUDIO_WEBM:
+        return visitor.visitAudioWebm();
+      case AUDIO_MPEG:
+        return visitor.visitAudioMpeg();
+      case IMAGE_JPG:
+        return visitor.visitImageJpg();
+      case APPLICATION_X_TAR:
+        return visitor.visitApplicationXTar();
+      case TEXT_CSS:
+        return visitor.visitTextCss();
+      case VIDEO_X_MATROSKA:
+        return visitor.visitVideoXMatroska();
+      case AUDIO_FLAC:
+        return visitor.visitAudioFlac();
+      case AUDIO_AAC:
+        return visitor.visitAudioAac();
+      case IMAGE_JPEG:
+        return visitor.visitImageJpeg();
+      case VIDEO_X_MSVIDEO:
+        return visitor.visitVideoXMsvideo();
+      case AUDIO_WAV:
+        return visitor.visitAudioWav();
+      case IMAGE_AVIF:
+        return visitor.visitImageAvif();
+      case APPLICATION_X_YAML:
+        return visitor.visitApplicationXYaml();
+      case APPLICATION_X_NDJSON:
+        return visitor.visitApplicationXNdjson();
+      case IMAGE_GIF:
+        return visitor.visitImageGif();
+      case IMAGE_BMP:
+        return visitor.visitImageBmp();
+      case APPLICATION_X7Z_COMPRESSED:
+        return visitor.visitApplicationX7ZCompressed();
+      case TEXT_HTML:
+        return visitor.visitTextHtml();
+      case VIDEO_QUICKTIME:
+        return visitor.visitVideoQuicktime();
+      case VIDEO_OGG:
+        return visitor.visitVideoOgg();
+      case IMAGE_WEBP:
+        return visitor.visitImageWebp();
+      case APPLICATION_PARQUET:
+        return visitor.visitApplicationParquet();
+      case APPLICATION_GZIP:
+        return visitor.visitApplicationGzip();
+      case APPLICATION_ZIP:
+        return visitor.visitApplicationZip();
+      case IMAGE_PNG:
+        return visitor.visitImagePng();
+      case VIDEO_MPEG:
+        return visitor.visitVideoMpeg();
+      case IMAGE_SVG_XML:
+        return visitor.visitImageSvgXml();
+      case TEXT_MARKDOWN:
+        return visitor.visitTextMarkdown();
+      case TEXT_PLAIN:
+        return visitor.visitTextPlain();
+      case APPLICATION_PDF:
+        return visitor.visitApplicationPdf();
+      case AUDIO_OGG:
+        return visitor.visitAudioOgg();
+      case APPLICATION_JSON:
+        return visitor.visitApplicationJson();
+      case APPLICATION_OPENXML_PRESENTATION:
+        return visitor.visitApplicationOpenxmlPresentation();
+      case APPLICATION_MS_EXCEL:
+        return visitor.visitApplicationMsExcel();
+      case IMAGE_HEIC:
+        return visitor.visitImageHeic();
+      case APPLICATION_JAVASCRIPT:
+        return visitor.visitApplicationJavascript();
+      case AUDIO_OGA:
+        return visitor.visitAudioOga();
+      case APPLICATION_OPENXML_WORD:
+        return visitor.visitApplicationOpenxmlWord();
+      case APPLICATION_OCTET_STREAM:
+        return visitor.visitApplicationOctetStream();
+      case VIDEO_WEBM:
+        return visitor.visitVideoWebm();
+      case TEXT_CSV:
+        return visitor.visitTextCsv();
+      case APPLICATION_MSWORD:
+        return visitor.visitApplicationMsword();
+      case TEXT_X_TYPESCRIPT:
+        return visitor.visitTextXTypescript();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static MediaContentType valueOf(String value) {
+    switch (value) {
+      case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        return APPLICATION_OPENXML_SPREADSHEET;
+      case "video/mp4":
+        return VIDEO_MP4;
+      case "application/rtf":
+        return APPLICATION_RTF;
+      case "audio/opus":
+        return AUDIO_OPUS;
+      case "audio/mp3":
+        return AUDIO_MP3;
+      case "image/tiff":
+        return IMAGE_TIFF;
+      case "application/xml":
+        return APPLICATION_XML;
+      case "audio/mp4":
+        return AUDIO_MP4;
+      case "text/x-python":
+        return TEXT_X_PYTHON;
+      case "audio/webm":
+        return AUDIO_WEBM;
+      case "audio/mpeg":
+        return AUDIO_MPEG;
+      case "image/jpg":
+        return IMAGE_JPG;
+      case "application/x-tar":
+        return APPLICATION_X_TAR;
+      case "text/css":
+        return TEXT_CSS;
+      case "video/x-matroska":
+        return VIDEO_X_MATROSKA;
+      case "audio/flac":
+        return AUDIO_FLAC;
+      case "audio/aac":
+        return AUDIO_AAC;
+      case "image/jpeg":
+        return IMAGE_JPEG;
+      case "video/x-msvideo":
+        return VIDEO_X_MSVIDEO;
+      case "audio/wav":
+        return AUDIO_WAV;
+      case "image/avif":
+        return IMAGE_AVIF;
+      case "application/x-yaml":
+        return APPLICATION_X_YAML;
+      case "application/x-ndjson":
+        return APPLICATION_X_NDJSON;
+      case "image/gif":
+        return IMAGE_GIF;
+      case "image/bmp":
+        return IMAGE_BMP;
+      case "application/x-7z-compressed":
+        return APPLICATION_X7Z_COMPRESSED;
+      case "text/html":
+        return TEXT_HTML;
+      case "video/quicktime":
+        return VIDEO_QUICKTIME;
+      case "video/ogg":
+        return VIDEO_OGG;
+      case "image/webp":
+        return IMAGE_WEBP;
+      case "application/vnd.apache.parquet":
+        return APPLICATION_PARQUET;
+      case "application/gzip":
+        return APPLICATION_GZIP;
+      case "application/zip":
+        return APPLICATION_ZIP;
+      case "image/png":
+        return IMAGE_PNG;
+      case "video/mpeg":
+        return VIDEO_MPEG;
+      case "image/svg+xml":
+        return IMAGE_SVG_XML;
+      case "text/markdown":
+        return TEXT_MARKDOWN;
+      case "text/plain":
+        return TEXT_PLAIN;
+      case "application/pdf":
+        return APPLICATION_PDF;
+      case "audio/ogg":
+        return AUDIO_OGG;
+      case "application/json":
+        return APPLICATION_JSON;
+      case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+        return APPLICATION_OPENXML_PRESENTATION;
+      case "application/vnd.ms-excel":
+        return APPLICATION_MS_EXCEL;
+      case "image/heic":
+        return IMAGE_HEIC;
+      case "application/javascript":
+        return APPLICATION_JAVASCRIPT;
+      case "audio/oga":
+        return AUDIO_OGA;
+      case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        return APPLICATION_OPENXML_WORD;
+      case "application/octet-stream":
+        return APPLICATION_OCTET_STREAM;
+      case "video/webm":
+        return VIDEO_WEBM;
+      case "text/csv":
+        return TEXT_CSV;
+      case "application/msword":
+        return APPLICATION_MSWORD;
+      case "text/x-typescript":
+        return TEXT_X_TYPESCRIPT;
+      default:
+        return new MediaContentType(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    IMAGE_PNG,
+
+    IMAGE_JPEG,
+
+    IMAGE_JPG,
+
+    IMAGE_WEBP,
+
+    IMAGE_GIF,
+
+    IMAGE_SVG_XML,
+
+    IMAGE_TIFF,
+
+    IMAGE_BMP,
+
+    IMAGE_AVIF,
+
+    IMAGE_HEIC,
+
+    AUDIO_MPEG,
+
+    AUDIO_MP3,
+
+    AUDIO_WAV,
+
+    AUDIO_OGG,
+
+    AUDIO_OGA,
+
+    AUDIO_AAC,
+
+    AUDIO_MP4,
+
+    AUDIO_FLAC,
+
+    AUDIO_OPUS,
+
+    AUDIO_WEBM,
+
+    VIDEO_MP4,
+
+    VIDEO_WEBM,
+
+    VIDEO_OGG,
+
+    VIDEO_MPEG,
+
+    VIDEO_QUICKTIME,
+
+    VIDEO_X_MSVIDEO,
+
+    VIDEO_X_MATROSKA,
+
+    TEXT_PLAIN,
+
+    TEXT_HTML,
+
+    TEXT_CSS,
+
+    TEXT_CSV,
+
+    TEXT_MARKDOWN,
+
+    TEXT_X_PYTHON,
+
+    APPLICATION_JAVASCRIPT,
+
+    TEXT_X_TYPESCRIPT,
+
+    APPLICATION_X_YAML,
+
+    APPLICATION_PDF,
+
+    APPLICATION_MSWORD,
+
+    APPLICATION_MS_EXCEL,
+
+    APPLICATION_OPENXML_SPREADSHEET,
+
+    APPLICATION_ZIP,
+
+    APPLICATION_JSON,
+
+    APPLICATION_XML,
+
+    APPLICATION_OCTET_STREAM,
+
+    APPLICATION_OPENXML_WORD,
+
+    APPLICATION_OPENXML_PRESENTATION,
+
+    APPLICATION_RTF,
+
+    APPLICATION_X_NDJSON,
+
+    APPLICATION_PARQUET,
+
+    APPLICATION_GZIP,
+
+    APPLICATION_X_TAR,
+
+    APPLICATION_X7Z_COMPRESSED,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitImagePng();
+
+    T visitImageJpeg();
+
+    T visitImageJpg();
+
+    T visitImageWebp();
+
+    T visitImageGif();
+
+    T visitImageSvgXml();
+
+    T visitImageTiff();
+
+    T visitImageBmp();
+
+    T visitImageAvif();
+
+    T visitImageHeic();
+
+    T visitAudioMpeg();
+
+    T visitAudioMp3();
+
+    T visitAudioWav();
+
+    T visitAudioOgg();
+
+    T visitAudioOga();
+
+    T visitAudioAac();
+
+    T visitAudioMp4();
+
+    T visitAudioFlac();
+
+    T visitAudioOpus();
+
+    T visitAudioWebm();
+
+    T visitVideoMp4();
+
+    T visitVideoWebm();
+
+    T visitVideoOgg();
+
+    T visitVideoMpeg();
+
+    T visitVideoQuicktime();
+
+    T visitVideoXMsvideo();
+
+    T visitVideoXMatroska();
+
+    T visitTextPlain();
+
+    T visitTextHtml();
+
+    T visitTextCss();
+
+    T visitTextCsv();
+
+    T visitTextMarkdown();
+
+    T visitTextXPython();
+
+    T visitApplicationJavascript();
+
+    T visitTextXTypescript();
+
+    T visitApplicationXYaml();
+
+    T visitApplicationPdf();
+
+    T visitApplicationMsword();
+
+    T visitApplicationMsExcel();
+
+    T visitApplicationOpenxmlSpreadsheet();
+
+    T visitApplicationZip();
+
+    T visitApplicationJson();
+
+    T visitApplicationXml();
+
+    T visitApplicationOctetStream();
+
+    T visitApplicationOpenxmlWord();
+
+    T visitApplicationOpenxmlPresentation();
+
+    T visitApplicationRtf();
+
+    T visitApplicationXNdjson();
+
+    T visitApplicationParquet();
+
+    T visitApplicationGzip();
+
+    T visitApplicationXTar();
+
+    T visitApplicationX7ZCompressed();
+
+    T visitUnknown(String unknownType);
   }
 }

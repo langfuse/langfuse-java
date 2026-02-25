@@ -118,6 +118,9 @@ public final class GetScoresResponseTraceData {
       return this;
     }
 
+    /**
+     * <p>The user ID associated with the trace referenced by score</p>
+     */
     @JsonSetter(
         value = "userId",
         nulls = Nulls.SKIP
@@ -132,6 +135,9 @@ public final class GetScoresResponseTraceData {
       return this;
     }
 
+    /**
+     * <p>A list of tags associated with the trace referenced by score</p>
+     */
     @JsonSetter(
         value = "tags",
         nulls = Nulls.SKIP
@@ -146,6 +152,9 @@ public final class GetScoresResponseTraceData {
       return this;
     }
 
+    /**
+     * <p>The environment of the trace referenced by score</p>
+     */
     @JsonSetter(
         value = "environment",
         nulls = Nulls.SKIP
@@ -162,6 +171,16 @@ public final class GetScoresResponseTraceData {
 
     public GetScoresResponseTraceData build() {
       return new GetScoresResponseTraceData(userId, tags, environment, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

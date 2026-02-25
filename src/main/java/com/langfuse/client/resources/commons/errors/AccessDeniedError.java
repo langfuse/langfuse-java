@@ -6,6 +6,7 @@ package com.langfuse.client.resources.commons.errors;
 
 import com.langfuse.client.core.LangfuseClientApiException;
 import java.lang.Object;
+import okhttp3.Response;
 
 public final class AccessDeniedError extends LangfuseClientApiException {
   /**
@@ -15,6 +16,11 @@ public final class AccessDeniedError extends LangfuseClientApiException {
 
   public AccessDeniedError(Object body) {
     super("AccessDeniedError", 403, body);
+    this.body = body;
+  }
+
+  public AccessDeniedError(Object body, Response rawResponse) {
+    super("AccessDeniedError", 403, body, rawResponse);
     this.body = body;
   }
 

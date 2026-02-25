@@ -82,17 +82,27 @@ public final class Organization {
   }
 
   public interface IdStage {
+    /**
+     * <p>The unique identifier of the organization</p>
+     */
     NameStage id(@NotNull String id);
 
     Builder from(Organization other);
   }
 
   public interface NameStage {
+    /**
+     * <p>The name of the organization</p>
+     */
     _FinalStage name(@NotNull String name);
   }
 
   public interface _FinalStage {
     Organization build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -118,6 +128,7 @@ public final class Organization {
 
     /**
      * <p>The unique identifier of the organization</p>
+     * <p>The unique identifier of the organization</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -128,6 +139,7 @@ public final class Organization {
     }
 
     /**
+     * <p>The name of the organization</p>
      * <p>The name of the organization</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -141,6 +153,18 @@ public final class Organization {
     @java.lang.Override
     public Organization build() {
       return new Organization(id, name, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

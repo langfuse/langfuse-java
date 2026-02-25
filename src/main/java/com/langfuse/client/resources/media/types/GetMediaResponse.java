@@ -129,33 +129,55 @@ public final class GetMediaResponse {
   }
 
   public interface MediaIdStage {
+    /**
+     * <p>The unique langfuse identifier of a media record</p>
+     */
     ContentTypeStage mediaId(@NotNull String mediaId);
 
     Builder from(GetMediaResponse other);
   }
 
   public interface ContentTypeStage {
+    /**
+     * <p>The MIME type of the media record</p>
+     */
     ContentLengthStage contentType(@NotNull String contentType);
   }
 
   public interface ContentLengthStage {
+    /**
+     * <p>The size of the media record in bytes</p>
+     */
     UploadedAtStage contentLength(int contentLength);
   }
 
   public interface UploadedAtStage {
+    /**
+     * <p>The date and time when the media record was uploaded</p>
+     */
     UrlStage uploadedAt(@NotNull OffsetDateTime uploadedAt);
   }
 
   public interface UrlStage {
+    /**
+     * <p>The download URL of the media record</p>
+     */
     UrlExpiryStage url(@NotNull String url);
   }
 
   public interface UrlExpiryStage {
+    /**
+     * <p>The expiry date and time of the media record download URL</p>
+     */
     _FinalStage urlExpiry(@NotNull String urlExpiry);
   }
 
   public interface _FinalStage {
     GetMediaResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -193,6 +215,7 @@ public final class GetMediaResponse {
 
     /**
      * <p>The unique langfuse identifier of a media record</p>
+     * <p>The unique langfuse identifier of a media record</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -203,6 +226,7 @@ public final class GetMediaResponse {
     }
 
     /**
+     * <p>The MIME type of the media record</p>
      * <p>The MIME type of the media record</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -215,6 +239,7 @@ public final class GetMediaResponse {
 
     /**
      * <p>The size of the media record in bytes</p>
+     * <p>The size of the media record in bytes</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -225,6 +250,7 @@ public final class GetMediaResponse {
     }
 
     /**
+     * <p>The date and time when the media record was uploaded</p>
      * <p>The date and time when the media record was uploaded</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -237,6 +263,7 @@ public final class GetMediaResponse {
 
     /**
      * <p>The download URL of the media record</p>
+     * <p>The download URL of the media record</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -247,6 +274,7 @@ public final class GetMediaResponse {
     }
 
     /**
+     * <p>The expiry date and time of the media record download URL</p>
      * <p>The expiry date and time of the media record download URL</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -260,6 +288,18 @@ public final class GetMediaResponse {
     @java.lang.Override
     public GetMediaResponse build() {
       return new GetMediaResponse(mediaId, contentType, contentLength, uploadedAt, url, urlExpiry, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

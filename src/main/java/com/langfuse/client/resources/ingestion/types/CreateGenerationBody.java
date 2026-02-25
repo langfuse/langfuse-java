@@ -629,5 +629,15 @@ public final class CreateGenerationBody implements ICreateSpanBody, ICreateEvent
     public CreateGenerationBody build() {
       return new CreateGenerationBody(endTime, id, traceId, name, startTime, metadata, input, output, level, statusMessage, parentObservationId, version, environment, completionStartTime, model, modelParameters, usage, usageDetails, costDetails, promptName, promptVersion, additionalProperties);
     }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
   }
 }

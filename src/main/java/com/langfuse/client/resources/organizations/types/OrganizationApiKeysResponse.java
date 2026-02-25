@@ -93,7 +93,9 @@ public final class OrganizationApiKeysResponse {
     )
     public Builder apiKeys(List<OrganizationApiKey> apiKeys) {
       this.apiKeys.clear();
-      this.apiKeys.addAll(apiKeys);
+      if (apiKeys != null) {
+        this.apiKeys.addAll(apiKeys);
+      }
       return this;
     }
 
@@ -103,12 +105,24 @@ public final class OrganizationApiKeysResponse {
     }
 
     public Builder addAllApiKeys(List<OrganizationApiKey> apiKeys) {
-      this.apiKeys.addAll(apiKeys);
+      if (apiKeys != null) {
+        this.apiKeys.addAll(apiKeys);
+      }
       return this;
     }
 
     public OrganizationApiKeysResponse build() {
       return new OrganizationApiKeysResponse(apiKeys, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

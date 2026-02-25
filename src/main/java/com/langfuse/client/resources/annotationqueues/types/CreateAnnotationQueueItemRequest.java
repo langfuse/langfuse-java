@@ -102,6 +102,13 @@ public final class CreateAnnotationQueueItemRequest {
   public interface _FinalStage {
     CreateAnnotationQueueItemRequest build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Defaults to PENDING for new queue items</p>
+     */
     _FinalStage status(Optional<AnnotationQueueStatus> status);
 
     _FinalStage status(AnnotationQueueStatus status);
@@ -155,6 +162,9 @@ public final class CreateAnnotationQueueItemRequest {
       return this;
     }
 
+    /**
+     * <p>Defaults to PENDING for new queue items</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "status",
@@ -168,6 +178,18 @@ public final class CreateAnnotationQueueItemRequest {
     @java.lang.Override
     public CreateAnnotationQueueItemRequest build() {
       return new CreateAnnotationQueueItemRequest(objectId, objectType, status, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -121,6 +121,10 @@ public final class OpenAiResponseUsageSchema {
   public interface _FinalStage {
     OpenAiResponseUsageSchema build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage inputTokensDetails(Optional<Map<String, Optional<Integer>>> inputTokensDetails);
 
     _FinalStage inputTokensDetails(Map<String, Optional<Integer>> inputTokensDetails);
@@ -218,6 +222,18 @@ public final class OpenAiResponseUsageSchema {
     @java.lang.Override
     public OpenAiResponseUsageSchema build() {
       return new OpenAiResponseUsageSchema(inputTokens, outputTokens, totalTokens, inputTokensDetails, outputTokensDetails, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

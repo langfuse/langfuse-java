@@ -95,6 +95,10 @@ public final class UserMeta {
   public interface _FinalStage {
     UserMeta build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage created(Optional<String> created);
 
     _FinalStage created(String created);
@@ -170,6 +174,18 @@ public final class UserMeta {
     @java.lang.Override
     public UserMeta build() {
       return new UserMeta(resourceType, created, lastModified, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

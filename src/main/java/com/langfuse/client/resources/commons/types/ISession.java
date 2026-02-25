@@ -6,7 +6,6 @@ package com.langfuse.client.resources.commons.types;
 
 import java.lang.String;
 import java.time.OffsetDateTime;
-import java.util.Optional;
 
 public interface ISession {
   String getId();
@@ -15,5 +14,5 @@ public interface ISession {
 
   String getProjectId();
 
-  Optional<String> getEnvironment();
+  String getEnvironment();
 }

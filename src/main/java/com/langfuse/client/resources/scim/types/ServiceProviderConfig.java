@@ -183,6 +183,10 @@ public final class ServiceProviderConfig {
   public interface _FinalStage {
     ServiceProviderConfig build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage schemas(List<String> schemas);
 
     _FinalStage addSchemas(String schemas);
@@ -300,7 +304,9 @@ public final class ServiceProviderConfig {
     @java.lang.Override
     public _FinalStage addAllAuthenticationSchemes(
         List<AuthenticationScheme> authenticationSchemes) {
-      this.authenticationSchemes.addAll(authenticationSchemes);
+      if (authenticationSchemes != null) {
+        this.authenticationSchemes.addAll(authenticationSchemes);
+      }
       return this;
     }
 
@@ -317,13 +323,17 @@ public final class ServiceProviderConfig {
     )
     public _FinalStage authenticationSchemes(List<AuthenticationScheme> authenticationSchemes) {
       this.authenticationSchemes.clear();
-      this.authenticationSchemes.addAll(authenticationSchemes);
+      if (authenticationSchemes != null) {
+        this.authenticationSchemes.addAll(authenticationSchemes);
+      }
       return this;
     }
 
     @java.lang.Override
     public _FinalStage addAllSchemas(List<String> schemas) {
-      this.schemas.addAll(schemas);
+      if (schemas != null) {
+        this.schemas.addAll(schemas);
+      }
       return this;
     }
 
@@ -340,13 +350,27 @@ public final class ServiceProviderConfig {
     )
     public _FinalStage schemas(List<String> schemas) {
       this.schemas.clear();
-      this.schemas.addAll(schemas);
+      if (schemas != null) {
+        this.schemas.addAll(schemas);
+      }
       return this;
     }
 
     @java.lang.Override
     public ServiceProviderConfig build() {
       return new ServiceProviderConfig(schemas, documentationUri, patch, bulk, filter, changePassword, sort, etag, authenticationSchemes, meta, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

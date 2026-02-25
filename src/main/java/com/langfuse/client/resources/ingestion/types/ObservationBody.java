@@ -225,6 +225,10 @@ public final class ObservationBody {
   public interface _FinalStage {
     ObservationBody build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage id(Optional<String> id);
 
     _FinalStage id(String id);
@@ -645,6 +649,18 @@ public final class ObservationBody {
     @java.lang.Override
     public ObservationBody build() {
       return new ObservationBody(id, traceId, type, name, startTime, endTime, completionStartTime, model, modelParameters, input, version, metadata, output, usage, level, statusMessage, parentObservationId, environment, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

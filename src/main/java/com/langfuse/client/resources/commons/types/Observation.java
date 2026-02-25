@@ -6,12 +6,15 @@ package com.langfuse.client.resources.commons.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Double;
 import java.lang.Integer;
@@ -19,6 +22,7 @@ import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,17 +49,17 @@ public final class Observation implements IObservation {
 
   private final Optional<String> model;
 
-  private final Optional<Map<String, MapValue>> modelParameters;
+  private final Object modelParameters;
 
-  private final Optional<Object> input;
+  private final Object input;
 
   private final Optional<String> version;
 
-  private final Optional<Object> metadata;
+  private final Object metadata;
 
-  private final Optional<Object> output;
+  private final Object output;
 
-  private final Optional<Usage> usage;
+  private final Usage usage;
 
   private final ObservationLevel level;
 
@@ -65,23 +69,21 @@ public final class Observation implements IObservation {
 
   private final Optional<String> promptId;
 
-  private final Optional<Map<String, Integer>> usageDetails;
+  private final Map<String, Integer> usageDetails;
 
-  private final Optional<Map<String, Double>> costDetails;
+  private final Map<String, Double> costDetails;
 
-  private final Optional<String> environment;
+  private final String environment;
 
   private final Map<String, Object> additionalProperties;
 
   private Observation(String id, Optional<String> traceId, String type, Optional<String> name,
       OffsetDateTime startTime, Optional<OffsetDateTime> endTime,
-      Optional<OffsetDateTime> completionStartTime, Optional<String> model,
-      Optional<Map<String, MapValue>> modelParameters, Optional<Object> input,
-      Optional<String> version, Optional<Object> metadata, Optional<Object> output,
-      Optional<Usage> usage, ObservationLevel level, Optional<String> statusMessage,
-      Optional<String> parentObservationId, Optional<String> promptId,
-      Optional<Map<String, Integer>> usageDetails, Optional<Map<String, Double>> costDetails,
-      Optional<String> environment, Map<String, Object> additionalProperties) {
+      Optional<OffsetDateTime> completionStartTime, Optional<String> model, Object modelParameters,
+      Object input, Optional<String> version, Object metadata, Object output, Usage usage,
+      ObservationLevel level, Optional<String> statusMessage, Optional<String> parentObservationId,
+      Optional<String> promptId, Map<String, Integer> usageDetails, Map<String, Double> costDetails,
+      String environment, Map<String, Object> additionalProperties) {
     this.id = id;
     this.traceId = traceId;
     this.type = type;
@@ -118,9 +120,12 @@ public final class Observation implements IObservation {
   /**
    * @return The trace ID associated with the observation
    */
-  @JsonProperty("traceId")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getTraceId() {
+    if (traceId == null) {
+      return Optional.empty();
+    }
     return traceId;
   }
 
@@ -136,9 +141,12 @@ public final class Observation implements IObservation {
   /**
    * @return The name of the observation
    */
-  @JsonProperty("name")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getName() {
+    if (name == null) {
+      return Optional.empty();
+    }
     return name;
   }
 
@@ -154,27 +162,36 @@ public final class Observation implements IObservation {
   /**
    * @return The end time of the observation.
    */
-  @JsonProperty("endTime")
+  @JsonIgnore
   @java.lang.Override
   public Optional<OffsetDateTime> getEndTime() {
+    if (endTime == null) {
+      return Optional.empty();
+    }
     return endTime;
   }
 
   /**
    * @return The completion start time of the observation
    */
-  @JsonProperty("completionStartTime")
+  @JsonIgnore
   @java.lang.Override
   public Optional<OffsetDateTime> getCompletionStartTime() {
+    if (completionStartTime == null) {
+      return Optional.empty();
+    }
     return completionStartTime;
   }
 
   /**
    * @return The model used for the observation
    */
-  @JsonProperty("model")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getModel() {
+    if (model == null) {
+      return Optional.empty();
+    }
     return model;
   }
 
@@ -183,7 +200,7 @@ public final class Observation implements IObservation {
    */
   @JsonProperty("modelParameters")
   @java.lang.Override
-  public Optional<Map<String, MapValue>> getModelParameters() {
+  public Object getModelParameters() {
     return modelParameters;
   }
 
@@ -192,16 +209,19 @@ public final class Observation implements IObservation {
    */
   @JsonProperty("input")
   @java.lang.Override
-  public Optional<Object> getInput() {
+  public Object getInput() {
     return input;
   }
 
   /**
    * @return The version of the observation
    */
-  @JsonProperty("version")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getVersion() {
+    if (version == null) {
+      return Optional.empty();
+    }
     return version;
   }
 
@@ -210,7 +230,7 @@ public final class Observation implements IObservation {
    */
   @JsonProperty("metadata")
   @java.lang.Override
-  public Optional<Object> getMetadata() {
+  public Object getMetadata() {
     return metadata;
   }
 
@@ -219,7 +239,7 @@ public final class Observation implements IObservation {
    */
   @JsonProperty("output")
   @java.lang.Override
-  public Optional<Object> getOutput() {
+  public Object getOutput() {
     return output;
   }
 
@@ -228,7 +248,7 @@ public final class Observation implements IObservation {
    */
   @JsonProperty("usage")
   @java.lang.Override
-  public Optional<Usage> getUsage() {
+  public Usage getUsage() {
     return usage;
   }
 
@@ -244,27 +264,36 @@ public final class Observation implements IObservation {
   /**
    * @return The status message of the observation
    */
-  @JsonProperty("statusMessage")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getStatusMessage() {
+    if (statusMessage == null) {
+      return Optional.empty();
+    }
     return statusMessage;
   }
 
   /**
    * @return The parent observation ID
    */
-  @JsonProperty("parentObservationId")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getParentObservationId() {
+    if (parentObservationId == null) {
+      return Optional.empty();
+    }
     return parentObservationId;
   }
 
   /**
    * @return The prompt ID associated with the observation
    */
-  @JsonProperty("promptId")
+  @JsonIgnore
   @java.lang.Override
   public Optional<String> getPromptId() {
+    if (promptId == null) {
+      return Optional.empty();
+    }
     return promptId;
   }
 
@@ -273,7 +302,7 @@ public final class Observation implements IObservation {
    */
   @JsonProperty("usageDetails")
   @java.lang.Override
-  public Optional<Map<String, Integer>> getUsageDetails() {
+  public Map<String, Integer> getUsageDetails() {
     return usageDetails;
   }
 
@@ -282,7 +311,7 @@ public final class Observation implements IObservation {
    */
   @JsonProperty("costDetails")
   @java.lang.Override
-  public Optional<Map<String, Double>> getCostDetails() {
+  public Map<String, Double> getCostDetails() {
     return costDetails;
   }
 
@@ -291,8 +320,89 @@ public final class Observation implements IObservation {
    */
   @JsonProperty("environment")
   @java.lang.Override
-  public Optional<String> getEnvironment() {
+  public String getEnvironment() {
     return environment;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("traceId")
+  private Optional<String> _getTraceId() {
+    return traceId;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("name")
+  private Optional<String> _getName() {
+    return name;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("endTime")
+  private Optional<OffsetDateTime> _getEndTime() {
+    return endTime;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("completionStartTime")
+  private Optional<OffsetDateTime> _getCompletionStartTime() {
+    return completionStartTime;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("model")
+  private Optional<String> _getModel() {
+    return model;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("version")
+  private Optional<String> _getVersion() {
+    return version;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("statusMessage")
+  private Optional<String> _getStatusMessage() {
+    return statusMessage;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("parentObservationId")
+  private Optional<String> _getParentObservationId() {
+    return parentObservationId;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("promptId")
+  private Optional<String> _getPromptId() {
+    return promptId;
   }
 
   @java.lang.Override
@@ -325,112 +435,211 @@ public final class Observation implements IObservation {
   }
 
   public interface IdStage {
+    /**
+     * <p>The unique identifier of the observation</p>
+     */
     TypeStage id(@NotNull String id);
 
     Builder from(Observation other);
   }
 
   public interface TypeStage {
+    /**
+     * <p>The type of the observation</p>
+     */
     StartTimeStage type(@NotNull String type);
   }
 
   public interface StartTimeStage {
-    LevelStage startTime(@NotNull OffsetDateTime startTime);
+    /**
+     * <p>The start time of the observation</p>
+     */
+    ModelParametersStage startTime(@NotNull OffsetDateTime startTime);
+  }
+
+  public interface ModelParametersStage {
+    /**
+     * <p>The parameters of the model used for the observation</p>
+     */
+    InputStage modelParameters(Object modelParameters);
+  }
+
+  public interface InputStage {
+    /**
+     * <p>The input data of the observation</p>
+     */
+    MetadataStage input(Object input);
+  }
+
+  public interface MetadataStage {
+    /**
+     * <p>Additional metadata of the observation</p>
+     */
+    OutputStage metadata(Object metadata);
+  }
+
+  public interface OutputStage {
+    /**
+     * <p>The output data of the observation</p>
+     */
+    UsageStage output(Object output);
+  }
+
+  public interface UsageStage {
+    /**
+     * <p>(Deprecated. Use usageDetails and costDetails instead.) The usage data of the observation</p>
+     */
+    LevelStage usage(@NotNull Usage usage);
   }
 
   public interface LevelStage {
-    _FinalStage level(@NotNull ObservationLevel level);
+    /**
+     * <p>The level of the observation</p>
+     */
+    EnvironmentStage level(@NotNull ObservationLevel level);
+  }
+
+  public interface EnvironmentStage {
+    /**
+     * <p>The environment from which this observation originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
+     */
+    _FinalStage environment(@NotNull String environment);
   }
 
   public interface _FinalStage {
     Observation build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>The trace ID associated with the observation</p>
+     */
     _FinalStage traceId(Optional<String> traceId);
 
     _FinalStage traceId(String traceId);
 
+    _FinalStage traceId(Nullable<String> traceId);
+
+    /**
+     * <p>The name of the observation</p>
+     */
     _FinalStage name(Optional<String> name);
 
     _FinalStage name(String name);
 
+    _FinalStage name(Nullable<String> name);
+
+    /**
+     * <p>The end time of the observation.</p>
+     */
     _FinalStage endTime(Optional<OffsetDateTime> endTime);
 
     _FinalStage endTime(OffsetDateTime endTime);
 
+    _FinalStage endTime(Nullable<OffsetDateTime> endTime);
+
+    /**
+     * <p>The completion start time of the observation</p>
+     */
     _FinalStage completionStartTime(Optional<OffsetDateTime> completionStartTime);
 
     _FinalStage completionStartTime(OffsetDateTime completionStartTime);
 
+    _FinalStage completionStartTime(Nullable<OffsetDateTime> completionStartTime);
+
+    /**
+     * <p>The model used for the observation</p>
+     */
     _FinalStage model(Optional<String> model);
 
     _FinalStage model(String model);
 
-    _FinalStage modelParameters(Optional<Map<String, MapValue>> modelParameters);
+    _FinalStage model(Nullable<String> model);
 
-    _FinalStage modelParameters(Map<String, MapValue> modelParameters);
-
-    _FinalStage input(Optional<Object> input);
-
-    _FinalStage input(Object input);
-
+    /**
+     * <p>The version of the observation</p>
+     */
     _FinalStage version(Optional<String> version);
 
     _FinalStage version(String version);
 
-    _FinalStage metadata(Optional<Object> metadata);
+    _FinalStage version(Nullable<String> version);
 
-    _FinalStage metadata(Object metadata);
-
-    _FinalStage output(Optional<Object> output);
-
-    _FinalStage output(Object output);
-
-    _FinalStage usage(Optional<Usage> usage);
-
-    _FinalStage usage(Usage usage);
-
+    /**
+     * <p>The status message of the observation</p>
+     */
     _FinalStage statusMessage(Optional<String> statusMessage);
 
     _FinalStage statusMessage(String statusMessage);
 
+    _FinalStage statusMessage(Nullable<String> statusMessage);
+
+    /**
+     * <p>The parent observation ID</p>
+     */
     _FinalStage parentObservationId(Optional<String> parentObservationId);
 
     _FinalStage parentObservationId(String parentObservationId);
 
+    _FinalStage parentObservationId(Nullable<String> parentObservationId);
+
+    /**
+     * <p>The prompt ID associated with the observation</p>
+     */
     _FinalStage promptId(Optional<String> promptId);
 
     _FinalStage promptId(String promptId);
 
-    _FinalStage usageDetails(Optional<Map<String, Integer>> usageDetails);
+    _FinalStage promptId(Nullable<String> promptId);
 
+    /**
+     * <p>The usage details of the observation. Key is the name of the usage metric, value is the number of units consumed. The total key is the sum of all (non-total) usage metrics or the total value ingested.</p>
+     */
     _FinalStage usageDetails(Map<String, Integer> usageDetails);
 
-    _FinalStage costDetails(Optional<Map<String, Double>> costDetails);
+    _FinalStage putAllUsageDetails(Map<String, Integer> usageDetails);
 
+    _FinalStage usageDetails(String key, Integer value);
+
+    /**
+     * <p>The cost details of the observation. Key is the name of the cost metric, value is the cost in USD. The total key is the sum of all (non-total) cost metrics or the total value ingested.</p>
+     */
     _FinalStage costDetails(Map<String, Double> costDetails);
 
-    _FinalStage environment(Optional<String> environment);
+    _FinalStage putAllCostDetails(Map<String, Double> costDetails);
 
-    _FinalStage environment(String environment);
+    _FinalStage costDetails(String key, Double value);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements IdStage, TypeStage, StartTimeStage, LevelStage, _FinalStage {
+  public static final class Builder implements IdStage, TypeStage, StartTimeStage, ModelParametersStage, InputStage, MetadataStage, OutputStage, UsageStage, LevelStage, EnvironmentStage, _FinalStage {
     private String id;
 
     private String type;
 
     private OffsetDateTime startTime;
 
+    private Object modelParameters;
+
+    private Object input;
+
+    private Object metadata;
+
+    private Object output;
+
+    private Usage usage;
+
     private ObservationLevel level;
 
-    private Optional<String> environment = Optional.empty();
+    private String environment;
 
-    private Optional<Map<String, Double>> costDetails = Optional.empty();
+    private Map<String, Double> costDetails = new LinkedHashMap<>();
 
-    private Optional<Map<String, Integer>> usageDetails = Optional.empty();
+    private Map<String, Integer> usageDetails = new LinkedHashMap<>();
 
     private Optional<String> promptId = Optional.empty();
 
@@ -438,17 +647,7 @@ public final class Observation implements IObservation {
 
     private Optional<String> statusMessage = Optional.empty();
 
-    private Optional<Usage> usage = Optional.empty();
-
-    private Optional<Object> output = Optional.empty();
-
-    private Optional<Object> metadata = Optional.empty();
-
     private Optional<String> version = Optional.empty();
-
-    private Optional<Object> input = Optional.empty();
-
-    private Optional<Map<String, MapValue>> modelParameters = Optional.empty();
 
     private Optional<String> model = Optional.empty();
 
@@ -494,6 +693,7 @@ public final class Observation implements IObservation {
 
     /**
      * <p>The unique identifier of the observation</p>
+     * <p>The unique identifier of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -504,6 +704,7 @@ public final class Observation implements IObservation {
     }
 
     /**
+     * <p>The type of the observation</p>
      * <p>The type of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -516,43 +717,97 @@ public final class Observation implements IObservation {
 
     /**
      * <p>The start time of the observation</p>
+     * <p>The start time of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
     @JsonSetter("startTime")
-    public LevelStage startTime(@NotNull OffsetDateTime startTime) {
+    public ModelParametersStage startTime(@NotNull OffsetDateTime startTime) {
       this.startTime = Objects.requireNonNull(startTime, "startTime must not be null");
       return this;
     }
 
     /**
+     * <p>The parameters of the model used for the observation</p>
+     * <p>The parameters of the model used for the observation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("modelParameters")
+    public InputStage modelParameters(Object modelParameters) {
+      this.modelParameters = modelParameters;
+      return this;
+    }
+
+    /**
+     * <p>The input data of the observation</p>
+     * <p>The input data of the observation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("input")
+    public MetadataStage input(Object input) {
+      this.input = input;
+      return this;
+    }
+
+    /**
+     * <p>Additional metadata of the observation</p>
+     * <p>Additional metadata of the observation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("metadata")
+    public OutputStage metadata(Object metadata) {
+      this.metadata = metadata;
+      return this;
+    }
+
+    /**
+     * <p>The output data of the observation</p>
+     * <p>The output data of the observation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("output")
+    public UsageStage output(Object output) {
+      this.output = output;
+      return this;
+    }
+
+    /**
+     * <p>(Deprecated. Use usageDetails and costDetails instead.) The usage data of the observation</p>
+     * <p>(Deprecated. Use usageDetails and costDetails instead.) The usage data of the observation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("usage")
+    public LevelStage usage(@NotNull Usage usage) {
+      this.usage = Objects.requireNonNull(usage, "usage must not be null");
+      return this;
+    }
+
+    /**
+     * <p>The level of the observation</p>
      * <p>The level of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
     @JsonSetter("level")
-    public _FinalStage level(@NotNull ObservationLevel level) {
+    public EnvironmentStage level(@NotNull ObservationLevel level) {
       this.level = Objects.requireNonNull(level, "level must not be null");
       return this;
     }
 
     /**
      * <p>The environment from which this observation originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
+     * <p>The environment from which this observation originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage environment(String environment) {
-      this.environment = Optional.ofNullable(environment);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "environment",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage environment(Optional<String> environment) {
-      this.environment = environment;
+    @JsonSetter("environment")
+    public _FinalStage environment(@NotNull String environment) {
+      this.environment = Objects.requireNonNull(environment, "environment must not be null");
       return this;
     }
 
@@ -561,18 +816,36 @@ public final class Observation implements IObservation {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage costDetails(Map<String, Double> costDetails) {
-      this.costDetails = Optional.ofNullable(costDetails);
+    public _FinalStage costDetails(String key, Double value) {
+      this.costDetails.put(key, value);
       return this;
     }
 
+    /**
+     * <p>The cost details of the observation. Key is the name of the cost metric, value is the cost in USD. The total key is the sum of all (non-total) cost metrics or the total value ingested.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage putAllCostDetails(Map<String, Double> costDetails) {
+      if (costDetails != null) {
+        this.costDetails.putAll(costDetails);
+      }
+      return this;
+    }
+
+    /**
+     * <p>The cost details of the observation. Key is the name of the cost metric, value is the cost in USD. The total key is the sum of all (non-total) cost metrics or the total value ingested.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "costDetails",
         nulls = Nulls.SKIP
     )
-    public _FinalStage costDetails(Optional<Map<String, Double>> costDetails) {
-      this.costDetails = costDetails;
+    public _FinalStage costDetails(Map<String, Double> costDetails) {
+      this.costDetails.clear();
+      if (costDetails != null) {
+        this.costDetails.putAll(costDetails);
+      }
       return this;
     }
 
@@ -581,18 +854,54 @@ public final class Observation implements IObservation {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage usageDetails(Map<String, Integer> usageDetails) {
-      this.usageDetails = Optional.ofNullable(usageDetails);
+    public _FinalStage usageDetails(String key, Integer value) {
+      this.usageDetails.put(key, value);
       return this;
     }
 
+    /**
+     * <p>The usage details of the observation. Key is the name of the usage metric, value is the number of units consumed. The total key is the sum of all (non-total) usage metrics or the total value ingested.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage putAllUsageDetails(Map<String, Integer> usageDetails) {
+      if (usageDetails != null) {
+        this.usageDetails.putAll(usageDetails);
+      }
+      return this;
+    }
+
+    /**
+     * <p>The usage details of the observation. Key is the name of the usage metric, value is the number of units consumed. The total key is the sum of all (non-total) usage metrics or the total value ingested.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "usageDetails",
         nulls = Nulls.SKIP
     )
-    public _FinalStage usageDetails(Optional<Map<String, Integer>> usageDetails) {
-      this.usageDetails = usageDetails;
+    public _FinalStage usageDetails(Map<String, Integer> usageDetails) {
+      this.usageDetails.clear();
+      if (usageDetails != null) {
+        this.usageDetails.putAll(usageDetails);
+      }
+      return this;
+    }
+
+    /**
+     * <p>The prompt ID associated with the observation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage promptId(Nullable<String> promptId) {
+      if (promptId.isNull()) {
+        this.promptId = null;
+      }
+      else if (promptId.isEmpty()) {
+        this.promptId = Optional.empty();
+      }
+      else {
+        this.promptId = Optional.of(promptId.get());
+      }
       return this;
     }
 
@@ -606,6 +915,9 @@ public final class Observation implements IObservation {
       return this;
     }
 
+    /**
+     * <p>The prompt ID associated with the observation</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "promptId",
@@ -621,11 +933,32 @@ public final class Observation implements IObservation {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage parentObservationId(Nullable<String> parentObservationId) {
+      if (parentObservationId.isNull()) {
+        this.parentObservationId = null;
+      }
+      else if (parentObservationId.isEmpty()) {
+        this.parentObservationId = Optional.empty();
+      }
+      else {
+        this.parentObservationId = Optional.of(parentObservationId.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The parent observation ID</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage parentObservationId(String parentObservationId) {
       this.parentObservationId = Optional.ofNullable(parentObservationId);
       return this;
     }
 
+    /**
+     * <p>The parent observation ID</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "parentObservationId",
@@ -641,11 +974,32 @@ public final class Observation implements IObservation {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage statusMessage(Nullable<String> statusMessage) {
+      if (statusMessage.isNull()) {
+        this.statusMessage = null;
+      }
+      else if (statusMessage.isEmpty()) {
+        this.statusMessage = Optional.empty();
+      }
+      else {
+        this.statusMessage = Optional.of(statusMessage.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The status message of the observation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage statusMessage(String statusMessage) {
       this.statusMessage = Optional.ofNullable(statusMessage);
       return this;
     }
 
+    /**
+     * <p>The status message of the observation</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "statusMessage",
@@ -657,62 +1011,20 @@ public final class Observation implements IObservation {
     }
 
     /**
-     * <p>(Deprecated. Use usageDetails and costDetails instead.) The usage data of the observation</p>
+     * <p>The version of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage usage(Usage usage) {
-      this.usage = Optional.ofNullable(usage);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "usage",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage usage(Optional<Usage> usage) {
-      this.usage = usage;
-      return this;
-    }
-
-    /**
-     * <p>The output data of the observation</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    public _FinalStage output(Object output) {
-      this.output = Optional.ofNullable(output);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "output",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage output(Optional<Object> output) {
-      this.output = output;
-      return this;
-    }
-
-    /**
-     * <p>Additional metadata of the observation</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    public _FinalStage metadata(Object metadata) {
-      this.metadata = Optional.ofNullable(metadata);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "metadata",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage metadata(Optional<Object> metadata) {
-      this.metadata = metadata;
+    public _FinalStage version(Nullable<String> version) {
+      if (version.isNull()) {
+        this.version = null;
+      }
+      else if (version.isEmpty()) {
+        this.version = Optional.empty();
+      }
+      else {
+        this.version = Optional.of(version.get());
+      }
       return this;
     }
 
@@ -726,6 +1038,9 @@ public final class Observation implements IObservation {
       return this;
     }
 
+    /**
+     * <p>The version of the observation</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "version",
@@ -737,42 +1052,20 @@ public final class Observation implements IObservation {
     }
 
     /**
-     * <p>The input data of the observation</p>
+     * <p>The model used for the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
-    public _FinalStage input(Object input) {
-      this.input = Optional.ofNullable(input);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "input",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage input(Optional<Object> input) {
-      this.input = input;
-      return this;
-    }
-
-    /**
-     * <p>The parameters of the model used for the observation</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    public _FinalStage modelParameters(Map<String, MapValue> modelParameters) {
-      this.modelParameters = Optional.ofNullable(modelParameters);
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter(
-        value = "modelParameters",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage modelParameters(Optional<Map<String, MapValue>> modelParameters) {
-      this.modelParameters = modelParameters;
+    public _FinalStage model(Nullable<String> model) {
+      if (model.isNull()) {
+        this.model = null;
+      }
+      else if (model.isEmpty()) {
+        this.model = Optional.empty();
+      }
+      else {
+        this.model = Optional.of(model.get());
+      }
       return this;
     }
 
@@ -786,6 +1079,9 @@ public final class Observation implements IObservation {
       return this;
     }
 
+    /**
+     * <p>The model used for the observation</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "model",
@@ -801,11 +1097,32 @@ public final class Observation implements IObservation {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage completionStartTime(Nullable<OffsetDateTime> completionStartTime) {
+      if (completionStartTime.isNull()) {
+        this.completionStartTime = null;
+      }
+      else if (completionStartTime.isEmpty()) {
+        this.completionStartTime = Optional.empty();
+      }
+      else {
+        this.completionStartTime = Optional.of(completionStartTime.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The completion start time of the observation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage completionStartTime(OffsetDateTime completionStartTime) {
       this.completionStartTime = Optional.ofNullable(completionStartTime);
       return this;
     }
 
+    /**
+     * <p>The completion start time of the observation</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "completionStartTime",
@@ -821,11 +1138,32 @@ public final class Observation implements IObservation {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage endTime(Nullable<OffsetDateTime> endTime) {
+      if (endTime.isNull()) {
+        this.endTime = null;
+      }
+      else if (endTime.isEmpty()) {
+        this.endTime = Optional.empty();
+      }
+      else {
+        this.endTime = Optional.of(endTime.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The end time of the observation.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage endTime(OffsetDateTime endTime) {
       this.endTime = Optional.ofNullable(endTime);
       return this;
     }
 
+    /**
+     * <p>The end time of the observation.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "endTime",
@@ -841,11 +1179,32 @@ public final class Observation implements IObservation {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage name(Nullable<String> name) {
+      if (name.isNull()) {
+        this.name = null;
+      }
+      else if (name.isEmpty()) {
+        this.name = Optional.empty();
+      }
+      else {
+        this.name = Optional.of(name.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The name of the observation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage name(String name) {
       this.name = Optional.ofNullable(name);
       return this;
     }
 
+    /**
+     * <p>The name of the observation</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "name",
@@ -861,11 +1220,32 @@ public final class Observation implements IObservation {
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
+    public _FinalStage traceId(Nullable<String> traceId) {
+      if (traceId.isNull()) {
+        this.traceId = null;
+      }
+      else if (traceId.isEmpty()) {
+        this.traceId = Optional.empty();
+      }
+      else {
+        this.traceId = Optional.of(traceId.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>The trace ID associated with the observation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
     public _FinalStage traceId(String traceId) {
       this.traceId = Optional.ofNullable(traceId);
       return this;
     }
 
+    /**
+     * <p>The trace ID associated with the observation</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "traceId",
@@ -879,6 +1259,18 @@ public final class Observation implements IObservation {
     @java.lang.Override
     public Observation build() {
       return new Observation(id, traceId, type, name, startTime, endTime, completionStartTime, model, modelParameters, input, version, metadata, output, usage, level, statusMessage, parentObservationId, promptId, usageDetails, costDetails, environment, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

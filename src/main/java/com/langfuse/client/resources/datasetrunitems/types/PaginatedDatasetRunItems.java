@@ -90,6 +90,10 @@ public final class PaginatedDatasetRunItems {
   public interface _FinalStage {
     PaginatedDatasetRunItems build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage data(List<DatasetRunItem> data);
 
     _FinalStage addData(DatasetRunItem data);
@@ -127,7 +131,9 @@ public final class PaginatedDatasetRunItems {
 
     @java.lang.Override
     public _FinalStage addAllData(List<DatasetRunItem> data) {
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
@@ -144,13 +150,27 @@ public final class PaginatedDatasetRunItems {
     )
     public _FinalStage data(List<DatasetRunItem> data) {
       this.data.clear();
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
     @java.lang.Override
     public PaginatedDatasetRunItems build() {
       return new PaginatedDatasetRunItems(data, meta, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

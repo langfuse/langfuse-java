@@ -89,6 +89,10 @@ public final class PaginatedAnnotationQueueItems {
   public interface _FinalStage {
     PaginatedAnnotationQueueItems build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage data(List<AnnotationQueueItem> data);
 
     _FinalStage addData(AnnotationQueueItem data);
@@ -126,7 +130,9 @@ public final class PaginatedAnnotationQueueItems {
 
     @java.lang.Override
     public _FinalStage addAllData(List<AnnotationQueueItem> data) {
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
@@ -143,13 +149,27 @@ public final class PaginatedAnnotationQueueItems {
     )
     public _FinalStage data(List<AnnotationQueueItem> data) {
       this.data.clear();
-      this.data.addAll(data);
+      if (data != null) {
+        this.data.addAll(data);
+      }
       return this;
     }
 
     @java.lang.Override
     public PaginatedAnnotationQueueItems build() {
       return new PaginatedAnnotationQueueItems(data, meta, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

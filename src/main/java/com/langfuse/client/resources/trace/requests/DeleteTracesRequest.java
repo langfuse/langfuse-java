@@ -89,13 +89,18 @@ public final class DeleteTracesRequest {
       return this;
     }
 
+    /**
+     * <p>List of trace IDs to delete</p>
+     */
     @JsonSetter(
         value = "traceIds",
         nulls = Nulls.SKIP
     )
     public Builder traceIds(List<String> traceIds) {
       this.traceIds.clear();
-      this.traceIds.addAll(traceIds);
+      if (traceIds != null) {
+        this.traceIds.addAll(traceIds);
+      }
       return this;
     }
 
@@ -105,12 +110,24 @@ public final class DeleteTracesRequest {
     }
 
     public Builder addAllTraceIds(List<String> traceIds) {
-      this.traceIds.addAll(traceIds);
+      if (traceIds != null) {
+        this.traceIds.addAll(traceIds);
+      }
       return this;
     }
 
     public DeleteTracesRequest build() {
       return new DeleteTracesRequest(traceIds, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

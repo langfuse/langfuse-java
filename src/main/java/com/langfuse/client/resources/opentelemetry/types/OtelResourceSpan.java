@@ -104,6 +104,9 @@ public final class OtelResourceSpan {
       return this;
     }
 
+    /**
+     * <p>Resource information</p>
+     */
     @JsonSetter(
         value = "resource",
         nulls = Nulls.SKIP
@@ -118,6 +121,9 @@ public final class OtelResourceSpan {
       return this;
     }
 
+    /**
+     * <p>Array of scope spans</p>
+     */
     @JsonSetter(
         value = "scopeSpans",
         nulls = Nulls.SKIP
@@ -134,6 +140,16 @@ public final class OtelResourceSpan {
 
     public OtelResourceSpan build() {
       return new OtelResourceSpan(resource, scopeSpans, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

@@ -71,6 +71,9 @@ public final class DeleteDatasetItemResponse {
   }
 
   public interface MessageStage {
+    /**
+     * <p>Success message after deletion</p>
+     */
     _FinalStage message(@NotNull String message);
 
     Builder from(DeleteDatasetItemResponse other);
@@ -78,6 +81,10 @@ public final class DeleteDatasetItemResponse {
 
   public interface _FinalStage {
     DeleteDatasetItemResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
@@ -100,6 +107,7 @@ public final class DeleteDatasetItemResponse {
 
     /**
      * <p>Success message after deletion</p>
+     * <p>Success message after deletion</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -112,6 +120,18 @@ public final class DeleteDatasetItemResponse {
     @java.lang.Override
     public DeleteDatasetItemResponse build() {
       return new DeleteDatasetItemResponse(message, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

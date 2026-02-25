@@ -4,224 +4,101 @@
 
 package com.langfuse.client.resources.prompts.types;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.langfuse.client.core.ObjectMappers;
+import java.io.IOException;
+import java.lang.IllegalStateException;
 import java.lang.Object;
+import java.lang.RuntimeException;
 import java.lang.String;
+import java.lang.SuppressWarnings;
 import java.util.Objects;
-import java.util.Optional;
 
+@JsonDeserialize(
+    using = ChatMessageWithPlaceholders.Deserializer.class
+)
 public final class ChatMessageWithPlaceholders {
-  private final Value value;
+  private final Object value;
 
-  @JsonCreator(
-      mode = JsonCreator.Mode.DELEGATING
-  )
-  private ChatMessageWithPlaceholders(Value value) {
+  private final int type;
+
+  private ChatMessageWithPlaceholders(Object value, int type) {
     this.value = value;
-  }
-
-  public <T> T visit(Visitor<T> visitor) {
-    return value.visit(visitor);
-  }
-
-  public static ChatMessageWithPlaceholders chatmessage(ChatMessage value) {
-    return new ChatMessageWithPlaceholders(new ChatmessageValue(value));
-  }
-
-  public static ChatMessageWithPlaceholders placeholder(PlaceholderMessage value) {
-    return new ChatMessageWithPlaceholders(new PlaceholderValue(value));
-  }
-
-  public boolean isChatmessage() {
-    return value instanceof ChatmessageValue;
-  }
-
-  public boolean isPlaceholder() {
-    return value instanceof PlaceholderValue;
-  }
-
-  public boolean _isUnknown() {
-    return value instanceof _UnknownValue;
-  }
-
-  public Optional<ChatMessage> getChatmessage() {
-    if (isChatmessage()) {
-      return Optional.of(((ChatmessageValue) value).value);
-    }
-    return Optional.empty();
-  }
-
-  public Optional<PlaceholderMessage> getPlaceholder() {
-    if (isPlaceholder()) {
-      return Optional.of(((PlaceholderValue) value).value);
-    }
-    return Optional.empty();
-  }
-
-  public Optional<Object> _getUnknown() {
-    if (_isUnknown()) {
-      return Optional.of(((_UnknownValue) value).value);
-    }
-    return Optional.empty();
+    this.type = type;
   }
 
   @JsonValue
-  private Value getValue() {
+  public Object get() {
     return this.value;
   }
 
+  @SuppressWarnings("unchecked")
+  public <T> T visit(Visitor<T> visitor) {
+    if(this.type == 0) {
+      return visitor.visit((ChatMessage) this.value);
+    } else if(this.type == 1) {
+      return visitor.visit((PlaceholderMessage) this.value);
+    }
+    throw new IllegalStateException("Failed to visit value. This should never happen.");
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ChatMessageWithPlaceholders && equalTo((ChatMessageWithPlaceholders) other);
+  }
+
+  private boolean equalTo(ChatMessageWithPlaceholders other) {
+    return value.equals(other.value);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.value);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return this.value.toString();
+  }
+
+  public static ChatMessageWithPlaceholders of(ChatMessage value) {
+    return new ChatMessageWithPlaceholders(value, 0);
+  }
+
+  public static ChatMessageWithPlaceholders of(PlaceholderMessage value) {
+    return new ChatMessageWithPlaceholders(value, 1);
+  }
+
   public interface Visitor<T> {
-    T visitChatmessage(ChatMessage chatmessage);
+    T visit(ChatMessage value);
 
-    T visitPlaceholder(PlaceholderMessage placeholder);
-
-    T _visitUnknown(Object unknownType);
+    T visit(PlaceholderMessage value);
   }
 
-  @JsonTypeInfo(
-      use = JsonTypeInfo.Id.NAME,
-      property = "type",
-      visible = true,
-      defaultImpl = _UnknownValue.class
-  )
-  @JsonSubTypes({
-      @JsonSubTypes.Type(ChatmessageValue.class),
-      @JsonSubTypes.Type(PlaceholderValue.class)
-  })
-  @JsonIgnoreProperties(
-      ignoreUnknown = true
-  )
-  private interface Value {
-    <T> T visit(Visitor<T> visitor);
-  }
-
-  @JsonTypeName("chatmessage")
-  @JsonIgnoreProperties("type")
-  private static final class ChatmessageValue implements Value {
-    @JsonUnwrapped
-    private ChatMessage value;
-
-    @JsonCreator(
-        mode = JsonCreator.Mode.PROPERTIES
-    )
-    private ChatmessageValue() {
-    }
-
-    private ChatmessageValue(ChatMessage value) {
-      this.value = value;
+  static final class Deserializer extends StdDeserializer<ChatMessageWithPlaceholders> {
+    Deserializer() {
+      super(ChatMessageWithPlaceholders.class);
     }
 
     @java.lang.Override
-    public <T> T visit(Visitor<T> visitor) {
-      return visitor.visitChatmessage(value);
-    }
-
-    @java.lang.Override
-    public boolean equals(Object other) {
-      if (this == other) return true;
-      return other instanceof ChatmessageValue && equalTo((ChatmessageValue) other);
-    }
-
-    private boolean equalTo(ChatmessageValue other) {
-      return value.equals(other.value);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      return Objects.hash(this.value);
-    }
-
-    @java.lang.Override
-    public String toString() {
-      return "ChatMessageWithPlaceholders{" + "value: " + value + "}";
-    }
-  }
-
-  @JsonTypeName("placeholder")
-  @JsonIgnoreProperties("type")
-  private static final class PlaceholderValue implements Value {
-    @JsonUnwrapped
-    private PlaceholderMessage value;
-
-    @JsonCreator(
-        mode = JsonCreator.Mode.PROPERTIES
-    )
-    private PlaceholderValue() {
-    }
-
-    private PlaceholderValue(PlaceholderMessage value) {
-      this.value = value;
-    }
-
-    @java.lang.Override
-    public <T> T visit(Visitor<T> visitor) {
-      return visitor.visitPlaceholder(value);
-    }
-
-    @java.lang.Override
-    public boolean equals(Object other) {
-      if (this == other) return true;
-      return other instanceof PlaceholderValue && equalTo((PlaceholderValue) other);
-    }
-
-    private boolean equalTo(PlaceholderValue other) {
-      return value.equals(other.value);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      return Objects.hash(this.value);
-    }
-
-    @java.lang.Override
-    public String toString() {
-      return "ChatMessageWithPlaceholders{" + "value: " + value + "}";
-    }
-  }
-
-  @JsonIgnoreProperties("type")
-  private static final class _UnknownValue implements Value {
-    private String type;
-
-    @JsonValue
-    private Object value;
-
-    @JsonCreator(
-        mode = JsonCreator.Mode.PROPERTIES
-    )
-    private _UnknownValue(@JsonProperty("value") Object value) {
-    }
-
-    @java.lang.Override
-    public <T> T visit(Visitor<T> visitor) {
-      return visitor._visitUnknown(value);
-    }
-
-    @java.lang.Override
-    public boolean equals(Object other) {
-      if (this == other) return true;
-      return other instanceof _UnknownValue && equalTo((_UnknownValue) other);
-    }
-
-    private boolean equalTo(_UnknownValue other) {
-      return type.equals(other.type) && value.equals(other.value);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      return Objects.hash(this.type, this.value);
-    }
-
-    @java.lang.Override
-    public String toString() {
-      return "ChatMessageWithPlaceholders{" + "type: " + type + ", value: " + value + "}";
+    public ChatMessageWithPlaceholders deserialize(JsonParser p, DeserializationContext context)
+        throws IOException {
+      Object value = p.readValueAs(Object.class);
+      try {
+        return of(ObjectMappers.JSON_MAPPER.convertValue(value, ChatMessage.class));
+      } catch(RuntimeException e) {
+      }
+      try {
+        return of(ObjectMappers.JSON_MAPPER.convertValue(value, PlaceholderMessage.class));
+      } catch(RuntimeException e) {
+      }
+      throw new JsonParseException(p, "Failed to deserialize");
     }
   }
 }

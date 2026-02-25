@@ -124,6 +124,10 @@ public final class SchemaResource {
   public interface _FinalStage {
     SchemaResource build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage attributes(List<Object> attributes);
 
     _FinalStage addAttributes(Object attributes);
@@ -191,7 +195,9 @@ public final class SchemaResource {
 
     @java.lang.Override
     public _FinalStage addAllAttributes(List<Object> attributes) {
-      this.attributes.addAll(attributes);
+      if (attributes != null) {
+        this.attributes.addAll(attributes);
+      }
       return this;
     }
 
@@ -208,13 +214,27 @@ public final class SchemaResource {
     )
     public _FinalStage attributes(List<Object> attributes) {
       this.attributes.clear();
-      this.attributes.addAll(attributes);
+      if (attributes != null) {
+        this.attributes.addAll(attributes);
+      }
       return this;
     }
 
     @java.lang.Override
     public SchemaResource build() {
       return new SchemaResource(id, name, description, attributes, meta, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

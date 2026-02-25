@@ -4,23 +4,85 @@
 
 package com.langfuse.client.resources.commons.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.Object;
 import java.lang.String;
 
-public enum DatasetStatus {
-  ACTIVE("ACTIVE"),
+public final class DatasetStatus {
+  public static final DatasetStatus ARCHIVED = new DatasetStatus(Value.ARCHIVED, "ARCHIVED");
 
-  ARCHIVED("ARCHIVED");
+  public static final DatasetStatus ACTIVE = new DatasetStatus(Value.ACTIVE, "ACTIVE");
 
-  private final String value;
+  private final Value value;
 
-  DatasetStatus(String value) {
+  private final String string;
+
+  DatasetStatus(Value value, String string) {
     this.value = value;
+    this.string = string;
   }
 
-  @JsonValue
+  public Value getEnumValue() {
+    return value;
+  }
+
   @java.lang.Override
+  @JsonValue
   public String toString() {
-    return this.value;
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) 
+      || (other instanceof DatasetStatus && this.string.equals(((DatasetStatus) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case ARCHIVED:
+        return visitor.visitArchived();
+      case ACTIVE:
+        return visitor.visitActive();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
+    }
+  }
+
+  @JsonCreator(
+      mode = JsonCreator.Mode.DELEGATING
+  )
+  public static DatasetStatus valueOf(String value) {
+    switch (value) {
+      case "ARCHIVED":
+        return ARCHIVED;
+      case "ACTIVE":
+        return ACTIVE;
+      default:
+        return new DatasetStatus(Value.UNKNOWN, value);
+    }
+  }
+
+  public enum Value {
+    ACTIVE,
+
+    ARCHIVED,
+
+    UNKNOWN
+  }
+
+  public interface Visitor<T> {
+    T visitActive();
+
+    T visitArchived();
+
+    T visitUnknown(String unknownType);
   }
 }

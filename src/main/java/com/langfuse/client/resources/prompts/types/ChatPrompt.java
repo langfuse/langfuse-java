@@ -166,22 +166,38 @@ public final class ChatPrompt implements IBasePrompt {
   public interface _FinalStage {
     ChatPrompt build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>List of deployment labels of this prompt version.</p>
+     */
     _FinalStage labels(List<String> labels);
 
     _FinalStage addLabels(String labels);
 
     _FinalStage addAllLabels(List<String> labels);
 
+    /**
+     * <p>List of tags. Used to filter via UI and API. The same across versions of a prompt.</p>
+     */
     _FinalStage tags(List<String> tags);
 
     _FinalStage addTags(String tags);
 
     _FinalStage addAllTags(List<String> tags);
 
+    /**
+     * <p>Commit message for this prompt version.</p>
+     */
     _FinalStage commitMessage(Optional<String> commitMessage);
 
     _FinalStage commitMessage(String commitMessage);
 
+    /**
+     * <p>The dependency resolution graph for the current prompt. Null if prompt has no dependencies.</p>
+     */
     _FinalStage resolutionGraph(Optional<Map<String, Object>> resolutionGraph);
 
     _FinalStage resolutionGraph(Map<String, Object> resolutionGraph);
@@ -255,7 +271,9 @@ public final class ChatPrompt implements IBasePrompt {
 
     @java.lang.Override
     public _FinalStage addAllPrompt(List<ChatMessageWithPlaceholders> prompt) {
-      this.prompt.addAll(prompt);
+      if (prompt != null) {
+        this.prompt.addAll(prompt);
+      }
       return this;
     }
 
@@ -272,7 +290,9 @@ public final class ChatPrompt implements IBasePrompt {
     )
     public _FinalStage prompt(List<ChatMessageWithPlaceholders> prompt) {
       this.prompt.clear();
-      this.prompt.addAll(prompt);
+      if (prompt != null) {
+        this.prompt.addAll(prompt);
+      }
       return this;
     }
 
@@ -286,6 +306,9 @@ public final class ChatPrompt implements IBasePrompt {
       return this;
     }
 
+    /**
+     * <p>The dependency resolution graph for the current prompt. Null if prompt has no dependencies.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "resolutionGraph",
@@ -306,6 +329,9 @@ public final class ChatPrompt implements IBasePrompt {
       return this;
     }
 
+    /**
+     * <p>Commit message for this prompt version.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "commitMessage",
@@ -322,7 +348,9 @@ public final class ChatPrompt implements IBasePrompt {
      */
     @java.lang.Override
     public _FinalStage addAllTags(List<String> tags) {
-      this.tags.addAll(tags);
+      if (tags != null) {
+        this.tags.addAll(tags);
+      }
       return this;
     }
 
@@ -336,6 +364,9 @@ public final class ChatPrompt implements IBasePrompt {
       return this;
     }
 
+    /**
+     * <p>List of tags. Used to filter via UI and API. The same across versions of a prompt.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "tags",
@@ -343,7 +374,9 @@ public final class ChatPrompt implements IBasePrompt {
     )
     public _FinalStage tags(List<String> tags) {
       this.tags.clear();
-      this.tags.addAll(tags);
+      if (tags != null) {
+        this.tags.addAll(tags);
+      }
       return this;
     }
 
@@ -353,7 +386,9 @@ public final class ChatPrompt implements IBasePrompt {
      */
     @java.lang.Override
     public _FinalStage addAllLabels(List<String> labels) {
-      this.labels.addAll(labels);
+      if (labels != null) {
+        this.labels.addAll(labels);
+      }
       return this;
     }
 
@@ -367,6 +402,9 @@ public final class ChatPrompt implements IBasePrompt {
       return this;
     }
 
+    /**
+     * <p>List of deployment labels of this prompt version.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "labels",
@@ -374,13 +412,27 @@ public final class ChatPrompt implements IBasePrompt {
     )
     public _FinalStage labels(List<String> labels) {
       this.labels.clear();
-      this.labels.addAll(labels);
+      if (labels != null) {
+        this.labels.addAll(labels);
+      }
       return this;
     }
 
     @java.lang.Override
     public ChatPrompt build() {
       return new ChatPrompt(name, version, config, labels, tags, commitMessage, resolutionGraph, prompt, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

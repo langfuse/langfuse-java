@@ -90,6 +90,9 @@ public final class OtelResource {
       return this;
     }
 
+    /**
+     * <p>Resource attributes like service.name, service.version, etc.</p>
+     */
     @JsonSetter(
         value = "attributes",
         nulls = Nulls.SKIP
@@ -106,6 +109,16 @@ public final class OtelResource {
 
     public OtelResource build() {
       return new OtelResource(attributes, additionalProperties);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }

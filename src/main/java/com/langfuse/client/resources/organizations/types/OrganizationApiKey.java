@@ -142,6 +142,10 @@ public final class OrganizationApiKey {
   public interface _FinalStage {
     OrganizationApiKey build();
 
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
     _FinalStage expiresAt(Optional<OffsetDateTime> expiresAt);
 
     _FinalStage expiresAt(OffsetDateTime expiresAt);
@@ -270,6 +274,18 @@ public final class OrganizationApiKey {
     @java.lang.Override
     public OrganizationApiKey build() {
       return new OrganizationApiKey(id, createdAt, expiresAt, lastUsedAt, note, publicKey, displaySecretKey, additionalProperties);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
   }
 }
