@@ -36,7 +36,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jackson.version>2.18.2</jackson.version>
+        <jackson.version>2.18.6</jackson.version>
         <okhttp.version>4.11.0</okhttp.version>
         <junit.version>5.9.3</junit.version>
     </properties>
