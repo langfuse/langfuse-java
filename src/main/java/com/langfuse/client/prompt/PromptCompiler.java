@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 public final class PromptCompiler {
-
     private PromptCompiler() {
     }
 
