@@ -1,0 +1,39 @@
+{{#additionalPropertiesType}}
+  /**
+   * A container for additional, undeclared properties.
+   * This is a holder for any undeclared properties as specified with
+   * the 'additionalProperties' keyword in the OAS document.
+   */
+  private Map<String, {{{.}}}> additionalProperties = new java.util.HashMap<>();
+
+  /**
+   * Set the additional (undeclared) property with the specified name and value.
+   * If the property does not already exist, create it otherwise replace it.
+   * @param key the name of the property
+   * @param value the value of the property
+   * @return self reference
+   */
+  @JsonAnySetter
+  public {{classname}} putAdditionalProperty(String key, {{{.}}} value) {
+    this.additionalProperties.put(key, value);
+    return this;
+  }
+
+  /**
+   * Return the additional (undeclared) properties.
+   * @return the additional (undeclared) properties
+   */
+  @JsonAnyGetter
+  public Map<String, {{{.}}}> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  /**
+   * Return the additional (undeclared) property with the specified name.
+   * @param key the name of the property
+   * @return the additional (undeclared) property with the specified name
+   */
+  public java.util.Optional<{{{.}}}> getAdditionalProperty(String key) {
+    return java.util.Optional.ofNullable(this.additionalProperties.get(key));
+  }
+{{/additionalPropertiesType}}
