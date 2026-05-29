@@ -69,7 +69,7 @@ public class LangfuseContainer extends GenericContainer<LangfuseContainer> {
         this.postgres = new PostgreSQLContainer<>(pgConfig.image())
                 .withNetwork(network)
                 .withNetworkAliases(POSTGRES_ALIAS)
-                .withLabel(SERVICE_LABEL, "postgres")
+                .withLabel(SERVICE_LABEL, "langfuse-postgres")
                 .withUsername(pgConfig.username())
                 .withPassword(pgConfig.password())
                 .withDatabaseName(pgConfig.databaseName());
@@ -79,7 +79,7 @@ public class LangfuseContainer extends GenericContainer<LangfuseContainer> {
         this.clickhouse = new ClickHouseContainer(chConfig.image())
                 .withNetwork(network)
                 .withNetworkAliases(CLICKHOUSE_ALIAS)
-                .withLabel(SERVICE_LABEL, "clickhouse")
+                .withLabel(SERVICE_LABEL, "langfuse-clickhouse")
                 .withUsername(chConfig.username())
                 .withPassword(chConfig.password())
                 .withDatabaseName(chConfig.databaseName());
@@ -89,7 +89,7 @@ public class LangfuseContainer extends GenericContainer<LangfuseContainer> {
         this.redis = new RedisContainer(redisConfig.image())
                 .withNetwork(network)
                 .withNetworkAliases(REDIS_ALIAS)
-                .withLabel(SERVICE_LABEL, "redis")
+                .withLabel(SERVICE_LABEL, "langfuse-redis")
                 .withCommand("--requirepass", redisConfig.password(), "--maxmemory-policy", "noeviction");
         redisConfig.containerEnv().forEach(redis::withEnv);
 
@@ -99,7 +99,7 @@ public class LangfuseContainer extends GenericContainer<LangfuseContainer> {
                          .asCompatibleSubstituteFor("minio/minio"))
                 .withNetwork(network)
                 .withNetworkAliases(MINIO_ALIAS)
-                .withLabel(SERVICE_LABEL, "minio")
+                .withLabel(SERVICE_LABEL, "langfuse-minio")
                 .withEnv("MINIO_ROOT_USER", minioConfig.rootUser())
                 .withEnv("MINIO_ROOT_PASSWORD", minioConfig.rootPassword())
                 .withCommand("server", "--address", ":9000", "--console-address", ":9001", "/data");
@@ -108,7 +108,7 @@ public class LangfuseContainer extends GenericContainer<LangfuseContainer> {
         var workerConfig = config.worker();
         this.worker = new GenericContainer<>(workerConfig.image())
                 .withNetwork(network)
-                .withLabel(SERVICE_LABEL, "worker");
+                .withLabel(SERVICE_LABEL, "langfuse-worker");
         workerConfig.containerEnv().forEach(worker::withEnv);
 
         configureWorker();
@@ -123,7 +123,7 @@ public class LangfuseContainer extends GenericContainer<LangfuseContainer> {
         var minioConfig = config.minio();
 
         withNetwork(network);
-        withLabel(SERVICE_LABEL, "langfuse");
+        withLabel(SERVICE_LABEL, "langfuse-web");
         withExposedPorts(langfuseConfig.port());
 
         withEnv("DATABASE_URL", "postgresql://%s:%s@%s:5432/%s".formatted(
@@ -259,10 +259,10 @@ public class LangfuseContainer extends GenericContainer<LangfuseContainer> {
         return Map.of(
                 "langfuse-web", getLogs(),
                 "langfuse-worker", worker.getLogs(),
-                "postgres", postgres.getLogs(),
-                "clickhouse", clickhouse.getLogs(),
-                "redis", redis.getLogs(),
-                "minio", minio.getLogs()
+                "langfuse-postgres", postgres.getLogs(),
+                "langfuse-clickhouse", clickhouse.getLogs(),
+                "langfuse-redis", redis.getLogs(),
+                "langfuse-minio", minio.getLogs()
         );
     }
 
