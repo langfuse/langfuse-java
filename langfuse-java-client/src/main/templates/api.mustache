@@ -207,7 +207,7 @@ public class {{classname}} implements com.langfuse.api.{{classVarName}}{{#asyncN
   /**
    * {{summary}}
    * {{notes}}
-   * @param apiRequest {@link API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request}
+   * @param apiRequest {@link com.langfuse.api.{{classVarName}}.{{classname}}.API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request}
    {{#returnType}}
    * @return {{#asyncNative}}CompletableFuture&lt;{{/asyncNative}}{{returnType}}{{#asyncNative}}&gt;{{/asyncNative}}
    {{/returnType}}
@@ -236,7 +236,7 @@ public class {{classname}} implements com.langfuse.api.{{classVarName}}{{#asyncN
   /**
    * {{summary}}
    * {{notes}}
-   * @param apiRequest {@link API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request}
+   * @param apiRequest {@link com.langfuse.api.{{classVarName}}.{{classname}}.API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request}
    * @param headers Optional headers to include in the request
    {{#returnType}}
    * @return {{#asyncNative}}CompletableFuture&lt;{{/asyncNative}}{{returnType}}{{#asyncNative}}&gt;{{/asyncNative}}
@@ -269,7 +269,7 @@ public class {{classname}} implements com.langfuse.api.{{classVarName}}{{#asyncN
   /**
    * {{summary}}
    * {{notes}}
-   * @param apiRequest {@link API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request}
+   * @param apiRequest {@link com.langfuse.api.{{classVarName}}.{{classname}}.API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request}
    * @return {{#asyncNative}}CompletableFuture&lt;{{/asyncNative}}ApiResponse&lt;{{returnType}}{{^returnType}}Void{{/returnType}}&gt;{{#asyncNative}}&gt;{{/asyncNative}}
    * @throws LangfuseApiException if fails to make API call
    {{#isDeprecated}}
@@ -290,7 +290,7 @@ public class {{classname}} implements com.langfuse.api.{{classVarName}}{{#asyncN
   /**
    * {{summary}}
    * {{notes}}
-   * @param apiRequest {@link API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request}
+   * @param apiRequest {@link com.langfuse.api.{{classVarName}}.{{classname}}.API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request}
    * @param headers Optional headers to include in the request
    * @return {{#asyncNative}}CompletableFuture&lt;{{/asyncNative}}ApiResponse&lt;{{returnType}}{{^returnType}}Void{{/returnType}}&gt;{{#asyncNative}}&gt;{{/asyncNative}}
    * @throws LangfuseApiException if fails to make API call
