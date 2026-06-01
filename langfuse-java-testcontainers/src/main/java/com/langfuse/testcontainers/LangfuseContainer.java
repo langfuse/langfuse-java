@@ -12,6 +12,7 @@ import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.utility.DockerImageName;
 
+import com.langfuse.testcontainers.config.LangfuseConfig;
 import com.langfuse.testcontainers.config.LangfuseContainerConfig;
 import com.redis.testcontainers.RedisContainer;
 
@@ -112,6 +113,15 @@ public class LangfuseContainer extends GenericContainer<LangfuseContainer> {
         workerConfig.containerEnv().forEach(worker::withEnv);
 
         configureWorker();
+    }
+
+    /**
+     * Retrieves the port number currently mapped for the service.
+     *
+     * @return the port number mapped for the service, or the default port if no mapping is found
+     */
+    public int getPort() {
+      return getMappedPort(LangfuseConfig.DEFAULT_PORT);
     }
 
     @Override
