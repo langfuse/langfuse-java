@@ -1,0 +1,246 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.langfuse</groupId>
+        <artifactId>langfuse-java-parent</artifactId>
+        <version>0.2.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>langfuse-java-client</artifactId>
+    <packaging>jar</packaging>
+
+    <name>langfuse-java-client</name>
+    <description>Reference client implementation for the Langfuse Java SDK API</description>
+
+    <dependencies>
+        <!-- API module -->
+        <dependency>
+            <groupId>com.langfuse</groupId>
+            <artifactId>langfuse-java-api</artifactId>
+        </dependency>
+
+        <!-- Jackson 2 (provided — consumers choose their Jackson version) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Jackson 3 (provided — consumers choose their Jackson version) -->
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- SLF4J (logging facade) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Annotations (used by openapi-generator output) -->
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.langfuse</groupId>
+            <artifactId>langfuse-java-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/../openapi.yml</inputSpec>
+                            <generatorName>java</generatorName>
+                            <templateResourcePath>${project.basedir}/src/main/templates</templateResourcePath>
+                            <cleanupOutput>true</cleanupOutput>
+                            <generateModels>false</generateModels>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <supportingFilesToGenerate>ApiClient.java,ApiResponse.java,Pair.java</supportingFilesToGenerate>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <openapiNormalizer>
+                                <SIMPLIFY_ONEOF_ANYOF>true</SIMPLIFY_ONEOF_ANYOF>
+                            </openapiNormalizer>
+                            <configOptions>
+                                <library>native</library>
+                                <dateLibrary>java8</dateLibrary>
+                                <serializationLibrary>jackson</serializationLibrary>
+                                <openApiNullable>false</openApiNullable>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useJspecify>true</useJspecify>
+                                <generateBuilders>true</generateBuilders>
+                                <containerDefaultToNull>false</containerDefaultToNull>
+                                <useSingleRequestParameter>true</useSingleRequestParameter>
+                            </configOptions>
+                            <invokerPackage>com.langfuse.client</invokerPackage>
+                            <apiPackage>com.langfuse.client</apiPackage>
+                            <modelPackage>com.langfuse.api.model</modelPackage>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-async-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/../openapi.yml</inputSpec>
+                            <generatorName>java</generatorName>
+                            <templateResourcePath>${project.basedir}/src/main/templates</templateResourcePath>
+                            <output>${project.build.directory}/generated-sources/openapi-async</output>
+                            <cleanupOutput>true</cleanupOutput>
+                            <generateModels>false</generateModels>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <openapiNormalizer>
+                                <SIMPLIFY_ONEOF_ANYOF>true</SIMPLIFY_ONEOF_ANYOF>
+                            </openapiNormalizer>
+                            <configOptions>
+                                <library>native</library>
+                                <dateLibrary>java8</dateLibrary>
+                                <serializationLibrary>jackson</serializationLibrary>
+                                <openApiNullable>false</openApiNullable>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useJspecify>true</useJspecify>
+                                <asyncNative>true</asyncNative>
+                                <useSingleRequestParameter>true</useSingleRequestParameter>
+                            </configOptions>
+                            <invokerPackage>com.langfuse.client</invokerPackage>
+                            <apiPackage>com.langfuse.client</apiPackage>
+                            <modelPackage>com.langfuse.api.model</modelPackage>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Fix openapi-generator bug: generic types in .class literals and method names -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>fix-generic-type-references</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <replaceregexp match="(\w+)&lt;[^&gt;]*&gt;\.class" replace="\1.class" flags="g" byline="true">
+                                    <fileset dir="${project.build.directory}/generated-sources" includes="**/*.java"/>
+                                </replaceregexp>
+                                <replaceregexp match="(get\w+)&lt;[^&gt;]*&gt;\(" replace="\1(" flags="g" byline="true">
+                                    <fileset dir="${project.build.directory}/generated-sources" includes="**/*.java"/>
+                                </replaceregexp>
+                                <!-- instanceof List<String> → instanceof List -->
+                                <replaceregexp match="instanceof (\w+)&lt;[^&gt;]*&gt;" replace="instanceof \1" flags="g" byline="true">
+                                    <fileset dir="${project.build.directory}/generated-sources" includes="**/*.java"/>
+                                </replaceregexp>
+                                <!-- getActualInstance().get( → ((Map)getActualInstance()).get( -->
+                                <replaceregexp match="getActualInstance\(\)\.get\(" replace="((java.util.Map)getActualInstance()).get(" flags="g" byline="true">
+                                    <fileset dir="${project.build.directory}/generated-sources" includes="**/*.java"/>
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>dev.jbang</groupId>
+                <artifactId>jbang-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>relocate-to-subpackages</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <script>${project.basedir}/../scripts/RelocateToSubpackages.java</script>
+                            <args>
+                                <arg>${project.build.directory}/generated-sources/openapi</arg>
+                                <arg>${project.build.directory}/generated-sources/openapi-async</arg>
+                                <arg>--</arg>
+                                <arg>*Api.java</arg>
+                            </args>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
