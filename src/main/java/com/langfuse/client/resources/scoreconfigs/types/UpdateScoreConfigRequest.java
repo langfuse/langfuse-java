@@ -65,7 +65,7 @@ public final class UpdateScoreConfigRequest {
   }
 
   /**
-   * @return The name of the score config
+   * @return Name of the score config. Max 35 characters. Only letters, numbers, underscores, spaces, periods, parentheses, and hyphens are allowed.
    */
   @JsonProperty("name")
   public Optional<String> getName() {
@@ -183,7 +183,7 @@ public final class UpdateScoreConfigRequest {
     }
 
     /**
-     * <p>The name of the score config</p>
+     * <p>Name of the score config. Max 35 characters. Only letters, numbers, underscores, spaces, periods, parentheses, and hyphens are allowed.</p>
      */
     @JsonSetter(
         value = "name",

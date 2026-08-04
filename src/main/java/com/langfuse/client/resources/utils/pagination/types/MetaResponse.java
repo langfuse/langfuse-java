@@ -170,7 +170,6 @@ public final class MetaResponse {
 
     /**
      * <p>current page number</p>
-     * <p>current page number</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -181,7 +180,6 @@ public final class MetaResponse {
     }
 
     /**
-     * <p>number of items per page</p>
      * <p>number of items per page</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -194,7 +192,6 @@ public final class MetaResponse {
 
     /**
      * <p>number of total items given the current filters/selection (if any)</p>
-     * <p>number of total items given the current filters/selection (if any)</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -205,7 +202,6 @@ public final class MetaResponse {
     }
 
     /**
-     * <p>number of total pages given the current limit</p>
      * <p>number of total pages given the current limit</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

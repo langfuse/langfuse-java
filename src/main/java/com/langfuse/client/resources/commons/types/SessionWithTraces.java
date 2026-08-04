@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -38,15 +39,19 @@ public final class SessionWithTraces implements ISession {
 
   private final List<Trace> traces;
 
+  private final Optional<Deprecation> deprecation;
+
   private final Map<String, Object> additionalProperties;
 
   private SessionWithTraces(String id, OffsetDateTime createdAt, String projectId,
-      String environment, List<Trace> traces, Map<String, Object> additionalProperties) {
+      String environment, List<Trace> traces, Optional<Deprecation> deprecation,
+      Map<String, Object> additionalProperties) {
     this.id = id;
     this.createdAt = createdAt;
     this.projectId = projectId;
     this.environment = environment;
     this.traces = traces;
+    this.deprecation = deprecation;
     this.additionalProperties = additionalProperties;
   }
 
@@ -82,6 +87,11 @@ public final class SessionWithTraces implements ISession {
     return traces;
   }
 
+  @JsonProperty("_deprecation")
+  public Optional<Deprecation> getDeprecation() {
+    return deprecation;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -94,12 +104,12 @@ public final class SessionWithTraces implements ISession {
   }
 
   private boolean equalTo(SessionWithTraces other) {
-    return id.equals(other.id) && createdAt.equals(other.createdAt) && projectId.equals(other.projectId) && environment.equals(other.environment) && traces.equals(other.traces);
+    return id.equals(other.id) && createdAt.equals(other.createdAt) && projectId.equals(other.projectId) && environment.equals(other.environment) && traces.equals(other.traces) && deprecation.equals(other.deprecation);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.createdAt, this.projectId, this.environment, this.traces);
+    return Objects.hash(this.id, this.createdAt, this.projectId, this.environment, this.traces, this.deprecation);
   }
 
   @java.lang.Override
@@ -144,6 +154,10 @@ public final class SessionWithTraces implements ISession {
     _FinalStage addTraces(Trace traces);
 
     _FinalStage addAllTraces(List<Trace> traces);
+
+    _FinalStage deprecation(Optional<Deprecation> deprecation);
+
+    _FinalStage deprecation(Deprecation deprecation);
   }
 
   @JsonIgnoreProperties(
@@ -157,6 +171,8 @@ public final class SessionWithTraces implements ISession {
     private String projectId;
 
     private String environment;
+
+    private Optional<Deprecation> deprecation = Optional.empty();
 
     private List<Trace> traces = new ArrayList<>();
 
@@ -173,6 +189,7 @@ public final class SessionWithTraces implements ISession {
       projectId(other.getProjectId());
       environment(other.getEnvironment());
       traces(other.getTraces());
+      deprecation(other.getDeprecation());
       return this;
     }
 
@@ -199,13 +216,28 @@ public final class SessionWithTraces implements ISession {
 
     /**
      * <p>The environment from which this session originated.</p>
-     * <p>The environment from which this session originated.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
     @JsonSetter("environment")
     public _FinalStage environment(@NotNull String environment) {
       this.environment = Objects.requireNonNull(environment, "environment must not be null");
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage deprecation(Deprecation deprecation) {
+      this.deprecation = Optional.ofNullable(deprecation);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "_deprecation",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage deprecation(Optional<Deprecation> deprecation) {
+      this.deprecation = deprecation;
       return this;
     }
 
@@ -238,7 +270,7 @@ public final class SessionWithTraces implements ISession {
 
     @java.lang.Override
     public SessionWithTraces build() {
-      return new SessionWithTraces(id, createdAt, projectId, environment, traces, additionalProperties);
+      return new SessionWithTraces(id, createdAt, projectId, environment, traces, deprecation, additionalProperties);
     }
 
     @java.lang.Override

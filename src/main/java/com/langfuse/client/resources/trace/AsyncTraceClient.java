@@ -10,6 +10,7 @@ import java.lang.String;
 import java.util.concurrent.CompletableFuture;
 import com.langfuse.client.resources.commons.types.TraceWithFullDetails;
 import com.langfuse.client.resources.trace.requests.DeleteTracesRequest;
+import com.langfuse.client.resources.trace.requests.GetTraceRequest;
 import com.langfuse.client.resources.trace.requests.GetTracesRequest;
 import com.langfuse.client.resources.trace.types.DeleteTraceResponse;
 import com.langfuse.client.resources.trace.types.Traces;
@@ -44,6 +45,21 @@ public class AsyncTraceClient {
   public CompletableFuture<TraceWithFullDetails> get(String traceId,
       RequestOptions requestOptions) {
     return this.rawClient.get(traceId, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Get a specific trace
+   */
+  public CompletableFuture<TraceWithFullDetails> get(String traceId, GetTraceRequest request) {
+    return this.rawClient.get(traceId, request).thenApply(response -> response.body());
+  }
+
+  /**
+   * Get a specific trace
+   */
+  public CompletableFuture<TraceWithFullDetails> get(String traceId, GetTraceRequest request,
+      RequestOptions requestOptions) {
+    return this.rawClient.get(traceId, request, requestOptions).thenApply(response -> response.body());
   }
 
   /**

@@ -9,6 +9,7 @@ import com.langfuse.client.core.RequestOptions;
 import java.lang.String;
 import com.langfuse.client.resources.commons.types.TraceWithFullDetails;
 import com.langfuse.client.resources.trace.requests.DeleteTracesRequest;
+import com.langfuse.client.resources.trace.requests.GetTraceRequest;
 import com.langfuse.client.resources.trace.requests.GetTracesRequest;
 import com.langfuse.client.resources.trace.types.DeleteTraceResponse;
 import com.langfuse.client.resources.trace.types.Traces;
@@ -42,6 +43,21 @@ public class TraceClient {
    */
   public TraceWithFullDetails get(String traceId, RequestOptions requestOptions) {
     return this.rawClient.get(traceId, requestOptions).body();
+  }
+
+  /**
+   * Get a specific trace
+   */
+  public TraceWithFullDetails get(String traceId, GetTraceRequest request) {
+    return this.rawClient.get(traceId, request).body();
+  }
+
+  /**
+   * Get a specific trace
+   */
+  public TraceWithFullDetails get(String traceId, GetTraceRequest request,
+      RequestOptions requestOptions) {
+    return this.rawClient.get(traceId, request, requestOptions).body();
   }
 
   /**

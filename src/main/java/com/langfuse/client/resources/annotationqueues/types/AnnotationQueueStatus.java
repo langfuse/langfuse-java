@@ -10,9 +10,9 @@ import java.lang.Object;
 import java.lang.String;
 
 public final class AnnotationQueueStatus {
-  public static final AnnotationQueueStatus COMPLETED = new AnnotationQueueStatus(Value.COMPLETED, "COMPLETED");
-
   public static final AnnotationQueueStatus PENDING = new AnnotationQueueStatus(Value.PENDING, "PENDING");
+
+  public static final AnnotationQueueStatus COMPLETED = new AnnotationQueueStatus(Value.COMPLETED, "COMPLETED");
 
   private final Value value;
 
@@ -46,10 +46,10 @@ public final class AnnotationQueueStatus {
 
   public <T> T visit(Visitor<T> visitor) {
     switch (value) {
-      case COMPLETED:
-        return visitor.visitCompleted();
       case PENDING:
         return visitor.visitPending();
+      case COMPLETED:
+        return visitor.visitCompleted();
       case UNKNOWN:
       default:
         return visitor.visitUnknown(string);
@@ -61,10 +61,10 @@ public final class AnnotationQueueStatus {
   )
   public static AnnotationQueueStatus valueOf(String value) {
     switch (value) {
-      case "COMPLETED":
-        return COMPLETED;
       case "PENDING":
         return PENDING;
+      case "COMPLETED":
+        return COMPLETED;
       default:
         return new AnnotationQueueStatus(Value.UNKNOWN, value);
     }

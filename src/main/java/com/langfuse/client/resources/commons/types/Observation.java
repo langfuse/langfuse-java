@@ -693,7 +693,6 @@ public final class Observation implements IObservation {
 
     /**
      * <p>The unique identifier of the observation</p>
-     * <p>The unique identifier of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -704,7 +703,6 @@ public final class Observation implements IObservation {
     }
 
     /**
-     * <p>The type of the observation</p>
      * <p>The type of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -717,7 +715,6 @@ public final class Observation implements IObservation {
 
     /**
      * <p>The start time of the observation</p>
-     * <p>The start time of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -728,7 +725,6 @@ public final class Observation implements IObservation {
     }
 
     /**
-     * <p>The parameters of the model used for the observation</p>
      * <p>The parameters of the model used for the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -741,7 +737,6 @@ public final class Observation implements IObservation {
 
     /**
      * <p>The input data of the observation</p>
-     * <p>The input data of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -752,7 +747,6 @@ public final class Observation implements IObservation {
     }
 
     /**
-     * <p>Additional metadata of the observation</p>
      * <p>Additional metadata of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -765,7 +759,6 @@ public final class Observation implements IObservation {
 
     /**
      * <p>The output data of the observation</p>
-     * <p>The output data of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -776,7 +769,6 @@ public final class Observation implements IObservation {
     }
 
     /**
-     * <p>(Deprecated. Use usageDetails and costDetails instead.) The usage data of the observation</p>
      * <p>(Deprecated. Use usageDetails and costDetails instead.) The usage data of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -789,7 +781,6 @@ public final class Observation implements IObservation {
 
     /**
      * <p>The level of the observation</p>
-     * <p>The level of the observation</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -800,7 +791,6 @@ public final class Observation implements IObservation {
     }
 
     /**
-     * <p>The environment from which this observation originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * <p>The environment from which this observation originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

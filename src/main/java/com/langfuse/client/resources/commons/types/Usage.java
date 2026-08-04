@@ -254,7 +254,6 @@ public final class Usage {
 
     /**
      * <p>Number of input units (e.g. tokens)</p>
-     * <p>Number of input units (e.g. tokens)</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -266,7 +265,6 @@ public final class Usage {
 
     /**
      * <p>Number of output units (e.g. tokens)</p>
-     * <p>Number of output units (e.g. tokens)</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -277,7 +275,6 @@ public final class Usage {
     }
 
     /**
-     * <p>Defaults to input+output if not set</p>
      * <p>Defaults to input+output if not set</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

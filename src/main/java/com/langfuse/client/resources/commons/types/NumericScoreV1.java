@@ -502,7 +502,6 @@ public final class NumericScoreV1 implements IBaseScoreV1 {
 
     /**
      * <p>Metadata associated with the score</p>
-     * <p>Metadata associated with the score</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -514,7 +513,6 @@ public final class NumericScoreV1 implements IBaseScoreV1 {
 
     /**
      * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
-     * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -525,7 +523,6 @@ public final class NumericScoreV1 implements IBaseScoreV1 {
     }
 
     /**
-     * <p>The numeric value of the score</p>
      * <p>The numeric value of the score</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

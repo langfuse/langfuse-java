@@ -235,8 +235,6 @@ public final class PricingTierInput {
     /**
      * <p>Name of the pricing tier for display and identification purposes.</p>
      * <p>Must be unique within the model. Common patterns: &quot;Standard&quot;, &quot;High Volume Tier&quot;, &quot;Extended Context&quot;</p>
-     * <p>Name of the pricing tier for display and identification purposes.</p>
-     * <p>Must be unique within the model. Common patterns: &quot;Standard&quot;, &quot;High Volume Tier&quot;, &quot;Extended Context&quot;</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -255,14 +253,6 @@ public final class PricingTierInput {
      * <li>Must have empty conditions array (conditions=[])</li>
      * </ul>
      * <p>The default tier acts as a fallback when no conditional tiers match.</p>
-     * <p>Whether this is the default tier. Exactly one tier per model must be marked as default.</p>
-     * <p>Requirements for default tier:</p>
-     * <ul>
-     * <li>Must have isDefault=true</li>
-     * <li>Must have priority=0</li>
-     * <li>Must have empty conditions array (conditions=[])</li>
-     * </ul>
-     * <p>The default tier acts as a fallback when no conditional tiers match.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -273,9 +263,6 @@ public final class PricingTierInput {
     }
 
     /**
-     * <p>Priority for tier matching evaluation. Lower numbers = higher priority (evaluated first).</p>
-     * <p>Must be unique within the model. The default tier must have priority=0.
-     * Conditional tiers should use priority 1, 2, 3, etc. based on their specificity.</p>
      * <p>Priority for tier matching evaluation. Lower numbers = higher priority (evaluated first).</p>
      * <p>Must be unique within the model. The default tier must have priority=0.
      * Conditional tiers should use priority 1, 2, 3, etc. based on their specificity.</p>

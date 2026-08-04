@@ -376,7 +376,6 @@ public final class ScoreConfig {
 
     /**
      * <p>Whether the score config is archived. Defaults to false</p>
-     * <p>Whether the score config is archived. Defaults to false</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override

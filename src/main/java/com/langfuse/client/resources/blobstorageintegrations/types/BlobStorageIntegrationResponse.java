@@ -6,17 +6,21 @@ package com.langfuse.client.resources.blobstorageintegrations.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,15 +53,25 @@ public final class BlobStorageIntegrationResponse {
 
   private final boolean forcePathStyle;
 
-  private final BlobStorageIntegrationFileType fileType;
+  private final BlobStorageIntegrationFileTypeResponse fileType;
 
   private final BlobStorageExportMode exportMode;
 
   private final Optional<OffsetDateTime> exportStartDate;
 
+  private final boolean compressed;
+
+  private final BlobStorageExportSource exportSource;
+
+  private final Optional<List<BlobStorageExportFieldGroup>> exportFieldGroups;
+
   private final Optional<OffsetDateTime> nextSyncAt;
 
   private final Optional<OffsetDateTime> lastSyncAt;
+
+  private final Optional<String> lastError;
+
+  private final Optional<OffsetDateTime> lastErrorAt;
 
   private final OffsetDateTime createdAt;
 
@@ -68,11 +82,13 @@ public final class BlobStorageIntegrationResponse {
   private BlobStorageIntegrationResponse(String id, String projectId,
       BlobStorageIntegrationType type, String bucketName, Optional<String> endpoint, String region,
       Optional<String> accessKeyId, String prefix, BlobStorageExportFrequency exportFrequency,
-      boolean enabled, boolean forcePathStyle, BlobStorageIntegrationFileType fileType,
+      boolean enabled, boolean forcePathStyle, BlobStorageIntegrationFileTypeResponse fileType,
       BlobStorageExportMode exportMode, Optional<OffsetDateTime> exportStartDate,
+      boolean compressed, BlobStorageExportSource exportSource,
+      Optional<List<BlobStorageExportFieldGroup>> exportFieldGroups,
       Optional<OffsetDateTime> nextSyncAt, Optional<OffsetDateTime> lastSyncAt,
-      OffsetDateTime createdAt, OffsetDateTime updatedAt,
-      Map<String, Object> additionalProperties) {
+      Optional<String> lastError, Optional<OffsetDateTime> lastErrorAt, OffsetDateTime createdAt,
+      OffsetDateTime updatedAt, Map<String, Object> additionalProperties) {
     this.id = id;
     this.projectId = projectId;
     this.type = type;
@@ -87,8 +103,13 @@ public final class BlobStorageIntegrationResponse {
     this.fileType = fileType;
     this.exportMode = exportMode;
     this.exportStartDate = exportStartDate;
+    this.compressed = compressed;
+    this.exportSource = exportSource;
+    this.exportFieldGroups = exportFieldGroups;
     this.nextSyncAt = nextSyncAt;
     this.lastSyncAt = lastSyncAt;
+    this.lastError = lastError;
+    this.lastErrorAt = lastErrorAt;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.additionalProperties = additionalProperties;
@@ -114,8 +135,11 @@ public final class BlobStorageIntegrationResponse {
     return bucketName;
   }
 
-  @JsonProperty("endpoint")
+  @JsonIgnore
   public Optional<String> getEndpoint() {
+    if (endpoint == null) {
+      return Optional.empty();
+    }
     return endpoint;
   }
 
@@ -124,8 +148,11 @@ public final class BlobStorageIntegrationResponse {
     return region;
   }
 
-  @JsonProperty("accessKeyId")
+  @JsonIgnore
   public Optional<String> getAccessKeyId() {
+    if (accessKeyId == null) {
+      return Optional.empty();
+    }
     return accessKeyId;
   }
 
@@ -150,7 +177,7 @@ public final class BlobStorageIntegrationResponse {
   }
 
   @JsonProperty("fileType")
-  public BlobStorageIntegrationFileType getFileType() {
+  public BlobStorageIntegrationFileTypeResponse getFileType() {
     return fileType;
   }
 
@@ -159,19 +186,65 @@ public final class BlobStorageIntegrationResponse {
     return exportMode;
   }
 
-  @JsonProperty("exportStartDate")
+  @JsonIgnore
   public Optional<OffsetDateTime> getExportStartDate() {
+    if (exportStartDate == null) {
+      return Optional.empty();
+    }
     return exportStartDate;
   }
 
-  @JsonProperty("nextSyncAt")
+  @JsonProperty("compressed")
+  public boolean getCompressed() {
+    return compressed;
+  }
+
+  @JsonProperty("exportSource")
+  public BlobStorageExportSource getExportSource() {
+    return exportSource;
+  }
+
+  /**
+   * @return Field groups included in each exported observation row. An empty list is treated as all groups during export.
+   */
+  @JsonIgnore
+  public Optional<List<BlobStorageExportFieldGroup>> getExportFieldGroups() {
+    if (exportFieldGroups == null) {
+      return Optional.empty();
+    }
+    return exportFieldGroups;
+  }
+
+  @JsonIgnore
   public Optional<OffsetDateTime> getNextSyncAt() {
+    if (nextSyncAt == null) {
+      return Optional.empty();
+    }
     return nextSyncAt;
   }
 
-  @JsonProperty("lastSyncAt")
+  @JsonIgnore
   public Optional<OffsetDateTime> getLastSyncAt() {
+    if (lastSyncAt == null) {
+      return Optional.empty();
+    }
     return lastSyncAt;
+  }
+
+  @JsonIgnore
+  public Optional<String> getLastError() {
+    if (lastError == null) {
+      return Optional.empty();
+    }
+    return lastError;
+  }
+
+  @JsonIgnore
+  public Optional<OffsetDateTime> getLastErrorAt() {
+    if (lastErrorAt == null) {
+      return Optional.empty();
+    }
+    return lastErrorAt;
   }
 
   @JsonProperty("createdAt")
@@ -182,6 +255,78 @@ public final class BlobStorageIntegrationResponse {
   @JsonProperty("updatedAt")
   public OffsetDateTime getUpdatedAt() {
     return updatedAt;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("endpoint")
+  private Optional<String> _getEndpoint() {
+    return endpoint;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("accessKeyId")
+  private Optional<String> _getAccessKeyId() {
+    return accessKeyId;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("exportStartDate")
+  private Optional<OffsetDateTime> _getExportStartDate() {
+    return exportStartDate;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("exportFieldGroups")
+  private Optional<List<BlobStorageExportFieldGroup>> _getExportFieldGroups() {
+    return exportFieldGroups;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("nextSyncAt")
+  private Optional<OffsetDateTime> _getNextSyncAt() {
+    return nextSyncAt;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("lastSyncAt")
+  private Optional<OffsetDateTime> _getLastSyncAt() {
+    return lastSyncAt;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("lastError")
+  private Optional<String> _getLastError() {
+    return lastError;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("lastErrorAt")
+  private Optional<OffsetDateTime> _getLastErrorAt() {
+    return lastErrorAt;
   }
 
   @java.lang.Override
@@ -196,12 +341,12 @@ public final class BlobStorageIntegrationResponse {
   }
 
   private boolean equalTo(BlobStorageIntegrationResponse other) {
-    return id.equals(other.id) && projectId.equals(other.projectId) && type.equals(other.type) && bucketName.equals(other.bucketName) && endpoint.equals(other.endpoint) && region.equals(other.region) && accessKeyId.equals(other.accessKeyId) && prefix.equals(other.prefix) && exportFrequency.equals(other.exportFrequency) && enabled == other.enabled && forcePathStyle == other.forcePathStyle && fileType.equals(other.fileType) && exportMode.equals(other.exportMode) && exportStartDate.equals(other.exportStartDate) && nextSyncAt.equals(other.nextSyncAt) && lastSyncAt.equals(other.lastSyncAt) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt);
+    return id.equals(other.id) && projectId.equals(other.projectId) && type.equals(other.type) && bucketName.equals(other.bucketName) && endpoint.equals(other.endpoint) && region.equals(other.region) && accessKeyId.equals(other.accessKeyId) && prefix.equals(other.prefix) && exportFrequency.equals(other.exportFrequency) && enabled == other.enabled && forcePathStyle == other.forcePathStyle && fileType.equals(other.fileType) && exportMode.equals(other.exportMode) && exportStartDate.equals(other.exportStartDate) && compressed == other.compressed && exportSource.equals(other.exportSource) && exportFieldGroups.equals(other.exportFieldGroups) && nextSyncAt.equals(other.nextSyncAt) && lastSyncAt.equals(other.lastSyncAt) && lastError.equals(other.lastError) && lastErrorAt.equals(other.lastErrorAt) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.projectId, this.type, this.bucketName, this.endpoint, this.region, this.accessKeyId, this.prefix, this.exportFrequency, this.enabled, this.forcePathStyle, this.fileType, this.exportMode, this.exportStartDate, this.nextSyncAt, this.lastSyncAt, this.createdAt, this.updatedAt);
+    return Objects.hash(this.id, this.projectId, this.type, this.bucketName, this.endpoint, this.region, this.accessKeyId, this.prefix, this.exportFrequency, this.enabled, this.forcePathStyle, this.fileType, this.exportMode, this.exportStartDate, this.compressed, this.exportSource, this.exportFieldGroups, this.nextSyncAt, this.lastSyncAt, this.lastError, this.lastErrorAt, this.createdAt, this.updatedAt);
   }
 
   @java.lang.Override
@@ -252,11 +397,19 @@ public final class BlobStorageIntegrationResponse {
   }
 
   public interface FileTypeStage {
-    ExportModeStage fileType(@NotNull BlobStorageIntegrationFileType fileType);
+    ExportModeStage fileType(@NotNull BlobStorageIntegrationFileTypeResponse fileType);
   }
 
   public interface ExportModeStage {
-    CreatedAtStage exportMode(@NotNull BlobStorageExportMode exportMode);
+    CompressedStage exportMode(@NotNull BlobStorageExportMode exportMode);
+  }
+
+  public interface CompressedStage {
+    ExportSourceStage compressed(boolean compressed);
+  }
+
+  public interface ExportSourceStage {
+    CreatedAtStage exportSource(@NotNull BlobStorageExportSource exportSource);
   }
 
   public interface CreatedAtStage {
@@ -278,27 +431,58 @@ public final class BlobStorageIntegrationResponse {
 
     _FinalStage endpoint(String endpoint);
 
+    _FinalStage endpoint(Nullable<String> endpoint);
+
     _FinalStage accessKeyId(Optional<String> accessKeyId);
 
     _FinalStage accessKeyId(String accessKeyId);
+
+    _FinalStage accessKeyId(Nullable<String> accessKeyId);
 
     _FinalStage exportStartDate(Optional<OffsetDateTime> exportStartDate);
 
     _FinalStage exportStartDate(OffsetDateTime exportStartDate);
 
+    _FinalStage exportStartDate(Nullable<OffsetDateTime> exportStartDate);
+
+    /**
+     * <p>Field groups included in each exported observation row. An empty list is treated as all groups during export.</p>
+     */
+    _FinalStage exportFieldGroups(Optional<List<BlobStorageExportFieldGroup>> exportFieldGroups);
+
+    _FinalStage exportFieldGroups(List<BlobStorageExportFieldGroup> exportFieldGroups);
+
+    _FinalStage exportFieldGroups(Nullable<List<BlobStorageExportFieldGroup>> exportFieldGroups);
+
     _FinalStage nextSyncAt(Optional<OffsetDateTime> nextSyncAt);
 
     _FinalStage nextSyncAt(OffsetDateTime nextSyncAt);
 
+    _FinalStage nextSyncAt(Nullable<OffsetDateTime> nextSyncAt);
+
     _FinalStage lastSyncAt(Optional<OffsetDateTime> lastSyncAt);
 
     _FinalStage lastSyncAt(OffsetDateTime lastSyncAt);
+
+    _FinalStage lastSyncAt(Nullable<OffsetDateTime> lastSyncAt);
+
+    _FinalStage lastError(Optional<String> lastError);
+
+    _FinalStage lastError(String lastError);
+
+    _FinalStage lastError(Nullable<String> lastError);
+
+    _FinalStage lastErrorAt(Optional<OffsetDateTime> lastErrorAt);
+
+    _FinalStage lastErrorAt(OffsetDateTime lastErrorAt);
+
+    _FinalStage lastErrorAt(Nullable<OffsetDateTime> lastErrorAt);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements IdStage, ProjectIdStage, TypeStage, BucketNameStage, RegionStage, PrefixStage, ExportFrequencyStage, EnabledStage, ForcePathStyleStage, FileTypeStage, ExportModeStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
+  public static final class Builder implements IdStage, ProjectIdStage, TypeStage, BucketNameStage, RegionStage, PrefixStage, ExportFrequencyStage, EnabledStage, ForcePathStyleStage, FileTypeStage, ExportModeStage, CompressedStage, ExportSourceStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
     private String id;
 
     private String projectId;
@@ -317,17 +501,27 @@ public final class BlobStorageIntegrationResponse {
 
     private boolean forcePathStyle;
 
-    private BlobStorageIntegrationFileType fileType;
+    private BlobStorageIntegrationFileTypeResponse fileType;
 
     private BlobStorageExportMode exportMode;
+
+    private boolean compressed;
+
+    private BlobStorageExportSource exportSource;
 
     private OffsetDateTime createdAt;
 
     private OffsetDateTime updatedAt;
 
+    private Optional<OffsetDateTime> lastErrorAt = Optional.empty();
+
+    private Optional<String> lastError = Optional.empty();
+
     private Optional<OffsetDateTime> lastSyncAt = Optional.empty();
 
     private Optional<OffsetDateTime> nextSyncAt = Optional.empty();
+
+    private Optional<List<BlobStorageExportFieldGroup>> exportFieldGroups = Optional.empty();
 
     private Optional<OffsetDateTime> exportStartDate = Optional.empty();
 
@@ -357,8 +551,13 @@ public final class BlobStorageIntegrationResponse {
       fileType(other.getFileType());
       exportMode(other.getExportMode());
       exportStartDate(other.getExportStartDate());
+      compressed(other.getCompressed());
+      exportSource(other.getExportSource());
+      exportFieldGroups(other.getExportFieldGroups());
       nextSyncAt(other.getNextSyncAt());
       lastSyncAt(other.getLastSyncAt());
+      lastError(other.getLastError());
+      lastErrorAt(other.getLastErrorAt());
       createdAt(other.getCreatedAt());
       updatedAt(other.getUpdatedAt());
       return this;
@@ -429,15 +628,29 @@ public final class BlobStorageIntegrationResponse {
 
     @java.lang.Override
     @JsonSetter("fileType")
-    public ExportModeStage fileType(@NotNull BlobStorageIntegrationFileType fileType) {
+    public ExportModeStage fileType(@NotNull BlobStorageIntegrationFileTypeResponse fileType) {
       this.fileType = Objects.requireNonNull(fileType, "fileType must not be null");
       return this;
     }
 
     @java.lang.Override
     @JsonSetter("exportMode")
-    public CreatedAtStage exportMode(@NotNull BlobStorageExportMode exportMode) {
+    public CompressedStage exportMode(@NotNull BlobStorageExportMode exportMode) {
       this.exportMode = Objects.requireNonNull(exportMode, "exportMode must not be null");
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter("compressed")
+    public ExportSourceStage compressed(boolean compressed) {
+      this.compressed = compressed;
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter("exportSource")
+    public CreatedAtStage exportSource(@NotNull BlobStorageExportSource exportSource) {
+      this.exportSource = Objects.requireNonNull(exportSource, "exportSource must not be null");
       return this;
     }
 
@@ -452,6 +665,80 @@ public final class BlobStorageIntegrationResponse {
     @JsonSetter("updatedAt")
     public _FinalStage updatedAt(@NotNull OffsetDateTime updatedAt) {
       this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage lastErrorAt(Nullable<OffsetDateTime> lastErrorAt) {
+      if (lastErrorAt.isNull()) {
+        this.lastErrorAt = null;
+      }
+      else if (lastErrorAt.isEmpty()) {
+        this.lastErrorAt = Optional.empty();
+      }
+      else {
+        this.lastErrorAt = Optional.of(lastErrorAt.get());
+      }
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage lastErrorAt(OffsetDateTime lastErrorAt) {
+      this.lastErrorAt = Optional.ofNullable(lastErrorAt);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "lastErrorAt",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage lastErrorAt(Optional<OffsetDateTime> lastErrorAt) {
+      this.lastErrorAt = lastErrorAt;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage lastError(Nullable<String> lastError) {
+      if (lastError.isNull()) {
+        this.lastError = null;
+      }
+      else if (lastError.isEmpty()) {
+        this.lastError = Optional.empty();
+      }
+      else {
+        this.lastError = Optional.of(lastError.get());
+      }
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage lastError(String lastError) {
+      this.lastError = Optional.ofNullable(lastError);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "lastError",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage lastError(Optional<String> lastError) {
+      this.lastError = lastError;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage lastSyncAt(Nullable<OffsetDateTime> lastSyncAt) {
+      if (lastSyncAt.isNull()) {
+        this.lastSyncAt = null;
+      }
+      else if (lastSyncAt.isEmpty()) {
+        this.lastSyncAt = Optional.empty();
+      }
+      else {
+        this.lastSyncAt = Optional.of(lastSyncAt.get());
+      }
       return this;
     }
 
@@ -472,6 +759,20 @@ public final class BlobStorageIntegrationResponse {
     }
 
     @java.lang.Override
+    public _FinalStage nextSyncAt(Nullable<OffsetDateTime> nextSyncAt) {
+      if (nextSyncAt.isNull()) {
+        this.nextSyncAt = null;
+      }
+      else if (nextSyncAt.isEmpty()) {
+        this.nextSyncAt = Optional.empty();
+      }
+      else {
+        this.nextSyncAt = Optional.of(nextSyncAt.get());
+      }
+      return this;
+    }
+
+    @java.lang.Override
     public _FinalStage nextSyncAt(OffsetDateTime nextSyncAt) {
       this.nextSyncAt = Optional.ofNullable(nextSyncAt);
       return this;
@@ -484,6 +785,63 @@ public final class BlobStorageIntegrationResponse {
     )
     public _FinalStage nextSyncAt(Optional<OffsetDateTime> nextSyncAt) {
       this.nextSyncAt = nextSyncAt;
+      return this;
+    }
+
+    /**
+     * <p>Field groups included in each exported observation row. An empty list is treated as all groups during export.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage exportFieldGroups(
+        Nullable<List<BlobStorageExportFieldGroup>> exportFieldGroups) {
+      if (exportFieldGroups.isNull()) {
+        this.exportFieldGroups = null;
+      }
+      else if (exportFieldGroups.isEmpty()) {
+        this.exportFieldGroups = Optional.empty();
+      }
+      else {
+        this.exportFieldGroups = Optional.of(exportFieldGroups.get());
+      }
+      return this;
+    }
+
+    /**
+     * <p>Field groups included in each exported observation row. An empty list is treated as all groups during export.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage exportFieldGroups(List<BlobStorageExportFieldGroup> exportFieldGroups) {
+      this.exportFieldGroups = Optional.ofNullable(exportFieldGroups);
+      return this;
+    }
+
+    /**
+     * <p>Field groups included in each exported observation row. An empty list is treated as all groups during export.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "exportFieldGroups",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage exportFieldGroups(
+        Optional<List<BlobStorageExportFieldGroup>> exportFieldGroups) {
+      this.exportFieldGroups = exportFieldGroups;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage exportStartDate(Nullable<OffsetDateTime> exportStartDate) {
+      if (exportStartDate.isNull()) {
+        this.exportStartDate = null;
+      }
+      else if (exportStartDate.isEmpty()) {
+        this.exportStartDate = Optional.empty();
+      }
+      else {
+        this.exportStartDate = Optional.of(exportStartDate.get());
+      }
       return this;
     }
 
@@ -504,6 +862,20 @@ public final class BlobStorageIntegrationResponse {
     }
 
     @java.lang.Override
+    public _FinalStage accessKeyId(Nullable<String> accessKeyId) {
+      if (accessKeyId.isNull()) {
+        this.accessKeyId = null;
+      }
+      else if (accessKeyId.isEmpty()) {
+        this.accessKeyId = Optional.empty();
+      }
+      else {
+        this.accessKeyId = Optional.of(accessKeyId.get());
+      }
+      return this;
+    }
+
+    @java.lang.Override
     public _FinalStage accessKeyId(String accessKeyId) {
       this.accessKeyId = Optional.ofNullable(accessKeyId);
       return this;
@@ -516,6 +888,20 @@ public final class BlobStorageIntegrationResponse {
     )
     public _FinalStage accessKeyId(Optional<String> accessKeyId) {
       this.accessKeyId = accessKeyId;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage endpoint(Nullable<String> endpoint) {
+      if (endpoint.isNull()) {
+        this.endpoint = null;
+      }
+      else if (endpoint.isEmpty()) {
+        this.endpoint = Optional.empty();
+      }
+      else {
+        this.endpoint = Optional.of(endpoint.get());
+      }
       return this;
     }
 
@@ -537,7 +923,7 @@ public final class BlobStorageIntegrationResponse {
 
     @java.lang.Override
     public BlobStorageIntegrationResponse build() {
-      return new BlobStorageIntegrationResponse(id, projectId, type, bucketName, endpoint, region, accessKeyId, prefix, exportFrequency, enabled, forcePathStyle, fileType, exportMode, exportStartDate, nextSyncAt, lastSyncAt, createdAt, updatedAt, additionalProperties);
+      return new BlobStorageIntegrationResponse(id, projectId, type, bucketName, endpoint, region, accessKeyId, prefix, exportFrequency, enabled, forcePathStyle, fileType, exportMode, exportStartDate, compressed, exportSource, exportFieldGroups, nextSyncAt, lastSyncAt, lastError, lastErrorAt, createdAt, updatedAt, additionalProperties);
     }
 
     @java.lang.Override

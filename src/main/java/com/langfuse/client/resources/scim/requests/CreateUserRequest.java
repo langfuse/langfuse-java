@@ -199,7 +199,6 @@ public final class CreateUserRequest {
 
     /**
      * <p>User's email address (required)</p>
-     * <p>User's email address (required)</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -210,7 +209,6 @@ public final class CreateUserRequest {
     }
 
     /**
-     * <p>User's name information</p>
      * <p>User's name information</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

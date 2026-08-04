@@ -6,7 +6,9 @@ package com.langfuse.client.resources.llmconnections;
 
 import com.langfuse.client.core.ClientOptions;
 import com.langfuse.client.core.RequestOptions;
+import java.lang.String;
 import com.langfuse.client.resources.llmconnections.requests.GetLlmConnectionsRequest;
+import com.langfuse.client.resources.llmconnections.types.DeleteLlmConnectionResponse;
 import com.langfuse.client.resources.llmconnections.types.LlmConnection;
 import com.langfuse.client.resources.llmconnections.types.PaginatedLlmConnections;
 import com.langfuse.client.resources.llmconnections.types.UpsertLlmConnectionRequest;
@@ -69,5 +71,19 @@ public class LlmConnectionsClient {
    */
   public LlmConnection upsert(UpsertLlmConnectionRequest request, RequestOptions requestOptions) {
     return this.rawClient.upsert(request, requestOptions).body();
+  }
+
+  /**
+   * Delete an LLM connection by id. Evaluators that depend on the deleted connection are automatically paused.
+   */
+  public DeleteLlmConnectionResponse delete(String id) {
+    return this.rawClient.delete(id).body();
+  }
+
+  /**
+   * Delete an LLM connection by id. Evaluators that depend on the deleted connection are automatically paused.
+   */
+  public DeleteLlmConnectionResponse delete(String id, RequestOptions requestOptions) {
+    return this.rawClient.delete(id, requestOptions).body();
   }
 }

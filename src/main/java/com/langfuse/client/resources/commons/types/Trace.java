@@ -456,7 +456,6 @@ public final class Trace implements ITrace {
 
     /**
      * <p>The unique identifier of a trace</p>
-     * <p>The unique identifier of a trace</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -467,7 +466,6 @@ public final class Trace implements ITrace {
     }
 
     /**
-     * <p>The timestamp when the trace was created</p>
      * <p>The timestamp when the trace was created</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -480,7 +478,6 @@ public final class Trace implements ITrace {
 
     /**
      * <p>Public traces are accessible via url without login</p>
-     * <p>Public traces are accessible via url without login</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -491,7 +488,6 @@ public final class Trace implements ITrace {
     }
 
     /**
-     * <p>The environment from which this trace originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * <p>The environment from which this trace originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

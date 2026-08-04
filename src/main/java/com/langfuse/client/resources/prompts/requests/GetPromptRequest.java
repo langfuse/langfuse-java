@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.langfuse.client.core.ObjectMappers;
+import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
@@ -30,12 +31,15 @@ public final class GetPromptRequest {
 
   private final Optional<String> label;
 
+  private final Optional<Boolean> resolve;
+
   private final Map<String, Object> additionalProperties;
 
   private GetPromptRequest(Optional<Integer> version, Optional<String> label,
-      Map<String, Object> additionalProperties) {
+      Optional<Boolean> resolve, Map<String, Object> additionalProperties) {
     this.version = version;
     this.label = label;
+    this.resolve = resolve;
     this.additionalProperties = additionalProperties;
   }
 
@@ -55,6 +59,14 @@ public final class GetPromptRequest {
     return label;
   }
 
+  /**
+   * @return Resolve prompt dependencies before returning the prompt. Defaults to <code>true</code>. Set to <code>false</code> to return the raw stored prompt with dependency tags intact. This bypasses prompt caching and is intended for debugging or one-off jobs, not production runtime fetches.
+   */
+  @JsonProperty("resolve")
+  public Optional<Boolean> getResolve() {
+    return resolve;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -67,12 +79,12 @@ public final class GetPromptRequest {
   }
 
   private boolean equalTo(GetPromptRequest other) {
-    return version.equals(other.version) && label.equals(other.label);
+    return version.equals(other.version) && label.equals(other.label) && resolve.equals(other.resolve);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.version, this.label);
+    return Objects.hash(this.version, this.label, this.resolve);
   }
 
   @java.lang.Override
@@ -92,6 +104,8 @@ public final class GetPromptRequest {
 
     private Optional<String> label = Optional.empty();
 
+    private Optional<Boolean> resolve = Optional.empty();
+
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -101,6 +115,7 @@ public final class GetPromptRequest {
     public Builder from(GetPromptRequest other) {
       version(other.getVersion());
       label(other.getLabel());
+      resolve(other.getResolve());
       return this;
     }
 
@@ -138,8 +153,25 @@ public final class GetPromptRequest {
       return this;
     }
 
+    /**
+     * <p>Resolve prompt dependencies before returning the prompt. Defaults to <code>true</code>. Set to <code>false</code> to return the raw stored prompt with dependency tags intact. This bypasses prompt caching and is intended for debugging or one-off jobs, not production runtime fetches.</p>
+     */
+    @JsonSetter(
+        value = "resolve",
+        nulls = Nulls.SKIP
+    )
+    public Builder resolve(Optional<Boolean> resolve) {
+      this.resolve = resolve;
+      return this;
+    }
+
+    public Builder resolve(Boolean resolve) {
+      this.resolve = Optional.ofNullable(resolve);
+      return this;
+    }
+
     public GetPromptRequest build() {
-      return new GetPromptRequest(version, label, additionalProperties);
+      return new GetPromptRequest(version, label, resolve, additionalProperties);
     }
 
     public Builder additionalProperty(String key, Object value) {

@@ -176,7 +176,6 @@ public final class PatchMediaBody {
 
     /**
      * <p>The date and time when the media record was uploaded</p>
-     * <p>The date and time when the media record was uploaded</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -187,7 +186,6 @@ public final class PatchMediaBody {
     }
 
     /**
-     * <p>The HTTP status code of the upload</p>
      * <p>The HTTP status code of the upload</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

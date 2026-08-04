@@ -6,12 +6,15 @@ package com.langfuse.client.resources.annotationqueues.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.langfuse.client.core.Nullable;
+import com.langfuse.client.core.NullableNonemptyFilter;
 import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
 import java.lang.String;
@@ -65,8 +68,11 @@ public final class AnnotationQueue {
     return name;
   }
 
-  @JsonProperty("description")
+  @JsonIgnore
   public Optional<String> getDescription() {
+    if (description == null) {
+      return Optional.empty();
+    }
     return description;
   }
 
@@ -83,6 +89,15 @@ public final class AnnotationQueue {
   @JsonProperty("updatedAt")
   public OffsetDateTime getUpdatedAt() {
     return updatedAt;
+  }
+
+  @JsonInclude(
+      value = JsonInclude.Include.CUSTOM,
+      valueFilter = NullableNonemptyFilter.class
+  )
+  @JsonProperty("description")
+  private Optional<String> _getDescription() {
+    return description;
   }
 
   @java.lang.Override
@@ -142,6 +157,8 @@ public final class AnnotationQueue {
     _FinalStage description(Optional<String> description);
 
     _FinalStage description(String description);
+
+    _FinalStage description(Nullable<String> description);
 
     _FinalStage scoreConfigIds(List<String> scoreConfigIds);
 
@@ -234,6 +251,20 @@ public final class AnnotationQueue {
       this.scoreConfigIds.clear();
       if (scoreConfigIds != null) {
         this.scoreConfigIds.addAll(scoreConfigIds);
+      }
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage description(Nullable<String> description) {
+      if (description.isNull()) {
+        this.description = null;
+      }
+      else if (description.isEmpty()) {
+        this.description = Optional.empty();
+      }
+      else {
+        this.description = Optional.of(description.get());
       }
       return this;
     }

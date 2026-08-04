@@ -12,15 +12,15 @@ import java.lang.String;
 public final class PricingTierOperator {
   public static final PricingTierOperator GTE = new PricingTierOperator(Value.GTE, "gte");
 
+  public static final PricingTierOperator GT = new PricingTierOperator(Value.GT, "gt");
+
   public static final PricingTierOperator LT = new PricingTierOperator(Value.LT, "lt");
 
-  public static final PricingTierOperator GT = new PricingTierOperator(Value.GT, "gt");
+  public static final PricingTierOperator NEQ = new PricingTierOperator(Value.NEQ, "neq");
 
   public static final PricingTierOperator EQ = new PricingTierOperator(Value.EQ, "eq");
 
   public static final PricingTierOperator LTE = new PricingTierOperator(Value.LTE, "lte");
-
-  public static final PricingTierOperator NEQ = new PricingTierOperator(Value.NEQ, "neq");
 
   private final Value value;
 
@@ -56,16 +56,16 @@ public final class PricingTierOperator {
     switch (value) {
       case GTE:
         return visitor.visitGte();
-      case LT:
-        return visitor.visitLt();
       case GT:
         return visitor.visitGt();
+      case LT:
+        return visitor.visitLt();
+      case NEQ:
+        return visitor.visitNeq();
       case EQ:
         return visitor.visitEq();
       case LTE:
         return visitor.visitLte();
-      case NEQ:
-        return visitor.visitNeq();
       case UNKNOWN:
       default:
         return visitor.visitUnknown(string);
@@ -79,16 +79,16 @@ public final class PricingTierOperator {
     switch (value) {
       case "gte":
         return GTE;
-      case "lt":
-        return LT;
       case "gt":
         return GT;
+      case "lt":
+        return LT;
+      case "neq":
+        return NEQ;
       case "eq":
         return EQ;
       case "lte":
         return LTE;
-      case "neq":
-        return NEQ;
       default:
         return new PricingTierOperator(Value.UNKNOWN, value);
     }

@@ -257,7 +257,6 @@ public final class PricingTier {
 
     /**
      * <p>Unique identifier for the pricing tier</p>
-     * <p>Unique identifier for the pricing tier</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -268,8 +267,6 @@ public final class PricingTier {
     }
 
     /**
-     * <p>Name of the pricing tier for display and identification purposes.</p>
-     * <p>Examples: &quot;Standard&quot;, &quot;High Volume Tier&quot;, &quot;Large Context&quot;, &quot;Extended Context Tier&quot;</p>
      * <p>Name of the pricing tier for display and identification purposes.</p>
      * <p>Examples: &quot;Standard&quot;, &quot;High Volume Tier&quot;, &quot;Large Context&quot;, &quot;Extended Context Tier&quot;</p>
      * @return Reference to {@code this} so that method calls can be chained together.
@@ -285,9 +282,6 @@ public final class PricingTier {
      * <p>Whether this is the default tier. Every model must have exactly one default tier with priority 0 and no conditions.</p>
      * <p>The default tier serves as a fallback when no conditional tiers match, ensuring cost calculation always succeeds.
      * It typically represents the base pricing for standard usage patterns.</p>
-     * <p>Whether this is the default tier. Every model must have exactly one default tier with priority 0 and no conditions.</p>
-     * <p>The default tier serves as a fallback when no conditional tiers match, ensuring cost calculation always succeeds.
-     * It typically represents the base pricing for standard usage patterns.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -298,15 +292,6 @@ public final class PricingTier {
     }
 
     /**
-     * <p>Priority for tier matching evaluation. Lower numbers = higher priority (evaluated first).</p>
-     * <p>The default tier must always have priority 0. Conditional tiers should have priority 1, 2, 3, etc.</p>
-     * <p>Example ordering:</p>
-     * <ul>
-     * <li>Priority 0: Default tier (no conditions, always matches as fallback)</li>
-     * <li>Priority 1: High usage tier (e.g., &gt;200K tokens)</li>
-     * <li>Priority 2: Medium usage tier (e.g., &gt;100K tokens)</li>
-     * </ul>
-     * <p>This ensures more specific conditions are checked before general ones.</p>
      * <p>Priority for tier matching evaluation. Lower numbers = higher priority (evaluated first).</p>
      * <p>The default tier must always have priority 0. Conditional tiers should have priority 1, 2, 3, etc.</p>
      * <p>Example ordering:</p>

@@ -16,11 +16,11 @@ public final class LlmAdapter {
 
   public static final LlmAdapter GOOGLE_AI_STUDIO = new LlmAdapter(Value.GOOGLE_AI_STUDIO, "google-ai-studio");
 
-  public static final LlmAdapter BEDROCK = new LlmAdapter(Value.BEDROCK, "bedrock");
-
   public static final LlmAdapter GOOGLE_VERTEX_AI = new LlmAdapter(Value.GOOGLE_VERTEX_AI, "google-vertex-ai");
 
   public static final LlmAdapter OPEN_AI = new LlmAdapter(Value.OPEN_AI, "openai");
+
+  public static final LlmAdapter BEDROCK = new LlmAdapter(Value.BEDROCK, "bedrock");
 
   private final Value value;
 
@@ -60,12 +60,12 @@ public final class LlmAdapter {
         return visitor.visitAzure();
       case GOOGLE_AI_STUDIO:
         return visitor.visitGoogleAiStudio();
-      case BEDROCK:
-        return visitor.visitBedrock();
       case GOOGLE_VERTEX_AI:
         return visitor.visitGoogleVertexAi();
       case OPEN_AI:
         return visitor.visitOpenAi();
+      case BEDROCK:
+        return visitor.visitBedrock();
       case UNKNOWN:
       default:
         return visitor.visitUnknown(string);
@@ -83,12 +83,12 @@ public final class LlmAdapter {
         return AZURE;
       case "google-ai-studio":
         return GOOGLE_AI_STUDIO;
-      case "bedrock":
-        return BEDROCK;
       case "google-vertex-ai":
         return GOOGLE_VERTEX_AI;
       case "openai":
         return OPEN_AI;
+      case "bedrock":
+        return BEDROCK;
       default:
         return new LlmAdapter(Value.UNKNOWN, value);
     }

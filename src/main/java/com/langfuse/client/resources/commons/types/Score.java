@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.lang.Object;
+import java.lang.Override;
 import java.lang.String;
 import java.util.Objects;
 import java.util.Optional;
@@ -47,6 +48,10 @@ public final class Score {
     return new Score(new CorrectionValue(value));
   }
 
+  public static Score text(TextScore value) {
+    return new Score(new TextValue(value));
+  }
+
   public boolean isNumeric() {
     return value instanceof NumericValue;
   }
@@ -61,6 +66,10 @@ public final class Score {
 
   public boolean isCorrection() {
     return value instanceof CorrectionValue;
+  }
+
+  public boolean isText() {
+    return value instanceof TextValue;
   }
 
   public boolean _isUnknown() {
@@ -95,11 +104,34 @@ public final class Score {
     return Optional.empty();
   }
 
+  public Optional<TextScore> getText() {
+    if (isText()) {
+      return Optional.of(((TextValue) value).value);
+    }
+    return Optional.empty();
+  }
+
   public Optional<Object> _getUnknown() {
     if (_isUnknown()) {
       return Optional.of(((_UnknownValue) value).value);
     }
     return Optional.empty();
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof Score && value.equals(((Score) other).value);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(value);
+  }
+
+  @Override
+  public String toString() {
+    return value.toString();
   }
 
   @JsonValue
@@ -116,6 +148,8 @@ public final class Score {
 
     T visitCorrection(CorrectionScore correction);
 
+    T visitText(TextScore text);
+
     T _visitUnknown(Object unknownType);
   }
 
@@ -129,7 +163,8 @@ public final class Score {
       @JsonSubTypes.Type(NumericValue.class),
       @JsonSubTypes.Type(CategoricalValue.class),
       @JsonSubTypes.Type(BooleanValue.class),
-      @JsonSubTypes.Type(CorrectionValue.class)
+      @JsonSubTypes.Type(CorrectionValue.class),
+      @JsonSubTypes.Type(TextValue.class)
   })
   @JsonIgnoreProperties(
       ignoreUnknown = true
@@ -142,6 +177,10 @@ public final class Score {
   @JsonIgnoreProperties("dataType")
   private static final class NumericValue implements Value {
     @JsonUnwrapped
+    @JsonIgnoreProperties(
+        value = "dataType",
+        allowSetters = true
+    )
     private NumericScore value;
 
     @JsonCreator(
@@ -184,6 +223,10 @@ public final class Score {
   @JsonIgnoreProperties("dataType")
   private static final class CategoricalValue implements Value {
     @JsonUnwrapped
+    @JsonIgnoreProperties(
+        value = "dataType",
+        allowSetters = true
+    )
     private CategoricalScore value;
 
     @JsonCreator(
@@ -226,6 +269,10 @@ public final class Score {
   @JsonIgnoreProperties("dataType")
   private static final class BooleanValue implements Value {
     @JsonUnwrapped
+    @JsonIgnoreProperties(
+        value = "dataType",
+        allowSetters = true
+    )
     private BooleanScore value;
 
     @JsonCreator(
@@ -268,6 +315,10 @@ public final class Score {
   @JsonIgnoreProperties("dataType")
   private static final class CorrectionValue implements Value {
     @JsonUnwrapped
+    @JsonIgnoreProperties(
+        value = "dataType",
+        allowSetters = true
+    )
     private CorrectionScore value;
 
     @JsonCreator(
@@ -292,6 +343,52 @@ public final class Score {
     }
 
     private boolean equalTo(CorrectionValue other) {
+      return value.equals(other.value);
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      return Objects.hash(this.value);
+    }
+
+    @java.lang.Override
+    public String toString() {
+      return "Score{" + "value: " + value + "}";
+    }
+  }
+
+  @JsonTypeName("TEXT")
+  @JsonIgnoreProperties("dataType")
+  private static final class TextValue implements Value {
+    @JsonUnwrapped
+    @JsonIgnoreProperties(
+        value = "dataType",
+        allowSetters = true
+    )
+    private TextScore value;
+
+    @JsonCreator(
+        mode = JsonCreator.Mode.PROPERTIES
+    )
+    private TextValue() {
+    }
+
+    private TextValue(TextScore value) {
+      this.value = value;
+    }
+
+    @java.lang.Override
+    public <T> T visit(Visitor<T> visitor) {
+      return visitor.visitText(value);
+    }
+
+    @java.lang.Override
+    public boolean equals(Object other) {
+      if (this == other) return true;
+      return other instanceof TextValue && equalTo((TextValue) other);
+    }
+
+    private boolean equalTo(TextValue other) {
       return value.equals(other.value);
     }
 

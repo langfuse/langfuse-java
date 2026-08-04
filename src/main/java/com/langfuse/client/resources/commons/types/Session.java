@@ -179,7 +179,6 @@ public final class Session implements ISession {
 
     /**
      * <p>The environment from which this session originated.</p>
-     * <p>The environment from which this session originated.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override

@@ -13,6 +13,7 @@ import com.langfuse.client.core.MediaTypes;
 import com.langfuse.client.core.ObjectMappers;
 import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
+import com.langfuse.client.core.RetryInterceptor;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -35,6 +36,7 @@ import com.langfuse.client.resources.commons.errors.NotFoundError;
 import com.langfuse.client.resources.commons.errors.UnauthorizedError;
 import com.langfuse.client.resources.commons.types.TraceWithFullDetails;
 import com.langfuse.client.resources.trace.requests.DeleteTracesRequest;
+import com.langfuse.client.resources.trace.requests.GetTraceRequest;
 import com.langfuse.client.resources.trace.requests.GetTracesRequest;
 import com.langfuse.client.resources.trace.types.DeleteTraceResponse;
 import com.langfuse.client.resources.trace.types.Traces;
@@ -50,7 +52,7 @@ public class AsyncRawTraceClient {
    * Get a specific trace
    */
   public CompletableFuture<LangfuseClientHttpResponse<TraceWithFullDetails>> get(String traceId) {
-    return get(traceId,null);
+    return get(traceId,GetTraceRequest.builder().build());
   }
 
   /**
@@ -58,23 +60,45 @@ public class AsyncRawTraceClient {
    */
   public CompletableFuture<LangfuseClientHttpResponse<TraceWithFullDetails>> get(String traceId,
       RequestOptions requestOptions) {
+    return get(traceId,GetTraceRequest.builder().build(),requestOptions);
+  }
+
+  /**
+   * Get a specific trace
+   */
+  public CompletableFuture<LangfuseClientHttpResponse<TraceWithFullDetails>> get(String traceId,
+      GetTraceRequest request) {
+    return get(traceId,request,null);
+  }
+
+  /**
+   * Get a specific trace
+   */
+  public CompletableFuture<LangfuseClientHttpResponse<TraceWithFullDetails>> get(String traceId,
+      GetTraceRequest request, RequestOptions requestOptions) {
     HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
       .addPathSegments("api/public")
       .addPathSegments("traces")
-      .addPathSegment(traceId);if (requestOptions != null) {
+      .addPathSegment(traceId);if (request.getFields().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "fields", request.getFields().get(), false);
+      }
+      if (requestOptions != null) {
         requestOptions.getQueryParameters().forEach((_key, _value) -> {
           httpUrl.addQueryParameter(_key, _value);
         } );
       }
-      Request okhttpRequest = new Request.Builder()
+      Request.Builder _requestBuilder = new Request.Builder()
         .url(httpUrl.build())
         .method("GET", null)
         .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Accept", "application/json")
-        .build();
+        .addHeader("Accept", "application/json");
+      Request okhttpRequest = _requestBuilder.build();
       OkHttpClient client = clientOptions.httpClient();
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
         client = clientOptions.httpClientWithTimeout(requestOptions);
+      }
+      if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+        okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
       }
       CompletableFuture<LangfuseClientHttpResponse<TraceWithFullDetails>> future = new CompletableFuture<>();
       client.newCall(okhttpRequest).enqueue(new Callback() {
@@ -106,6 +130,9 @@ public class AsyncRawTraceClient {
             Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
             return;
+          }
+          catch (JsonProcessingException e) {
+            future.completeExceptionally(new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e));
           }
           catch (IOException e) {
             future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
@@ -151,6 +178,9 @@ public class AsyncRawTraceClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
           client = clientOptions.httpClientWithTimeout(requestOptions);
         }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+          okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+        }
         CompletableFuture<LangfuseClientHttpResponse<DeleteTraceResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
           @Override
@@ -181,6 +211,9 @@ public class AsyncRawTraceClient {
               Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
               future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
               return;
+            }
+            catch (JsonProcessingException e) {
+              future.completeExceptionally(new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e));
             }
             catch (IOException e) {
               future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
@@ -281,6 +314,9 @@ public class AsyncRawTraceClient {
           if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
           }
+          if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+            okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+          }
           CompletableFuture<LangfuseClientHttpResponse<Traces>> future = new CompletableFuture<>();
           client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
@@ -311,6 +347,9 @@ public class AsyncRawTraceClient {
                 Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                 future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
                 return;
+              }
+              catch (JsonProcessingException e) {
+                future.completeExceptionally(new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e));
               }
               catch (IOException e) {
                 future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
@@ -363,6 +402,9 @@ public class AsyncRawTraceClient {
             if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
               client = clientOptions.httpClientWithTimeout(requestOptions);
             }
+            if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+              okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+            }
             CompletableFuture<LangfuseClientHttpResponse<DeleteTraceResponse>> future = new CompletableFuture<>();
             client.newCall(okhttpRequest).enqueue(new Callback() {
               @Override
@@ -393,6 +435,9 @@ public class AsyncRawTraceClient {
                   Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                   future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
                   return;
+                }
+                catch (JsonProcessingException e) {
+                  future.completeExceptionally(new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e));
                 }
                 catch (IOException e) {
                   future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));

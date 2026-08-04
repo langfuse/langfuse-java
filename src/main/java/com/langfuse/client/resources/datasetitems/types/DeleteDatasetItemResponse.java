@@ -107,7 +107,6 @@ public final class DeleteDatasetItemResponse {
 
     /**
      * <p>Success message after deletion</p>
-     * <p>Success message after deletion</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override

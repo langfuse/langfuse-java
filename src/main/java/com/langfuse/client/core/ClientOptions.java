@@ -4,7 +4,9 @@
 
 package com.langfuse.client.core;
 
+import java.lang.Double;
 import java.lang.Integer;
+import java.lang.Long;
 import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,17 +28,30 @@ public final class ClientOptions {
 
   private final int maxRetries;
 
+  private final Optional<Long> initialRetryDelayMillis;
+
+  private final Optional<Long> maxRetryDelayMillis;
+
+  private final Optional<Double> retryJitterFactor;
+
+  private final Optional<LogConfig> logging;
+
   private ClientOptions(Environment environment, Map<String, String> headers,
       Map<String, Supplier<String>> headerSuppliers, OkHttpClient httpClient, int timeout,
-      int maxRetries) {
+      int maxRetries, Optional<Long> initialRetryDelayMillis, Optional<Long> maxRetryDelayMillis,
+      Optional<Double> retryJitterFactor, Optional<LogConfig> logging) {
     this.environment = environment;
     this.headers = new HashMap<>();
     this.headers.putAll(headers);
-    this.headers.putAll(new HashMap<String,String>() {{put("X-Fern-Language", "JAVA");put("X-Fern-SDK-Name", "com.langfuse.fern:langfuse-sdk");put("X-Fern-SDK-Version", "0.0.3585");}});
+    this.headers.putAll(new HashMap<String,String>() {{put("X-Fern-Language", "JAVA");put("X-Fern-SDK-Name", "com.langfuse.fern:langfuse-sdk");}});
     this.headerSuppliers = headerSuppliers;
     this.httpClient = httpClient;
     this.timeout = timeout;
     this.maxRetries = maxRetries;
+    this.initialRetryDelayMillis = initialRetryDelayMillis;
+    this.maxRetryDelayMillis = maxRetryDelayMillis;
+    this.retryJitterFactor = retryJitterFactor;
+    this.logging = logging;
   }
 
   public Environment environment() {
@@ -76,6 +91,22 @@ public final class ClientOptions {
     return this.maxRetries;
   }
 
+  public Optional<Long> initialRetryDelayMillis() {
+    return this.initialRetryDelayMillis;
+  }
+
+  public Optional<Long> maxRetryDelayMillis() {
+    return this.maxRetryDelayMillis;
+  }
+
+  public Optional<Double> retryJitterFactor() {
+    return this.retryJitterFactor;
+  }
+
+  public Optional<LogConfig> logging() {
+    return this.logging;
+  }
+
   public static Builder builder() {
     return new Builder();
   }
@@ -89,9 +120,17 @@ public final class ClientOptions {
 
     private int maxRetries = 2;
 
+    private Optional<Long> initialRetryDelayMillis = Optional.empty();
+
+    private Optional<Long> maxRetryDelayMillis = Optional.empty();
+
+    private Optional<Double> retryJitterFactor = Optional.empty();
+
     private Optional<Integer> timeout = Optional.empty();
 
     private OkHttpClient httpClient = null;
+
+    private Optional<LogConfig> logging = Optional.empty();
 
     public Builder environment(Environment environment) {
       this.environment = environment;
@@ -99,7 +138,9 @@ public final class ClientOptions {
     }
 
     public Builder addHeader(String key, String value) {
-      this.headers.put(key, value);
+      if (value != null) {
+        this.headers.put(key, value);
+      }
       return this;
     }
 
@@ -132,8 +173,40 @@ public final class ClientOptions {
       return this;
     }
 
+    /**
+     * Override the initial delay (in milliseconds) used for exponential backoff between retries. Defaults to 1000 milliseconds.
+     */
+    public Builder initialRetryDelayMillis(long initialRetryDelayMillis) {
+      this.initialRetryDelayMillis = Optional.of(initialRetryDelayMillis);
+      return this;
+    }
+
+    /**
+     * Override the maximum delay (in milliseconds) between retries. Defaults to 60000 milliseconds.
+     */
+    public Builder maxRetryDelayMillis(long maxRetryDelayMillis) {
+      this.maxRetryDelayMillis = Optional.of(maxRetryDelayMillis);
+      return this;
+    }
+
+    /**
+     * Override the jitter factor (between 0 and 1) applied to retry delays. Defaults to 0.2.
+     */
+    public Builder retryJitterFactor(double retryJitterFactor) {
+      this.retryJitterFactor = Optional.of(retryJitterFactor);
+      return this;
+    }
+
     public Builder httpClient(OkHttpClient httpClient) {
       this.httpClient = httpClient;
+      return this;
+    }
+
+    /**
+     * Configure logging for the SDK. Silent by default — no log output unless explicitly configured.
+     */
+    public Builder logging(LogConfig logging) {
+      this.logging = Optional.of(logging);
       return this;
     }
 
@@ -144,13 +217,17 @@ public final class ClientOptions {
         timeout.ifPresent(timeout -> httpClientBuilder.callTimeout(timeout, TimeUnit.SECONDS).connectTimeout(0, TimeUnit.SECONDS).writeTimeout(0, TimeUnit.SECONDS).readTimeout(0, TimeUnit.SECONDS));
       }
       else {
-        httpClientBuilder.callTimeout(this.timeout.orElse(60), TimeUnit.SECONDS).connectTimeout(0, TimeUnit.SECONDS).writeTimeout(0, TimeUnit.SECONDS).readTimeout(0, TimeUnit.SECONDS).addInterceptor(new RetryInterceptor(this.maxRetries));
+        httpClientBuilder.callTimeout(this.timeout.orElse(60), TimeUnit.SECONDS).connectTimeout(0, TimeUnit.SECONDS).writeTimeout(0, TimeUnit.SECONDS).readTimeout(0, TimeUnit.SECONDS).addInterceptor(new RetryInterceptor(this.maxRetries, this.initialRetryDelayMillis, this.maxRetryDelayMillis, this.retryJitterFactor));
       }
+
+      Logger logger = Logger.from(this.logging);
+      httpClientBuilder.addInterceptor(new LoggingInterceptor(logger));
+      httpClientBuilder.addInterceptor(new ResponseDecompressionInterceptor());
 
       this.httpClient = httpClientBuilder.build();
       this.timeout = Optional.of(httpClient.callTimeoutMillis() / 1000);
 
-      return new ClientOptions(environment, headers, headerSuppliers, httpClient, this.timeout.get(), this.maxRetries);
+      return new ClientOptions(environment, headers, headerSuppliers, httpClient, this.timeout.get(), this.maxRetries, this.initialRetryDelayMillis, this.maxRetryDelayMillis, this.retryJitterFactor, this.logging);
     }
 
     /**
@@ -164,6 +241,10 @@ public final class ClientOptions {
       builder.headers.putAll(clientOptions.headers);
       builder.headerSuppliers.putAll(clientOptions.headerSuppliers);
       builder.maxRetries = clientOptions.maxRetries();
+      builder.initialRetryDelayMillis = clientOptions.initialRetryDelayMillis();
+      builder.maxRetryDelayMillis = clientOptions.maxRetryDelayMillis();
+      builder.retryJitterFactor = clientOptions.retryJitterFactor();
+      builder.logging = clientOptions.logging();
       return builder;
     }
   }

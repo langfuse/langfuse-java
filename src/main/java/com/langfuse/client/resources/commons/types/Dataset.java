@@ -310,7 +310,6 @@ public final class Dataset {
 
     /**
      * <p>Metadata associated with the dataset</p>
-     * <p>Metadata associated with the dataset</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override

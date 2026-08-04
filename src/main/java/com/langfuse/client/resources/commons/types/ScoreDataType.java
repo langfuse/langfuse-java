@@ -10,13 +10,15 @@ import java.lang.Object;
 import java.lang.String;
 
 public final class ScoreDataType {
+  public static final ScoreDataType BOOLEAN = new ScoreDataType(Value.BOOLEAN, "BOOLEAN");
+
+  public static final ScoreDataType TEXT = new ScoreDataType(Value.TEXT, "TEXT");
+
   public static final ScoreDataType CATEGORICAL = new ScoreDataType(Value.CATEGORICAL, "CATEGORICAL");
 
   public static final ScoreDataType CORRECTION = new ScoreDataType(Value.CORRECTION, "CORRECTION");
 
   public static final ScoreDataType NUMERIC = new ScoreDataType(Value.NUMERIC, "NUMERIC");
-
-  public static final ScoreDataType BOOLEAN = new ScoreDataType(Value.BOOLEAN, "BOOLEAN");
 
   private final Value value;
 
@@ -50,14 +52,16 @@ public final class ScoreDataType {
 
   public <T> T visit(Visitor<T> visitor) {
     switch (value) {
+      case BOOLEAN:
+        return visitor.visitBoolean();
+      case TEXT:
+        return visitor.visitText();
       case CATEGORICAL:
         return visitor.visitCategorical();
       case CORRECTION:
         return visitor.visitCorrection();
       case NUMERIC:
         return visitor.visitNumeric();
-      case BOOLEAN:
-        return visitor.visitBoolean();
       case UNKNOWN:
       default:
         return visitor.visitUnknown(string);
@@ -69,14 +73,16 @@ public final class ScoreDataType {
   )
   public static ScoreDataType valueOf(String value) {
     switch (value) {
+      case "BOOLEAN":
+        return BOOLEAN;
+      case "TEXT":
+        return TEXT;
       case "CATEGORICAL":
         return CATEGORICAL;
       case "CORRECTION":
         return CORRECTION;
       case "NUMERIC":
         return NUMERIC;
-      case "BOOLEAN":
-        return BOOLEAN;
       default:
         return new ScoreDataType(Value.UNKNOWN, value);
     }
@@ -91,6 +97,8 @@ public final class ScoreDataType {
 
     CORRECTION,
 
+    TEXT,
+
     UNKNOWN
   }
 
@@ -102,6 +110,8 @@ public final class ScoreDataType {
     T visitCategorical();
 
     T visitCorrection();
+
+    T visitText();
 
     T visitUnknown(String unknownType);
   }

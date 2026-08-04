@@ -10,6 +10,8 @@ import java.lang.Object;
 import java.lang.String;
 
 public final class BlobStorageExportFrequency {
+  public static final BlobStorageExportFrequency EVERY20MINUTES = new BlobStorageExportFrequency(Value.EVERY20MINUTES, "every_20_minutes");
+
   public static final BlobStorageExportFrequency HOURLY = new BlobStorageExportFrequency(Value.HOURLY, "hourly");
 
   public static final BlobStorageExportFrequency DAILY = new BlobStorageExportFrequency(Value.DAILY, "daily");
@@ -48,6 +50,8 @@ public final class BlobStorageExportFrequency {
 
   public <T> T visit(Visitor<T> visitor) {
     switch (value) {
+      case EVERY20MINUTES:
+        return visitor.visitEvery20Minutes();
       case HOURLY:
         return visitor.visitHourly();
       case DAILY:
@@ -65,6 +69,8 @@ public final class BlobStorageExportFrequency {
   )
   public static BlobStorageExportFrequency valueOf(String value) {
     switch (value) {
+      case "every_20_minutes":
+        return EVERY20MINUTES;
       case "hourly":
         return HOURLY;
       case "daily":
@@ -77,6 +83,8 @@ public final class BlobStorageExportFrequency {
   }
 
   public enum Value {
+    EVERY20MINUTES,
+
     HOURLY,
 
     DAILY,
@@ -87,6 +95,8 @@ public final class BlobStorageExportFrequency {
   }
 
   public interface Visitor<T> {
+    T visitEvery20Minutes();
+
     T visitHourly();
 
     T visitDaily();

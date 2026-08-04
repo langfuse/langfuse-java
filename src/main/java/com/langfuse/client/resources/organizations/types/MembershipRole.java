@@ -14,9 +14,9 @@ public final class MembershipRole {
 
   public static final MembershipRole MEMBER = new MembershipRole(Value.MEMBER, "MEMBER");
 
-  public static final MembershipRole ADMIN = new MembershipRole(Value.ADMIN, "ADMIN");
-
   public static final MembershipRole VIEWER = new MembershipRole(Value.VIEWER, "VIEWER");
+
+  public static final MembershipRole ADMIN = new MembershipRole(Value.ADMIN, "ADMIN");
 
   private final Value value;
 
@@ -54,10 +54,10 @@ public final class MembershipRole {
         return visitor.visitOwner();
       case MEMBER:
         return visitor.visitMember();
-      case ADMIN:
-        return visitor.visitAdmin();
       case VIEWER:
         return visitor.visitViewer();
+      case ADMIN:
+        return visitor.visitAdmin();
       case UNKNOWN:
       default:
         return visitor.visitUnknown(string);
@@ -73,10 +73,10 @@ public final class MembershipRole {
         return OWNER;
       case "MEMBER":
         return MEMBER;
-      case "ADMIN":
-        return ADMIN;
       case "VIEWER":
         return VIEWER;
+      case "ADMIN":
+        return ADMIN;
       default:
         return new MembershipRole(Value.UNKNOWN, value);
     }

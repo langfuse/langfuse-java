@@ -122,7 +122,6 @@ public final class HealthResponse {
 
     /**
      * <p>Langfuse server version</p>
-     * <p>Langfuse server version</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override

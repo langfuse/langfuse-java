@@ -13,6 +13,7 @@ import com.langfuse.client.core.MediaTypes;
 import com.langfuse.client.core.ObjectMappers;
 import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
+import com.langfuse.client.core.RetryInterceptor;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.String;
@@ -29,6 +30,7 @@ import com.langfuse.client.resources.commons.errors.MethodNotAllowedError;
 import com.langfuse.client.resources.commons.errors.NotFoundError;
 import com.langfuse.client.resources.commons.errors.UnauthorizedError;
 import com.langfuse.client.resources.llmconnections.requests.GetLlmConnectionsRequest;
+import com.langfuse.client.resources.llmconnections.types.DeleteLlmConnectionResponse;
 import com.langfuse.client.resources.llmconnections.types.LlmConnection;
 import com.langfuse.client.resources.llmconnections.types.PaginatedLlmConnections;
 import com.langfuse.client.resources.llmconnections.types.UpsertLlmConnectionRequest;
@@ -90,6 +92,9 @@ public class RawLlmConnectionsClient {
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
         client = clientOptions.httpClientWithTimeout(requestOptions);
       }
+      if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+        okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+      }
       try (Response response = client.newCall(okhttpRequest).execute()) {
         ResponseBody responseBody = response.body();
         String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -110,6 +115,9 @@ public class RawLlmConnectionsClient {
         }
         Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
         throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+      }
+      catch (JsonProcessingException e) {
+        throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
       }
       catch (IOException e) {
         throw new LangfuseClientException("Network error executing HTTP request", e);
@@ -153,6 +161,9 @@ public class RawLlmConnectionsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
           client = clientOptions.httpClientWithTimeout(requestOptions);
         }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+          okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+        }
         try (Response response = client.newCall(okhttpRequest).execute()) {
           ResponseBody responseBody = response.body();
           String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -174,8 +185,73 @@ public class RawLlmConnectionsClient {
           Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
           throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
         }
+        catch (JsonProcessingException e) {
+          throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
+        }
         catch (IOException e) {
           throw new LangfuseClientException("Network error executing HTTP request", e);
         }
       }
-    }
+
+      /**
+       * Delete an LLM connection by id. Evaluators that depend on the deleted connection are automatically paused.
+       */
+      public LangfuseClientHttpResponse<DeleteLlmConnectionResponse> delete(String id) {
+        return delete(id,null);
+      }
+
+      /**
+       * Delete an LLM connection by id. Evaluators that depend on the deleted connection are automatically paused.
+       */
+      public LangfuseClientHttpResponse<DeleteLlmConnectionResponse> delete(String id,
+          RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+          .addPathSegments("api/public")
+          .addPathSegments("llm-connections")
+          .addPathSegment(id);if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+              httpUrl.addQueryParameter(_key, _value);
+            } );
+          }
+          Request okhttpRequest = new Request.Builder()
+            .url(httpUrl.build())
+            .method("DELETE", null)
+            .headers(Headers.of(clientOptions.headers(requestOptions)))
+            .addHeader("Accept", "application/json")
+            .build();
+          OkHttpClient client = clientOptions.httpClient();
+          if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+          }
+          if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+            okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+          }
+          try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+              return new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteLlmConnectionResponse.class), response);
+            }
+            try {
+              switch (response.code()) {
+                case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+              }
+            }
+            catch (JsonProcessingException ignored) {
+              // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+          }
+          catch (JsonProcessingException e) {
+            throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
+          }
+          catch (IOException e) {
+            throw new LangfuseClientException("Network error executing HTTP request", e);
+          }
+        }
+      }

@@ -107,7 +107,7 @@ public final class ChatPrompt implements IBasePrompt {
   }
 
   /**
-   * @return The dependency resolution graph for the current prompt. Null if prompt has no dependencies.
+   * @return The dependency resolution graph for the current prompt. Null if the prompt has no dependencies or if <code>resolve=false</code> was used.
    */
   @JsonProperty("resolutionGraph")
   @java.lang.Override
@@ -196,7 +196,7 @@ public final class ChatPrompt implements IBasePrompt {
     _FinalStage commitMessage(String commitMessage);
 
     /**
-     * <p>The dependency resolution graph for the current prompt. Null if prompt has no dependencies.</p>
+     * <p>The dependency resolution graph for the current prompt. Null if the prompt has no dependencies or if <code>resolve=false</code> was used.</p>
      */
     _FinalStage resolutionGraph(Optional<Map<String, Object>> resolutionGraph);
 
@@ -297,7 +297,7 @@ public final class ChatPrompt implements IBasePrompt {
     }
 
     /**
-     * <p>The dependency resolution graph for the current prompt. Null if prompt has no dependencies.</p>
+     * <p>The dependency resolution graph for the current prompt. Null if the prompt has no dependencies or if <code>resolve=false</code> was used.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -307,7 +307,7 @@ public final class ChatPrompt implements IBasePrompt {
     }
 
     /**
-     * <p>The dependency resolution graph for the current prompt. Null if prompt has no dependencies.</p>
+     * <p>The dependency resolution graph for the current prompt. Null if the prompt has no dependencies or if <code>resolve=false</code> was used.</p>
      */
     @java.lang.Override
     @JsonSetter(

@@ -153,7 +153,6 @@ public final class CreateProjectRequest {
 
     /**
      * <p>Number of days to retain data. Must be 0 or at least 3 days. Requires data-retention entitlement for non-zero values. Optional.</p>
-     * <p>Number of days to retain data. Must be 0 or at least 3 days. Requires data-retention entitlement for non-zero values. Optional.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override

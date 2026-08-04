@@ -12,6 +12,7 @@ import com.langfuse.client.core.LangfuseClientHttpResponse;
 import com.langfuse.client.core.MediaTypes;
 import com.langfuse.client.core.ObjectMappers;
 import com.langfuse.client.core.RequestOptions;
+import com.langfuse.client.core.RetryInterceptor;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -29,6 +30,7 @@ import okhttp3.ResponseBody;
 import org.jetbrains.annotations.NotNull;
 import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationDeletionResponse;
 import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationResponse;
+import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationStatusResponse;
 import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationsResponse;
 import com.langfuse.client.resources.blobstorageintegrations.types.CreateBlobStorageIntegrationRequest;
 import com.langfuse.client.resources.commons.errors.AccessDeniedError;
@@ -74,6 +76,9 @@ public class AsyncRawBlobStorageIntegrationsClient {
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
         client = clientOptions.httpClientWithTimeout(requestOptions);
       }
+      if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+        okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+      }
       CompletableFuture<LangfuseClientHttpResponse<BlobStorageIntegrationsResponse>> future = new CompletableFuture<>();
       client.newCall(okhttpRequest).enqueue(new Callback() {
         @Override
@@ -104,6 +109,9 @@ public class AsyncRawBlobStorageIntegrationsClient {
             Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
             return;
+          }
+          catch (JsonProcessingException e) {
+            future.completeExceptionally(new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e));
           }
           catch (IOException e) {
             future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
@@ -156,6 +164,9 @@ public class AsyncRawBlobStorageIntegrationsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
           client = clientOptions.httpClientWithTimeout(requestOptions);
         }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+          okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+        }
         CompletableFuture<LangfuseClientHttpResponse<BlobStorageIntegrationResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
           @Override
@@ -187,6 +198,9 @@ public class AsyncRawBlobStorageIntegrationsClient {
               future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
               return;
             }
+            catch (JsonProcessingException e) {
+              future.completeExceptionally(new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e));
+            }
             catch (IOException e) {
               future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
             }
@@ -201,17 +215,17 @@ public class AsyncRawBlobStorageIntegrationsClient {
       }
 
       /**
-       * Delete a blob storage integration by ID (requires organization-scoped API key)
+       * Get the sync status of a blob storage integration by integration ID (requires organization-scoped API key)
        */
-      public CompletableFuture<LangfuseClientHttpResponse<BlobStorageIntegrationDeletionResponse>> deleteBlobStorageIntegration(
+      public CompletableFuture<LangfuseClientHttpResponse<BlobStorageIntegrationStatusResponse>> getBlobStorageIntegrationStatus(
           String id) {
-        return deleteBlobStorageIntegration(id,null);
+        return getBlobStorageIntegrationStatus(id,null);
       }
 
       /**
-       * Delete a blob storage integration by ID (requires organization-scoped API key)
+       * Get the sync status of a blob storage integration by integration ID (requires organization-scoped API key)
        */
-      public CompletableFuture<LangfuseClientHttpResponse<BlobStorageIntegrationDeletionResponse>> deleteBlobStorageIntegration(
+      public CompletableFuture<LangfuseClientHttpResponse<BlobStorageIntegrationStatusResponse>> getBlobStorageIntegrationStatus(
           String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
           .addPathSegments("api/public/integrations/blob-storage")
@@ -223,7 +237,7 @@ public class AsyncRawBlobStorageIntegrationsClient {
           }
           Request okhttpRequest = new Request.Builder()
             .url(httpUrl.build())
-            .method("DELETE", null)
+            .method("GET", null)
             .headers(Headers.of(clientOptions.headers(requestOptions)))
             .addHeader("Accept", "application/json")
             .build();
@@ -231,14 +245,17 @@ public class AsyncRawBlobStorageIntegrationsClient {
           if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
           }
-          CompletableFuture<LangfuseClientHttpResponse<BlobStorageIntegrationDeletionResponse>> future = new CompletableFuture<>();
+          if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+            okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+          }
+          CompletableFuture<LangfuseClientHttpResponse<BlobStorageIntegrationStatusResponse>> future = new CompletableFuture<>();
           client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
               try (ResponseBody responseBody = response.body()) {
                 String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                 if (response.isSuccessful()) {
-                  future.complete(new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BlobStorageIntegrationDeletionResponse.class), response));
+                  future.complete(new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BlobStorageIntegrationStatusResponse.class), response));
                   return;
                 }
                 try {
@@ -262,6 +279,9 @@ public class AsyncRawBlobStorageIntegrationsClient {
                 future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
                 return;
               }
+              catch (JsonProcessingException e) {
+                future.completeExceptionally(new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e));
+              }
               catch (IOException e) {
                 future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
               }
@@ -274,4 +294,85 @@ public class AsyncRawBlobStorageIntegrationsClient {
           });
           return future;
         }
-      }
+
+        /**
+         * Delete a blob storage integration by ID (requires organization-scoped API key)
+         */
+        public CompletableFuture<LangfuseClientHttpResponse<BlobStorageIntegrationDeletionResponse>> deleteBlobStorageIntegration(
+            String id) {
+          return deleteBlobStorageIntegration(id,null);
+        }
+
+        /**
+         * Delete a blob storage integration by ID (requires organization-scoped API key)
+         */
+        public CompletableFuture<LangfuseClientHttpResponse<BlobStorageIntegrationDeletionResponse>> deleteBlobStorageIntegration(
+            String id, RequestOptions requestOptions) {
+          HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+            .addPathSegments("api/public/integrations/blob-storage")
+
+            .addPathSegment(id);if (requestOptions != null) {
+              requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+              } );
+            }
+            Request okhttpRequest = new Request.Builder()
+              .url(httpUrl.build())
+              .method("DELETE", null)
+              .headers(Headers.of(clientOptions.headers(requestOptions)))
+              .addHeader("Accept", "application/json")
+              .build();
+            OkHttpClient client = clientOptions.httpClient();
+            if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+              client = clientOptions.httpClientWithTimeout(requestOptions);
+            }
+            if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+              okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+            }
+            CompletableFuture<LangfuseClientHttpResponse<BlobStorageIntegrationDeletionResponse>> future = new CompletableFuture<>();
+            client.newCall(okhttpRequest).enqueue(new Callback() {
+              @Override
+              public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                  String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                  if (response.isSuccessful()) {
+                    future.complete(new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BlobStorageIntegrationDeletionResponse.class), response));
+                    return;
+                  }
+                  try {
+                    switch (response.code()) {
+                      case 400:future.completeExceptionally(new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                      return;
+                      case 401:future.completeExceptionally(new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                      return;
+                      case 403:future.completeExceptionally(new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                      return;
+                      case 404:future.completeExceptionally(new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                      return;
+                      case 405:future.completeExceptionally(new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                      return;
+                    }
+                  }
+                  catch (JsonProcessingException ignored) {
+                    // unable to map error response, throwing generic error
+                  }
+                  Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+                  future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
+                  return;
+                }
+                catch (JsonProcessingException e) {
+                  future.completeExceptionally(new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e));
+                }
+                catch (IOException e) {
+                  future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
+                }
+              }
+
+              @Override
+              public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
+              }
+            });
+            return future;
+          }
+        }

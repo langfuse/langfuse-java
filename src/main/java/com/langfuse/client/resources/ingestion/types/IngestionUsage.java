@@ -17,6 +17,7 @@ import java.lang.Object;
 import java.lang.RuntimeException;
 import java.lang.String;
 import java.lang.SuppressWarnings;
+import java.util.Map;
 import java.util.Objects;
 import com.langfuse.client.resources.commons.types.Usage;
 
@@ -91,9 +92,11 @@ public final class IngestionUsage {
     public IngestionUsage deserialize(JsonParser p, DeserializationContext context) throws
         IOException {
       Object value = p.readValueAs(Object.class);
-      try {
-        return of(ObjectMappers.JSON_MAPPER.convertValue(value, Usage.class));
-      } catch(RuntimeException e) {
+      if (value instanceof Map<?, ?> && ((Map<?, ?>) value).containsKey("input") && ((Map<?, ?>) value).containsKey("output") && ((Map<?, ?>) value).containsKey("total")) {
+        try {
+          return of(ObjectMappers.JSON_MAPPER.convertValue(value, Usage.class));
+        } catch(RuntimeException e) {
+        }
       }
       try {
         return of(ObjectMappers.JSON_MAPPER.convertValue(value, OpenAiUsage.class));

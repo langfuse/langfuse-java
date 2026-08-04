@@ -19,7 +19,9 @@ import com.langfuse.client.core.ObjectMappers;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,12 +54,14 @@ public final class DatasetItem {
 
   private final OffsetDateTime updatedAt;
 
+  private final List<DatasetItemMediaReference> mediaReferences;
+
   private final Map<String, Object> additionalProperties;
 
   private DatasetItem(String id, DatasetStatus status, Object input, Object expectedOutput,
       Object metadata, Optional<String> sourceTraceId, Optional<String> sourceObservationId,
       String datasetId, String datasetName, OffsetDateTime createdAt, OffsetDateTime updatedAt,
-      Map<String, Object> additionalProperties) {
+      List<DatasetItemMediaReference> mediaReferences, Map<String, Object> additionalProperties) {
     this.id = id;
     this.status = status;
     this.input = input;
@@ -69,6 +73,7 @@ public final class DatasetItem {
     this.datasetName = datasetName;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+    this.mediaReferences = mediaReferences;
     this.additionalProperties = additionalProperties;
   }
 
@@ -148,6 +153,14 @@ public final class DatasetItem {
     return updatedAt;
   }
 
+  /**
+   * @return Resolved Langfuse media references found in input, expectedOutput, and metadata.
+   */
+  @JsonProperty("mediaReferences")
+  public List<DatasetItemMediaReference> getMediaReferences() {
+    return mediaReferences;
+  }
+
   @JsonInclude(
       value = JsonInclude.Include.CUSTOM,
       valueFilter = NullableNonemptyFilter.class
@@ -178,12 +191,12 @@ public final class DatasetItem {
   }
 
   private boolean equalTo(DatasetItem other) {
-    return id.equals(other.id) && status.equals(other.status) && input.equals(other.input) && expectedOutput.equals(other.expectedOutput) && metadata.equals(other.metadata) && sourceTraceId.equals(other.sourceTraceId) && sourceObservationId.equals(other.sourceObservationId) && datasetId.equals(other.datasetId) && datasetName.equals(other.datasetName) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt);
+    return id.equals(other.id) && status.equals(other.status) && input.equals(other.input) && expectedOutput.equals(other.expectedOutput) && metadata.equals(other.metadata) && sourceTraceId.equals(other.sourceTraceId) && sourceObservationId.equals(other.sourceObservationId) && datasetId.equals(other.datasetId) && datasetName.equals(other.datasetName) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt) && mediaReferences.equals(other.mediaReferences);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.status, this.input, this.expectedOutput, this.metadata, this.sourceTraceId, this.sourceObservationId, this.datasetId, this.datasetName, this.createdAt, this.updatedAt);
+    return Objects.hash(this.id, this.status, this.input, this.expectedOutput, this.metadata, this.sourceTraceId, this.sourceObservationId, this.datasetId, this.datasetName, this.createdAt, this.updatedAt, this.mediaReferences);
   }
 
   @java.lang.Override
@@ -266,6 +279,15 @@ public final class DatasetItem {
     _FinalStage sourceObservationId(String sourceObservationId);
 
     _FinalStage sourceObservationId(Nullable<String> sourceObservationId);
+
+    /**
+     * <p>Resolved Langfuse media references found in input, expectedOutput, and metadata.</p>
+     */
+    _FinalStage mediaReferences(List<DatasetItemMediaReference> mediaReferences);
+
+    _FinalStage addMediaReferences(DatasetItemMediaReference mediaReferences);
+
+    _FinalStage addAllMediaReferences(List<DatasetItemMediaReference> mediaReferences);
   }
 
   @JsonIgnoreProperties(
@@ -290,6 +312,8 @@ public final class DatasetItem {
 
     private OffsetDateTime updatedAt;
 
+    private List<DatasetItemMediaReference> mediaReferences = new ArrayList<>();
+
     private Optional<String> sourceObservationId = Optional.empty();
 
     private Optional<String> sourceTraceId = Optional.empty();
@@ -313,6 +337,7 @@ public final class DatasetItem {
       datasetName(other.getDatasetName());
       createdAt(other.getCreatedAt());
       updatedAt(other.getUpdatedAt());
+      mediaReferences(other.getMediaReferences());
       return this;
     }
 
@@ -332,7 +357,6 @@ public final class DatasetItem {
 
     /**
      * <p>Input data for the dataset item</p>
-     * <p>Input data for the dataset item</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -344,7 +368,6 @@ public final class DatasetItem {
 
     /**
      * <p>Expected output for the dataset item</p>
-     * <p>Expected output for the dataset item</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -355,7 +378,6 @@ public final class DatasetItem {
     }
 
     /**
-     * <p>Metadata associated with the dataset item</p>
      * <p>Metadata associated with the dataset item</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -391,6 +413,44 @@ public final class DatasetItem {
     @JsonSetter("updatedAt")
     public _FinalStage updatedAt(@NotNull OffsetDateTime updatedAt) {
       this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Resolved Langfuse media references found in input, expectedOutput, and metadata.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addAllMediaReferences(List<DatasetItemMediaReference> mediaReferences) {
+      if (mediaReferences != null) {
+        this.mediaReferences.addAll(mediaReferences);
+      }
+      return this;
+    }
+
+    /**
+     * <p>Resolved Langfuse media references found in input, expectedOutput, and metadata.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addMediaReferences(DatasetItemMediaReference mediaReferences) {
+      this.mediaReferences.add(mediaReferences);
+      return this;
+    }
+
+    /**
+     * <p>Resolved Langfuse media references found in input, expectedOutput, and metadata.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "mediaReferences",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage mediaReferences(List<DatasetItemMediaReference> mediaReferences) {
+      this.mediaReferences.clear();
+      if (mediaReferences != null) {
+        this.mediaReferences.addAll(mediaReferences);
+      }
       return this;
     }
 
@@ -478,7 +538,7 @@ public final class DatasetItem {
 
     @java.lang.Override
     public DatasetItem build() {
-      return new DatasetItem(id, status, input, expectedOutput, metadata, sourceTraceId, sourceObservationId, datasetId, datasetName, createdAt, updatedAt, additionalProperties);
+      return new DatasetItem(id, status, input, expectedOutput, metadata, sourceTraceId, sourceObservationId, datasetId, datasetName, createdAt, updatedAt, mediaReferences, additionalProperties);
     }
 
     @java.lang.Override

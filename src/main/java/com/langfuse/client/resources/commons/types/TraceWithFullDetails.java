@@ -69,6 +69,8 @@ public final class TraceWithFullDetails implements ITrace {
 
   private final List<ScoreV1> scores;
 
+  private final Optional<Deprecation> deprecation;
+
   private final Map<String, Object> additionalProperties;
 
   private TraceWithFullDetails(String id, OffsetDateTime timestamp, Optional<String> name,
@@ -76,7 +78,7 @@ public final class TraceWithFullDetails implements ITrace {
       Optional<String> release, Optional<String> version, Optional<String> userId,
       Optional<Object> metadata, List<String> tags, boolean public_, String environment,
       String htmlPath, Optional<Double> latency, Optional<Double> totalCost,
-      List<ObservationsView> observations, List<ScoreV1> scores,
+      List<ObservationsView> observations, List<ScoreV1> scores, Optional<Deprecation> deprecation,
       Map<String, Object> additionalProperties) {
     this.id = id;
     this.timestamp = timestamp;
@@ -96,6 +98,7 @@ public final class TraceWithFullDetails implements ITrace {
     this.totalCost = totalCost;
     this.observations = observations;
     this.scores = scores;
+    this.deprecation = deprecation;
     this.additionalProperties = additionalProperties;
   }
 
@@ -277,6 +280,11 @@ public final class TraceWithFullDetails implements ITrace {
     return scores;
   }
 
+  @JsonProperty("_deprecation")
+  public Optional<Deprecation> getDeprecation() {
+    return deprecation;
+  }
+
   @JsonInclude(
       value = JsonInclude.Include.CUSTOM,
       valueFilter = NullableNonemptyFilter.class
@@ -352,12 +360,12 @@ public final class TraceWithFullDetails implements ITrace {
   }
 
   private boolean equalTo(TraceWithFullDetails other) {
-    return id.equals(other.id) && timestamp.equals(other.timestamp) && name.equals(other.name) && input.equals(other.input) && output.equals(other.output) && sessionId.equals(other.sessionId) && release.equals(other.release) && version.equals(other.version) && userId.equals(other.userId) && metadata.equals(other.metadata) && tags.equals(other.tags) && public_ == other.public_ && environment.equals(other.environment) && htmlPath.equals(other.htmlPath) && latency.equals(other.latency) && totalCost.equals(other.totalCost) && observations.equals(other.observations) && scores.equals(other.scores);
+    return id.equals(other.id) && timestamp.equals(other.timestamp) && name.equals(other.name) && input.equals(other.input) && output.equals(other.output) && sessionId.equals(other.sessionId) && release.equals(other.release) && version.equals(other.version) && userId.equals(other.userId) && metadata.equals(other.metadata) && tags.equals(other.tags) && public_ == other.public_ && environment.equals(other.environment) && htmlPath.equals(other.htmlPath) && latency.equals(other.latency) && totalCost.equals(other.totalCost) && observations.equals(other.observations) && scores.equals(other.scores) && deprecation.equals(other.deprecation);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.timestamp, this.name, this.input, this.output, this.sessionId, this.release, this.version, this.userId, this.metadata, this.tags, this.public_, this.environment, this.htmlPath, this.latency, this.totalCost, this.observations, this.scores);
+    return Objects.hash(this.id, this.timestamp, this.name, this.input, this.output, this.sessionId, this.release, this.version, this.userId, this.metadata, this.tags, this.public_, this.environment, this.htmlPath, this.latency, this.totalCost, this.observations, this.scores, this.deprecation);
   }
 
   @java.lang.Override
@@ -523,6 +531,10 @@ public final class TraceWithFullDetails implements ITrace {
     _FinalStage addScores(ScoreV1 scores);
 
     _FinalStage addAllScores(List<ScoreV1> scores);
+
+    _FinalStage deprecation(Optional<Deprecation> deprecation);
+
+    _FinalStage deprecation(Deprecation deprecation);
   }
 
   @JsonIgnoreProperties(
@@ -538,6 +550,8 @@ public final class TraceWithFullDetails implements ITrace {
     private String environment;
 
     private String htmlPath;
+
+    private Optional<Deprecation> deprecation = Optional.empty();
 
     private List<ScoreV1> scores = new ArrayList<>();
 
@@ -591,11 +605,11 @@ public final class TraceWithFullDetails implements ITrace {
       totalCost(other.getTotalCost());
       observations(other.getObservations());
       scores(other.getScores());
+      deprecation(other.getDeprecation());
       return this;
     }
 
     /**
-     * <p>The unique identifier of a trace</p>
      * <p>The unique identifier of a trace</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -608,7 +622,6 @@ public final class TraceWithFullDetails implements ITrace {
 
     /**
      * <p>The timestamp when the trace was created</p>
-     * <p>The timestamp when the trace was created</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -619,7 +632,6 @@ public final class TraceWithFullDetails implements ITrace {
     }
 
     /**
-     * <p>Public traces are accessible via url without login</p>
      * <p>Public traces are accessible via url without login</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -632,7 +644,6 @@ public final class TraceWithFullDetails implements ITrace {
 
     /**
      * <p>The environment from which this trace originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
-     * <p>The environment from which this trace originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -644,13 +655,28 @@ public final class TraceWithFullDetails implements ITrace {
 
     /**
      * <p>Path of trace in Langfuse UI</p>
-     * <p>Path of trace in Langfuse UI</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
     @JsonSetter("htmlPath")
     public _FinalStage htmlPath(@NotNull String htmlPath) {
       this.htmlPath = Objects.requireNonNull(htmlPath, "htmlPath must not be null");
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage deprecation(Deprecation deprecation) {
+      this.deprecation = Optional.ofNullable(deprecation);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "_deprecation",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage deprecation(Optional<Deprecation> deprecation) {
+      this.deprecation = deprecation;
       return this;
     }
 
@@ -1126,7 +1152,7 @@ public final class TraceWithFullDetails implements ITrace {
 
     @java.lang.Override
     public TraceWithFullDetails build() {
-      return new TraceWithFullDetails(id, timestamp, name, input, output, sessionId, release, version, userId, metadata, tags, public_, environment, htmlPath, latency, totalCost, observations, scores, additionalProperties);
+      return new TraceWithFullDetails(id, timestamp, name, input, output, sessionId, release, version, userId, metadata, tags, public_, environment, htmlPath, latency, totalCost, observations, scores, deprecation, additionalProperties);
     }
 
     @java.lang.Override

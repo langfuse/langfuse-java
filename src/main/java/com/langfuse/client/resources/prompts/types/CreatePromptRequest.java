@@ -17,6 +17,7 @@ import java.lang.Object;
 import java.lang.RuntimeException;
 import java.lang.String;
 import java.lang.SuppressWarnings;
+import java.util.Map;
 import java.util.Objects;
 
 @JsonDeserialize(
@@ -90,13 +91,17 @@ public final class CreatePromptRequest {
     public CreatePromptRequest deserialize(JsonParser p, DeserializationContext context) throws
         IOException {
       Object value = p.readValueAs(Object.class);
-      try {
-        return of(ObjectMappers.JSON_MAPPER.convertValue(value, CreateChatPromptRequest.class));
-      } catch(RuntimeException e) {
+      if (value instanceof Map<?, ?> && ((Map<?, ?>) value).containsKey("name") && ((Map<?, ?>) value).containsKey("prompt") && ((Map<?, ?>) value).containsKey("type")) {
+        try {
+          return of(ObjectMappers.JSON_MAPPER.convertValue(value, CreateChatPromptRequest.class));
+        } catch(RuntimeException e) {
+        }
       }
-      try {
-        return of(ObjectMappers.JSON_MAPPER.convertValue(value, CreateTextPromptRequest.class));
-      } catch(RuntimeException e) {
+      if (value instanceof Map<?, ?> && ((Map<?, ?>) value).containsKey("name") && ((Map<?, ?>) value).containsKey("prompt")) {
+        try {
+          return of(ObjectMappers.JSON_MAPPER.convertValue(value, CreateTextPromptRequest.class));
+        } catch(RuntimeException e) {
+        }
       }
       throw new JsonParseException(p, "Failed to deserialize");
     }

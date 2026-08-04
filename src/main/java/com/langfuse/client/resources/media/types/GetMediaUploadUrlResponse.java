@@ -131,7 +131,6 @@ public final class GetMediaUploadUrlResponse {
 
     /**
      * <p>The unique langfuse identifier of a media record</p>
-     * <p>The unique langfuse identifier of a media record</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
