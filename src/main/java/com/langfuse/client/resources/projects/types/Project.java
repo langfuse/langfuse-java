@@ -200,7 +200,6 @@ public final class Project {
 
     /**
      * <p>The organization this project belongs to</p>
-     * <p>The organization this project belongs to</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override

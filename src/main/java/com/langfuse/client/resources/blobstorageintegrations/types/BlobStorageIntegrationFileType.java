@@ -10,6 +10,8 @@ import java.lang.Object;
 import java.lang.String;
 
 public final class BlobStorageIntegrationFileType {
+  public static final BlobStorageIntegrationFileType PARQUET = new BlobStorageIntegrationFileType(Value.PARQUET, "PARQUET");
+
   public static final BlobStorageIntegrationFileType JSONL = new BlobStorageIntegrationFileType(Value.JSONL, "JSONL");
 
   public static final BlobStorageIntegrationFileType JSON = new BlobStorageIntegrationFileType(Value.JSON, "JSON");
@@ -48,6 +50,8 @@ public final class BlobStorageIntegrationFileType {
 
   public <T> T visit(Visitor<T> visitor) {
     switch (value) {
+      case PARQUET:
+        return visitor.visitParquet();
       case JSONL:
         return visitor.visitJsonl();
       case JSON:
@@ -65,6 +69,8 @@ public final class BlobStorageIntegrationFileType {
   )
   public static BlobStorageIntegrationFileType valueOf(String value) {
     switch (value) {
+      case "PARQUET":
+        return PARQUET;
       case "JSONL":
         return JSONL;
       case "JSON":
@@ -83,6 +89,8 @@ public final class BlobStorageIntegrationFileType {
 
     JSONL,
 
+    PARQUET,
+
     UNKNOWN
   }
 
@@ -92,6 +100,8 @@ public final class BlobStorageIntegrationFileType {
     T visitCsv();
 
     T visitJsonl();
+
+    T visitParquet();
 
     T visitUnknown(String unknownType);
   }

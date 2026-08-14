@@ -26,9 +26,13 @@ import org.jetbrains.annotations.NotNull;
     builder = GetMediaUploadUrlRequest.Builder.class
 )
 public final class GetMediaUploadUrlRequest {
-  private final String traceId;
+  private final Optional<String> traceId;
 
   private final Optional<String> observationId;
+
+  private final Optional<String> datasetId;
+
+  private final Optional<String> datasetItemId;
 
   private final MediaContentType contentType;
 
@@ -40,11 +44,14 @@ public final class GetMediaUploadUrlRequest {
 
   private final Map<String, Object> additionalProperties;
 
-  private GetMediaUploadUrlRequest(String traceId, Optional<String> observationId,
-      MediaContentType contentType, int contentLength, String sha256Hash, String field,
+  private GetMediaUploadUrlRequest(Optional<String> traceId, Optional<String> observationId,
+      Optional<String> datasetId, Optional<String> datasetItemId, MediaContentType contentType,
+      int contentLength, String sha256Hash, String field,
       Map<String, Object> additionalProperties) {
     this.traceId = traceId;
     this.observationId = observationId;
+    this.datasetId = datasetId;
+    this.datasetItemId = datasetItemId;
     this.contentType = contentType;
     this.contentLength = contentLength;
     this.sha256Hash = sha256Hash;
@@ -53,10 +60,10 @@ public final class GetMediaUploadUrlRequest {
   }
 
   /**
-   * @return The trace ID associated with the media record
+   * @return The trace the media is associated with. Null for dataset item media uploads.
    */
   @JsonProperty("traceId")
-  public String getTraceId() {
+  public Optional<String> getTraceId() {
     return traceId;
   }
 
@@ -66,6 +73,22 @@ public final class GetMediaUploadUrlRequest {
   @JsonProperty("observationId")
   public Optional<String> getObservationId() {
     return observationId;
+  }
+
+  /**
+   * @return The dataset the media belongs to. Null for trace/observation media uploads.
+   */
+  @JsonProperty("datasetId")
+  public Optional<String> getDatasetId() {
+    return datasetId;
+  }
+
+  /**
+   * @return The dataset item the media is associated with (need not exist yet). Null for trace/observation media uploads.
+   */
+  @JsonProperty("datasetItemId")
+  public Optional<String> getDatasetItemId() {
+    return datasetItemId;
   }
 
   @JsonProperty("contentType")
@@ -90,7 +113,7 @@ public final class GetMediaUploadUrlRequest {
   }
 
   /**
-   * @return The trace / observation field the media record is associated with. This can be one of <code>input</code>, <code>output</code>, <code>metadata</code>
+   * @return The item field the media is in: <code>input</code>/<code>output</code>/<code>metadata</code> (trace) or <code>input</code>/<code>expectedOutput</code>/<code>metadata</code> (dataset item).
    */
   @JsonProperty("field")
   public String getField() {
@@ -109,12 +132,12 @@ public final class GetMediaUploadUrlRequest {
   }
 
   private boolean equalTo(GetMediaUploadUrlRequest other) {
-    return traceId.equals(other.traceId) && observationId.equals(other.observationId) && contentType.equals(other.contentType) && contentLength == other.contentLength && sha256Hash.equals(other.sha256Hash) && field.equals(other.field);
+    return traceId.equals(other.traceId) && observationId.equals(other.observationId) && datasetId.equals(other.datasetId) && datasetItemId.equals(other.datasetItemId) && contentType.equals(other.contentType) && contentLength == other.contentLength && sha256Hash.equals(other.sha256Hash) && field.equals(other.field);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.traceId, this.observationId, this.contentType, this.contentLength, this.sha256Hash, this.field);
+    return Objects.hash(this.traceId, this.observationId, this.datasetId, this.datasetItemId, this.contentType, this.contentLength, this.sha256Hash, this.field);
   }
 
   @java.lang.Override
@@ -122,21 +145,14 @@ public final class GetMediaUploadUrlRequest {
     return ObjectMappers.stringify(this);
   }
 
-  public static TraceIdStage builder() {
+  public static ContentTypeStage builder() {
     return new Builder();
-  }
-
-  public interface TraceIdStage {
-    /**
-     * <p>The trace ID associated with the media record</p>
-     */
-    ContentTypeStage traceId(@NotNull String traceId);
-
-    Builder from(GetMediaUploadUrlRequest other);
   }
 
   public interface ContentTypeStage {
     ContentLengthStage contentType(@NotNull MediaContentType contentType);
+
+    Builder from(GetMediaUploadUrlRequest other);
   }
 
   public interface ContentLengthStage {
@@ -155,7 +171,7 @@ public final class GetMediaUploadUrlRequest {
 
   public interface FieldStage {
     /**
-     * <p>The trace / observation field the media record is associated with. This can be one of <code>input</code>, <code>output</code>, <code>metadata</code></p>
+     * <p>The item field the media is in: <code>input</code>/<code>output</code>/<code>metadata</code> (trace) or <code>input</code>/<code>expectedOutput</code>/<code>metadata</code> (dataset item).</p>
      */
     _FinalStage field(@NotNull String field);
   }
@@ -168,19 +184,38 @@ public final class GetMediaUploadUrlRequest {
     _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
     /**
+     * <p>The trace the media is associated with. Null for dataset item media uploads.</p>
+     */
+    _FinalStage traceId(Optional<String> traceId);
+
+    _FinalStage traceId(String traceId);
+
+    /**
      * <p>The observation ID associated with the media record. If the media record is associated directly with a trace, this will be null.</p>
      */
     _FinalStage observationId(Optional<String> observationId);
 
     _FinalStage observationId(String observationId);
+
+    /**
+     * <p>The dataset the media belongs to. Null for trace/observation media uploads.</p>
+     */
+    _FinalStage datasetId(Optional<String> datasetId);
+
+    _FinalStage datasetId(String datasetId);
+
+    /**
+     * <p>The dataset item the media is associated with (need not exist yet). Null for trace/observation media uploads.</p>
+     */
+    _FinalStage datasetItemId(Optional<String> datasetItemId);
+
+    _FinalStage datasetItemId(String datasetItemId);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements TraceIdStage, ContentTypeStage, ContentLengthStage, Sha256HashStage, FieldStage, _FinalStage {
-    private String traceId;
-
+  public static final class Builder implements ContentTypeStage, ContentLengthStage, Sha256HashStage, FieldStage, _FinalStage {
     private MediaContentType contentType;
 
     private int contentLength;
@@ -189,7 +224,13 @@ public final class GetMediaUploadUrlRequest {
 
     private String field;
 
+    private Optional<String> datasetItemId = Optional.empty();
+
+    private Optional<String> datasetId = Optional.empty();
+
     private Optional<String> observationId = Optional.empty();
+
+    private Optional<String> traceId = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -201,22 +242,12 @@ public final class GetMediaUploadUrlRequest {
     public Builder from(GetMediaUploadUrlRequest other) {
       traceId(other.getTraceId());
       observationId(other.getObservationId());
+      datasetId(other.getDatasetId());
+      datasetItemId(other.getDatasetItemId());
       contentType(other.getContentType());
       contentLength(other.getContentLength());
       sha256Hash(other.getSha256Hash());
       field(other.getField());
-      return this;
-    }
-
-    /**
-     * <p>The trace ID associated with the media record</p>
-     * <p>The trace ID associated with the media record</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    @JsonSetter("traceId")
-    public ContentTypeStage traceId(@NotNull String traceId) {
-      this.traceId = Objects.requireNonNull(traceId, "traceId must not be null");
       return this;
     }
 
@@ -229,7 +260,6 @@ public final class GetMediaUploadUrlRequest {
 
     /**
      * <p>The size of the media record in bytes</p>
-     * <p>The size of the media record in bytes</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -241,7 +271,6 @@ public final class GetMediaUploadUrlRequest {
 
     /**
      * <p>The SHA-256 hash of the media record</p>
-     * <p>The SHA-256 hash of the media record</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -252,14 +281,59 @@ public final class GetMediaUploadUrlRequest {
     }
 
     /**
-     * <p>The trace / observation field the media record is associated with. This can be one of <code>input</code>, <code>output</code>, <code>metadata</code></p>
-     * <p>The trace / observation field the media record is associated with. This can be one of <code>input</code>, <code>output</code>, <code>metadata</code></p>
+     * <p>The item field the media is in: <code>input</code>/<code>output</code>/<code>metadata</code> (trace) or <code>input</code>/<code>expectedOutput</code>/<code>metadata</code> (dataset item).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
     @JsonSetter("field")
     public _FinalStage field(@NotNull String field) {
       this.field = Objects.requireNonNull(field, "field must not be null");
+      return this;
+    }
+
+    /**
+     * <p>The dataset item the media is associated with (need not exist yet). Null for trace/observation media uploads.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage datasetItemId(String datasetItemId) {
+      this.datasetItemId = Optional.ofNullable(datasetItemId);
+      return this;
+    }
+
+    /**
+     * <p>The dataset item the media is associated with (need not exist yet). Null for trace/observation media uploads.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "datasetItemId",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage datasetItemId(Optional<String> datasetItemId) {
+      this.datasetItemId = datasetItemId;
+      return this;
+    }
+
+    /**
+     * <p>The dataset the media belongs to. Null for trace/observation media uploads.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage datasetId(String datasetId) {
+      this.datasetId = Optional.ofNullable(datasetId);
+      return this;
+    }
+
+    /**
+     * <p>The dataset the media belongs to. Null for trace/observation media uploads.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "datasetId",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage datasetId(Optional<String> datasetId) {
+      this.datasetId = datasetId;
       return this;
     }
 
@@ -286,9 +360,32 @@ public final class GetMediaUploadUrlRequest {
       return this;
     }
 
+    /**
+     * <p>The trace the media is associated with. Null for dataset item media uploads.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage traceId(String traceId) {
+      this.traceId = Optional.ofNullable(traceId);
+      return this;
+    }
+
+    /**
+     * <p>The trace the media is associated with. Null for dataset item media uploads.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "traceId",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage traceId(Optional<String> traceId) {
+      this.traceId = traceId;
+      return this;
+    }
+
     @java.lang.Override
     public GetMediaUploadUrlRequest build() {
-      return new GetMediaUploadUrlRequest(traceId, observationId, contentType, contentLength, sha256Hash, field, additionalProperties);
+      return new GetMediaUploadUrlRequest(traceId, observationId, datasetId, datasetItemId, contentType, contentLength, sha256Hash, field, additionalProperties);
     }
 
     @java.lang.Override

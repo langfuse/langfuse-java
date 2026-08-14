@@ -30,28 +30,44 @@ public class AsyncSessionsClient {
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public CompletableFuture<PaginatedSessions> list() {
     return this.rawClient.list().thenApply(response -> response.body());
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public CompletableFuture<PaginatedSessions> list(RequestOptions requestOptions) {
     return this.rawClient.list(requestOptions).thenApply(response -> response.body());
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public CompletableFuture<PaginatedSessions> list(GetSessionsRequest request) {
     return this.rawClient.list(request).thenApply(response -> response.body());
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public CompletableFuture<PaginatedSessions> list(GetSessionsRequest request,
       RequestOptions requestOptions) {
@@ -59,14 +75,22 @@ public class AsyncSessionsClient {
   }
 
   /**
-   * Get a session. Please note that <code>traces</code> on this endpoint are not paginated, if you plan to fetch large sessions, consider <code>GET /api/public/traces?sessionId=&lt;sessionId&gt;</code>
+   * Get a session.
+   * <p>Please note that <code>traces</code> on this endpoint are not paginated. For large
+   * sessions or new data extraction workflows, use the v2 observations endpoint
+   * with a URL-encoded <code>sessionId</code> filter and a bounded time range:
+   * <code>GET /api/public/v2/observations?filter=&lt;sessionId filter&gt;&amp;fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public CompletableFuture<SessionWithTraces> get(String sessionId) {
     return this.rawClient.get(sessionId).thenApply(response -> response.body());
   }
 
   /**
-   * Get a session. Please note that <code>traces</code> on this endpoint are not paginated, if you plan to fetch large sessions, consider <code>GET /api/public/traces?sessionId=&lt;sessionId&gt;</code>
+   * Get a session.
+   * <p>Please note that <code>traces</code> on this endpoint are not paginated. For large
+   * sessions or new data extraction workflows, use the v2 observations endpoint
+   * with a URL-encoded <code>sessionId</code> filter and a bounded time range:
+   * <code>GET /api/public/v2/observations?filter=&lt;sessionId filter&gt;&amp;fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public CompletableFuture<SessionWithTraces> get(String sessionId, RequestOptions requestOptions) {
     return this.rawClient.get(sessionId, requestOptions).thenApply(response -> response.body());

@@ -10,13 +10,13 @@ import java.lang.Object;
 import java.lang.String;
 
 public final class CommentObjectType {
+  public static final CommentObjectType TRACE = new CommentObjectType(Value.TRACE, "TRACE");
+
   public static final CommentObjectType OBSERVATION = new CommentObjectType(Value.OBSERVATION, "OBSERVATION");
 
   public static final CommentObjectType PROMPT = new CommentObjectType(Value.PROMPT, "PROMPT");
 
   public static final CommentObjectType SESSION = new CommentObjectType(Value.SESSION, "SESSION");
-
-  public static final CommentObjectType TRACE = new CommentObjectType(Value.TRACE, "TRACE");
 
   private final Value value;
 
@@ -50,14 +50,14 @@ public final class CommentObjectType {
 
   public <T> T visit(Visitor<T> visitor) {
     switch (value) {
+      case TRACE:
+        return visitor.visitTrace();
       case OBSERVATION:
         return visitor.visitObservation();
       case PROMPT:
         return visitor.visitPrompt();
       case SESSION:
         return visitor.visitSession();
-      case TRACE:
-        return visitor.visitTrace();
       case UNKNOWN:
       default:
         return visitor.visitUnknown(string);
@@ -69,14 +69,14 @@ public final class CommentObjectType {
   )
   public static CommentObjectType valueOf(String value) {
     switch (value) {
+      case "TRACE":
+        return TRACE;
       case "OBSERVATION":
         return OBSERVATION;
       case "PROMPT":
         return PROMPT;
       case "SESSION":
         return SESSION;
-      case "TRACE":
-        return TRACE;
       default:
         return new CommentObjectType(Value.UNKNOWN, value);
     }

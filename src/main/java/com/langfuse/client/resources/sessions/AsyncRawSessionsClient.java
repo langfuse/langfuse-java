@@ -12,6 +12,7 @@ import com.langfuse.client.core.LangfuseClientHttpResponse;
 import com.langfuse.client.core.ObjectMappers;
 import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
+import com.langfuse.client.core.RetryInterceptor;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -43,14 +44,22 @@ public class AsyncRawSessionsClient {
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public CompletableFuture<LangfuseClientHttpResponse<PaginatedSessions>> list() {
     return list(GetSessionsRequest.builder().build());
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public CompletableFuture<LangfuseClientHttpResponse<PaginatedSessions>> list(
       RequestOptions requestOptions) {
@@ -58,7 +67,11 @@ public class AsyncRawSessionsClient {
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public CompletableFuture<LangfuseClientHttpResponse<PaginatedSessions>> list(
       GetSessionsRequest request) {
@@ -66,7 +79,11 @@ public class AsyncRawSessionsClient {
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public CompletableFuture<LangfuseClientHttpResponse<PaginatedSessions>> list(
       GetSessionsRequest request, RequestOptions requestOptions) {
@@ -102,6 +119,9 @@ public class AsyncRawSessionsClient {
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
         client = clientOptions.httpClientWithTimeout(requestOptions);
       }
+      if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+        okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+      }
       CompletableFuture<LangfuseClientHttpResponse<PaginatedSessions>> future = new CompletableFuture<>();
       client.newCall(okhttpRequest).enqueue(new Callback() {
         @Override
@@ -133,6 +153,9 @@ public class AsyncRawSessionsClient {
             future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
             return;
           }
+          catch (JsonProcessingException e) {
+            future.completeExceptionally(new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e));
+          }
           catch (IOException e) {
             future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
           }
@@ -147,14 +170,22 @@ public class AsyncRawSessionsClient {
     }
 
     /**
-     * Get a session. Please note that <code>traces</code> on this endpoint are not paginated, if you plan to fetch large sessions, consider <code>GET /api/public/traces?sessionId=&lt;sessionId&gt;</code>
+     * Get a session.
+     * <p>Please note that <code>traces</code> on this endpoint are not paginated. For large
+     * sessions or new data extraction workflows, use the v2 observations endpoint
+     * with a URL-encoded <code>sessionId</code> filter and a bounded time range:
+     * <code>GET /api/public/v2/observations?filter=&lt;sessionId filter&gt;&amp;fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
      */
     public CompletableFuture<LangfuseClientHttpResponse<SessionWithTraces>> get(String sessionId) {
       return get(sessionId,null);
     }
 
     /**
-     * Get a session. Please note that <code>traces</code> on this endpoint are not paginated, if you plan to fetch large sessions, consider <code>GET /api/public/traces?sessionId=&lt;sessionId&gt;</code>
+     * Get a session.
+     * <p>Please note that <code>traces</code> on this endpoint are not paginated. For large
+     * sessions or new data extraction workflows, use the v2 observations endpoint
+     * with a URL-encoded <code>sessionId</code> filter and a bounded time range:
+     * <code>GET /api/public/v2/observations?filter=&lt;sessionId filter&gt;&amp;fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
      */
     public CompletableFuture<LangfuseClientHttpResponse<SessionWithTraces>> get(String sessionId,
         RequestOptions requestOptions) {
@@ -175,6 +206,9 @@ public class AsyncRawSessionsClient {
         OkHttpClient client = clientOptions.httpClient();
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
           client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+          okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
         }
         CompletableFuture<LangfuseClientHttpResponse<SessionWithTraces>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
@@ -206,6 +240,9 @@ public class AsyncRawSessionsClient {
               Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
               future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
               return;
+            }
+            catch (JsonProcessingException e) {
+              future.completeExceptionally(new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e));
             }
             catch (IOException e) {
               future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));

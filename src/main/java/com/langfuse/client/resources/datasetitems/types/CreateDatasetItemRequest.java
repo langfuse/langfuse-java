@@ -91,7 +91,7 @@ public final class CreateDatasetItemRequest {
   }
 
   /**
-   * @return Dataset items are upserted on their id. Id needs to be unique (project-level) and cannot be reused across datasets.
+   * @return Dataset items are upserted on their id. Id needs to be unique (project-level), cannot be reused across datasets, and must be at most 255 characters.
    */
   @JsonProperty("id")
   public Optional<String> getId() {
@@ -169,7 +169,7 @@ public final class CreateDatasetItemRequest {
     _FinalStage sourceObservationId(String sourceObservationId);
 
     /**
-     * <p>Dataset items are upserted on their id. Id needs to be unique (project-level) and cannot be reused across datasets.</p>
+     * <p>Dataset items are upserted on their id. Id needs to be unique (project-level), cannot be reused across datasets, and must be at most 255 characters.</p>
      */
     _FinalStage id(Optional<String> id);
 
@@ -253,7 +253,7 @@ public final class CreateDatasetItemRequest {
     }
 
     /**
-     * <p>Dataset items are upserted on their id. Id needs to be unique (project-level) and cannot be reused across datasets.</p>
+     * <p>Dataset items are upserted on their id. Id needs to be unique (project-level), cannot be reused across datasets, and must be at most 255 characters.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -263,7 +263,7 @@ public final class CreateDatasetItemRequest {
     }
 
     /**
-     * <p>Dataset items are upserted on their id. Id needs to be unique (project-level) and cannot be reused across datasets.</p>
+     * <p>Dataset items are upserted on their id. Id needs to be unique (project-level), cannot be reused across datasets, and must be at most 255 characters.</p>
      */
     @java.lang.Override
     @JsonSetter(

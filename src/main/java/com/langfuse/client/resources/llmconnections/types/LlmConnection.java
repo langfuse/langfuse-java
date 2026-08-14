@@ -133,7 +133,7 @@ public final class LlmConnection {
   }
 
   /**
-   * @return Adapter-specific configuration. Required for Bedrock (<code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>), optional for VertexAI (<code>{&quot;location&quot;:&quot;us-central1&quot;}</code>), not used by other adapters.
+   * @return Adapter-specific configuration. Required for Bedrock (<code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>), optional for OpenAI (<code>{&quot;useResponsesApi&quot;:true}</code>), optional for VertexAI (<code>{&quot;location&quot;:&quot;us-central1&quot;}</code>), not used by other adapters.
    */
   @JsonProperty("config")
   public Optional<Map<String, Object>> getConfig() {
@@ -254,7 +254,7 @@ public final class LlmConnection {
     _FinalStage addAllExtraHeaderKeys(List<String> extraHeaderKeys);
 
     /**
-     * <p>Adapter-specific configuration. Required for Bedrock (<code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>), optional for VertexAI (<code>{&quot;location&quot;:&quot;us-central1&quot;}</code>), not used by other adapters.</p>
+     * <p>Adapter-specific configuration. Required for Bedrock (<code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>), optional for OpenAI (<code>{&quot;useResponsesApi&quot;:true}</code>), optional for VertexAI (<code>{&quot;location&quot;:&quot;us-central1&quot;}</code>), not used by other adapters.</p>
      */
     _FinalStage config(Optional<Map<String, Object>> config);
 
@@ -318,7 +318,6 @@ public final class LlmConnection {
 
     /**
      * <p>Provider name (e.g., 'openai', 'my-gateway'). Must be unique in project, used for upserting.</p>
-     * <p>Provider name (e.g., 'openai', 'my-gateway'). Must be unique in project, used for upserting.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -329,7 +328,6 @@ public final class LlmConnection {
     }
 
     /**
-     * <p>The adapter used to interface with the LLM</p>
      * <p>The adapter used to interface with the LLM</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -342,7 +340,6 @@ public final class LlmConnection {
 
     /**
      * <p>Masked version of the secret key for display purposes</p>
-     * <p>Masked version of the secret key for display purposes</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -353,7 +350,6 @@ public final class LlmConnection {
     }
 
     /**
-     * <p>Whether to include default models for this adapter</p>
      * <p>Whether to include default models for this adapter</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -379,7 +375,7 @@ public final class LlmConnection {
     }
 
     /**
-     * <p>Adapter-specific configuration. Required for Bedrock (<code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>), optional for VertexAI (<code>{&quot;location&quot;:&quot;us-central1&quot;}</code>), not used by other adapters.</p>
+     * <p>Adapter-specific configuration. Required for Bedrock (<code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>), optional for OpenAI (<code>{&quot;useResponsesApi&quot;:true}</code>), optional for VertexAI (<code>{&quot;location&quot;:&quot;us-central1&quot;}</code>), not used by other adapters.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -389,7 +385,7 @@ public final class LlmConnection {
     }
 
     /**
-     * <p>Adapter-specific configuration. Required for Bedrock (<code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>), optional for VertexAI (<code>{&quot;location&quot;:&quot;us-central1&quot;}</code>), not used by other adapters.</p>
+     * <p>Adapter-specific configuration. Required for Bedrock (<code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>), optional for OpenAI (<code>{&quot;useResponsesApi&quot;:true}</code>), optional for VertexAI (<code>{&quot;location&quot;:&quot;us-central1&quot;}</code>), not used by other adapters.</p>
      */
     @java.lang.Override
     @JsonSetter(

@@ -91,24 +91,17 @@ public final class ChatMessageWithPlaceholders {
     public ChatMessageWithPlaceholders deserialize(JsonParser p, DeserializationContext context)
         throws IOException {
       Object value = p.readValueAs(Object.class);
-      // Use "type" discriminator when present — placeholder messages carry
-      // "type": "placeholder" while regular chat messages typically have no type field.
-      if (value instanceof Map) {
-        Map<?, ?> map = (Map<?, ?>) value;
-        if ("placeholder".equals(map.get("type"))) {
-          try {
-            return of(ObjectMappers.JSON_MAPPER.convertValue(value, PlaceholderMessage.class));
-          } catch(RuntimeException e) {
-          }
+      if (value instanceof Map<?, ?> && ((Map<?, ?>) value).containsKey("role") && ((Map<?, ?>) value).containsKey("content")) {
+        try {
+          return of(ObjectMappers.JSON_MAPPER.convertValue(value, ChatMessage.class));
+        } catch(RuntimeException e) {
         }
       }
-      try {
-        return of(ObjectMappers.JSON_MAPPER.convertValue(value, ChatMessage.class));
-      } catch(RuntimeException e) {
-      }
-      try {
-        return of(ObjectMappers.JSON_MAPPER.convertValue(value, PlaceholderMessage.class));
-      } catch(RuntimeException e) {
+      if (value instanceof Map<?, ?> && ((Map<?, ?>) value).containsKey("name")) {
+        try {
+          return of(ObjectMappers.JSON_MAPPER.convertValue(value, PlaceholderMessage.class));
+        } catch(RuntimeException e) {
+        }
       }
       throw new JsonParseException(p, "Failed to deserialize");
     }

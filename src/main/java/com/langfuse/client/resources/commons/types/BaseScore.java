@@ -567,7 +567,6 @@ public final class BaseScore implements IBaseScore {
 
     /**
      * <p>Metadata associated with the score</p>
-     * <p>Metadata associated with the score</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -578,7 +577,6 @@ public final class BaseScore implements IBaseScore {
     }
 
     /**
-     * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

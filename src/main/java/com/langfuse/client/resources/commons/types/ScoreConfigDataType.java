@@ -10,11 +10,13 @@ import java.lang.Object;
 import java.lang.String;
 
 public final class ScoreConfigDataType {
+  public static final ScoreConfigDataType BOOLEAN = new ScoreConfigDataType(Value.BOOLEAN, "BOOLEAN");
+
+  public static final ScoreConfigDataType TEXT = new ScoreConfigDataType(Value.TEXT, "TEXT");
+
   public static final ScoreConfigDataType CATEGORICAL = new ScoreConfigDataType(Value.CATEGORICAL, "CATEGORICAL");
 
   public static final ScoreConfigDataType NUMERIC = new ScoreConfigDataType(Value.NUMERIC, "NUMERIC");
-
-  public static final ScoreConfigDataType BOOLEAN = new ScoreConfigDataType(Value.BOOLEAN, "BOOLEAN");
 
   private final Value value;
 
@@ -48,12 +50,14 @@ public final class ScoreConfigDataType {
 
   public <T> T visit(Visitor<T> visitor) {
     switch (value) {
+      case BOOLEAN:
+        return visitor.visitBoolean();
+      case TEXT:
+        return visitor.visitText();
       case CATEGORICAL:
         return visitor.visitCategorical();
       case NUMERIC:
         return visitor.visitNumeric();
-      case BOOLEAN:
-        return visitor.visitBoolean();
       case UNKNOWN:
       default:
         return visitor.visitUnknown(string);
@@ -65,12 +69,14 @@ public final class ScoreConfigDataType {
   )
   public static ScoreConfigDataType valueOf(String value) {
     switch (value) {
+      case "BOOLEAN":
+        return BOOLEAN;
+      case "TEXT":
+        return TEXT;
       case "CATEGORICAL":
         return CATEGORICAL;
       case "NUMERIC":
         return NUMERIC;
-      case "BOOLEAN":
-        return BOOLEAN;
       default:
         return new ScoreConfigDataType(Value.UNKNOWN, value);
     }
@@ -83,6 +89,8 @@ public final class ScoreConfigDataType {
 
     CATEGORICAL,
 
+    TEXT,
+
     UNKNOWN
   }
 
@@ -92,6 +100,8 @@ public final class ScoreConfigDataType {
     T visitBoolean();
 
     T visitCategorical();
+
+    T visitText();
 
     T visitUnknown(String unknownType);
   }

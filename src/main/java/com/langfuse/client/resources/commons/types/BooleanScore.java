@@ -569,7 +569,6 @@ public final class BooleanScore implements IBooleanScore, IBaseScore {
 
     /**
      * <p>The numeric value of the score. Equals 1 for &quot;True&quot; and 0 for &quot;False&quot;</p>
-     * <p>The numeric value of the score. Equals 1 for &quot;True&quot; and 0 for &quot;False&quot;</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -580,7 +579,6 @@ public final class BooleanScore implements IBooleanScore, IBaseScore {
     }
 
     /**
-     * <p>The string representation of the score value. Is inferred from the numeric value and equals &quot;True&quot; or &quot;False&quot;</p>
      * <p>The string representation of the score value. Is inferred from the numeric value and equals &quot;True&quot; or &quot;False&quot;</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -635,7 +633,6 @@ public final class BooleanScore implements IBooleanScore, IBaseScore {
 
     /**
      * <p>Metadata associated with the score</p>
-     * <p>Metadata associated with the score</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -646,7 +643,6 @@ public final class BooleanScore implements IBooleanScore, IBaseScore {
     }
 
     /**
-     * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

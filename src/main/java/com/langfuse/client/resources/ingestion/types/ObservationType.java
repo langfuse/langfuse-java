@@ -12,23 +12,23 @@ import java.lang.String;
 public final class ObservationType {
   public static final ObservationType AGENT = new ObservationType(Value.AGENT, "AGENT");
 
+  public static final ObservationType EVALUATOR = new ObservationType(Value.EVALUATOR, "EVALUATOR");
+
   public static final ObservationType TOOL = new ObservationType(Value.TOOL, "TOOL");
 
   public static final ObservationType CHAIN = new ObservationType(Value.CHAIN, "CHAIN");
 
-  public static final ObservationType EVALUATOR = new ObservationType(Value.EVALUATOR, "EVALUATOR");
-
   public static final ObservationType SPAN = new ObservationType(Value.SPAN, "SPAN");
-
-  public static final ObservationType GENERATION = new ObservationType(Value.GENERATION, "GENERATION");
-
-  public static final ObservationType GUARDRAIL = new ObservationType(Value.GUARDRAIL, "GUARDRAIL");
 
   public static final ObservationType EVENT = new ObservationType(Value.EVENT, "EVENT");
 
   public static final ObservationType EMBEDDING = new ObservationType(Value.EMBEDDING, "EMBEDDING");
 
   public static final ObservationType RETRIEVER = new ObservationType(Value.RETRIEVER, "RETRIEVER");
+
+  public static final ObservationType GENERATION = new ObservationType(Value.GENERATION, "GENERATION");
+
+  public static final ObservationType GUARDRAIL = new ObservationType(Value.GUARDRAIL, "GUARDRAIL");
 
   private final Value value;
 
@@ -64,24 +64,24 @@ public final class ObservationType {
     switch (value) {
       case AGENT:
         return visitor.visitAgent();
+      case EVALUATOR:
+        return visitor.visitEvaluator();
       case TOOL:
         return visitor.visitTool();
       case CHAIN:
         return visitor.visitChain();
-      case EVALUATOR:
-        return visitor.visitEvaluator();
       case SPAN:
         return visitor.visitSpan();
-      case GENERATION:
-        return visitor.visitGeneration();
-      case GUARDRAIL:
-        return visitor.visitGuardrail();
       case EVENT:
         return visitor.visitEvent();
       case EMBEDDING:
         return visitor.visitEmbedding();
       case RETRIEVER:
         return visitor.visitRetriever();
+      case GENERATION:
+        return visitor.visitGeneration();
+      case GUARDRAIL:
+        return visitor.visitGuardrail();
       case UNKNOWN:
       default:
         return visitor.visitUnknown(string);
@@ -95,24 +95,24 @@ public final class ObservationType {
     switch (value) {
       case "AGENT":
         return AGENT;
+      case "EVALUATOR":
+        return EVALUATOR;
       case "TOOL":
         return TOOL;
       case "CHAIN":
         return CHAIN;
-      case "EVALUATOR":
-        return EVALUATOR;
       case "SPAN":
         return SPAN;
-      case "GENERATION":
-        return GENERATION;
-      case "GUARDRAIL":
-        return GUARDRAIL;
       case "EVENT":
         return EVENT;
       case "EMBEDDING":
         return EMBEDDING;
       case "RETRIEVER":
         return RETRIEVER;
+      case "GENERATION":
+        return GENERATION;
+      case "GUARDRAIL":
+        return GUARDRAIL;
       default:
         return new ObservationType(Value.UNKNOWN, value);
     }

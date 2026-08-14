@@ -10,9 +10,9 @@ import java.lang.Object;
 import java.lang.String;
 
 public final class ModelUsageUnit {
-  public static final ModelUsageUnit IMAGES = new ModelUsageUnit(Value.IMAGES, "IMAGES");
-
   public static final ModelUsageUnit SECONDS = new ModelUsageUnit(Value.SECONDS, "SECONDS");
+
+  public static final ModelUsageUnit IMAGES = new ModelUsageUnit(Value.IMAGES, "IMAGES");
 
   public static final ModelUsageUnit TOKENS = new ModelUsageUnit(Value.TOKENS, "TOKENS");
 
@@ -54,10 +54,10 @@ public final class ModelUsageUnit {
 
   public <T> T visit(Visitor<T> visitor) {
     switch (value) {
-      case IMAGES:
-        return visitor.visitImages();
       case SECONDS:
         return visitor.visitSeconds();
+      case IMAGES:
+        return visitor.visitImages();
       case TOKENS:
         return visitor.visitTokens();
       case CHARACTERS:
@@ -77,10 +77,10 @@ public final class ModelUsageUnit {
   )
   public static ModelUsageUnit valueOf(String value) {
     switch (value) {
-      case "IMAGES":
-        return IMAGES;
       case "SECONDS":
         return SECONDS;
+      case "IMAGES":
+        return IMAGES;
       case "TOKENS":
         return TOKENS;
       case "CHARACTERS":

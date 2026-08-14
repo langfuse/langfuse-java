@@ -9,6 +9,7 @@ import com.langfuse.client.core.RequestOptions;
 import java.lang.String;
 import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationDeletionResponse;
 import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationResponse;
+import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationStatusResponse;
 import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationsResponse;
 import com.langfuse.client.resources.blobstorageintegrations.types.CreateBlobStorageIntegrationRequest;
 
@@ -57,6 +58,21 @@ public class BlobStorageIntegrationsClient {
   public BlobStorageIntegrationResponse upsertBlobStorageIntegration(
       CreateBlobStorageIntegrationRequest request, RequestOptions requestOptions) {
     return this.rawClient.upsertBlobStorageIntegration(request, requestOptions).body();
+  }
+
+  /**
+   * Get the sync status of a blob storage integration by integration ID (requires organization-scoped API key)
+   */
+  public BlobStorageIntegrationStatusResponse getBlobStorageIntegrationStatus(String id) {
+    return this.rawClient.getBlobStorageIntegrationStatus(id).body();
+  }
+
+  /**
+   * Get the sync status of a blob storage integration by integration ID (requires organization-scoped API key)
+   */
+  public BlobStorageIntegrationStatusResponse getBlobStorageIntegrationStatus(String id,
+      RequestOptions requestOptions) {
+    return this.rawClient.getBlobStorageIntegrationStatus(id, requestOptions).body();
   }
 
   /**

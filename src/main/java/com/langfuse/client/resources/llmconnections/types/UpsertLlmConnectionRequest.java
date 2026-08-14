@@ -118,7 +118,7 @@ public final class UpsertLlmConnectionRequest {
   }
 
   /**
-   * @return Adapter-specific configuration. Validation rules: - <strong>Bedrock</strong>: Required. Must be <code>{&quot;region&quot;: &quot;&lt;aws-region&gt;&quot;}</code> (e.g., <code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>) - <strong>VertexAI</strong>: Optional. If provided, must be <code>{&quot;location&quot;: &quot;&lt;gcp-location&gt;&quot;}</code> (e.g., <code>{&quot;location&quot;:&quot;us-central1&quot;}</code>) - <strong>Other adapters</strong>: Not supported. Omit this field or set to null.
+   * @return Adapter-specific configuration. Validation rules: - <strong>Bedrock</strong>: Required. Must be <code>{&quot;region&quot;: &quot;&lt;aws-region&gt;&quot;}</code> (e.g., <code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>) - <strong>OpenAI</strong>: Optional. If provided, must be <code>{&quot;useResponsesApi&quot;: &lt;boolean&gt;}</code> to control whether Langfuse routes calls through OpenAI's Responses API. - <strong>VertexAI</strong>: Optional. If provided, must be <code>{&quot;location&quot;: &quot;&lt;gcp-location&gt;&quot;}</code> (e.g., <code>{&quot;location&quot;:&quot;us-central1&quot;}</code>) - <strong>Other adapters</strong>: Not supported. Omit this field or set to null.
    */
   @JsonProperty("config")
   public Optional<Map<String, Object>> getConfig() {
@@ -213,7 +213,7 @@ public final class UpsertLlmConnectionRequest {
     _FinalStage extraHeaders(Map<String, String> extraHeaders);
 
     /**
-     * <p>Adapter-specific configuration. Validation rules: - <strong>Bedrock</strong>: Required. Must be <code>{&quot;region&quot;: &quot;&lt;aws-region&gt;&quot;}</code> (e.g., <code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>) - <strong>VertexAI</strong>: Optional. If provided, must be <code>{&quot;location&quot;: &quot;&lt;gcp-location&gt;&quot;}</code> (e.g., <code>{&quot;location&quot;:&quot;us-central1&quot;}</code>) - <strong>Other adapters</strong>: Not supported. Omit this field or set to null.</p>
+     * <p>Adapter-specific configuration. Validation rules: - <strong>Bedrock</strong>: Required. Must be <code>{&quot;region&quot;: &quot;&lt;aws-region&gt;&quot;}</code> (e.g., <code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>) - <strong>OpenAI</strong>: Optional. If provided, must be <code>{&quot;useResponsesApi&quot;: &lt;boolean&gt;}</code> to control whether Langfuse routes calls through OpenAI's Responses API. - <strong>VertexAI</strong>: Optional. If provided, must be <code>{&quot;location&quot;: &quot;&lt;gcp-location&gt;&quot;}</code> (e.g., <code>{&quot;location&quot;:&quot;us-central1&quot;}</code>) - <strong>Other adapters</strong>: Not supported. Omit this field or set to null.</p>
      */
     _FinalStage config(Optional<Map<String, Object>> config);
 
@@ -261,7 +261,6 @@ public final class UpsertLlmConnectionRequest {
 
     /**
      * <p>Provider name (e.g., 'openai', 'my-gateway'). Must be unique in project, used for upserting.</p>
-     * <p>Provider name (e.g., 'openai', 'my-gateway'). Must be unique in project, used for upserting.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -272,7 +271,6 @@ public final class UpsertLlmConnectionRequest {
     }
 
     /**
-     * <p>The adapter used to interface with the LLM</p>
      * <p>The adapter used to interface with the LLM</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -285,7 +283,6 @@ public final class UpsertLlmConnectionRequest {
 
     /**
      * <p>Secret key for the LLM API.</p>
-     * <p>Secret key for the LLM API.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -296,7 +293,7 @@ public final class UpsertLlmConnectionRequest {
     }
 
     /**
-     * <p>Adapter-specific configuration. Validation rules: - <strong>Bedrock</strong>: Required. Must be <code>{&quot;region&quot;: &quot;&lt;aws-region&gt;&quot;}</code> (e.g., <code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>) - <strong>VertexAI</strong>: Optional. If provided, must be <code>{&quot;location&quot;: &quot;&lt;gcp-location&gt;&quot;}</code> (e.g., <code>{&quot;location&quot;:&quot;us-central1&quot;}</code>) - <strong>Other adapters</strong>: Not supported. Omit this field or set to null.</p>
+     * <p>Adapter-specific configuration. Validation rules: - <strong>Bedrock</strong>: Required. Must be <code>{&quot;region&quot;: &quot;&lt;aws-region&gt;&quot;}</code> (e.g., <code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>) - <strong>OpenAI</strong>: Optional. If provided, must be <code>{&quot;useResponsesApi&quot;: &lt;boolean&gt;}</code> to control whether Langfuse routes calls through OpenAI's Responses API. - <strong>VertexAI</strong>: Optional. If provided, must be <code>{&quot;location&quot;: &quot;&lt;gcp-location&gt;&quot;}</code> (e.g., <code>{&quot;location&quot;:&quot;us-central1&quot;}</code>) - <strong>Other adapters</strong>: Not supported. Omit this field or set to null.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -306,7 +303,7 @@ public final class UpsertLlmConnectionRequest {
     }
 
     /**
-     * <p>Adapter-specific configuration. Validation rules: - <strong>Bedrock</strong>: Required. Must be <code>{&quot;region&quot;: &quot;&lt;aws-region&gt;&quot;}</code> (e.g., <code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>) - <strong>VertexAI</strong>: Optional. If provided, must be <code>{&quot;location&quot;: &quot;&lt;gcp-location&gt;&quot;}</code> (e.g., <code>{&quot;location&quot;:&quot;us-central1&quot;}</code>) - <strong>Other adapters</strong>: Not supported. Omit this field or set to null.</p>
+     * <p>Adapter-specific configuration. Validation rules: - <strong>Bedrock</strong>: Required. Must be <code>{&quot;region&quot;: &quot;&lt;aws-region&gt;&quot;}</code> (e.g., <code>{&quot;region&quot;:&quot;us-east-1&quot;}</code>) - <strong>OpenAI</strong>: Optional. If provided, must be <code>{&quot;useResponsesApi&quot;: &lt;boolean&gt;}</code> to control whether Langfuse routes calls through OpenAI's Responses API. - <strong>VertexAI</strong>: Optional. If provided, must be <code>{&quot;location&quot;: &quot;&lt;gcp-location&gt;&quot;}</code> (e.g., <code>{&quot;location&quot;:&quot;us-central1&quot;}</code>) - <strong>Other adapters</strong>: Not supported. Omit this field or set to null.</p>
      */
     @java.lang.Override
     @JsonSetter(

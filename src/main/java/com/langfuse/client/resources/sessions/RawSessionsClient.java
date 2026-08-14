@@ -12,6 +12,7 @@ import com.langfuse.client.core.LangfuseClientHttpResponse;
 import com.langfuse.client.core.ObjectMappers;
 import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
+import com.langfuse.client.core.RetryInterceptor;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.String;
@@ -38,28 +39,44 @@ public class RawSessionsClient {
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public LangfuseClientHttpResponse<PaginatedSessions> list() {
     return list(GetSessionsRequest.builder().build());
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public LangfuseClientHttpResponse<PaginatedSessions> list(RequestOptions requestOptions) {
     return list(GetSessionsRequest.builder().build(),requestOptions);
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public LangfuseClientHttpResponse<PaginatedSessions> list(GetSessionsRequest request) {
     return list(request,null);
   }
 
   /**
-   * Get sessions
+   * Get sessions.
+   * <p>This legacy endpoint is not recommended for new data extraction workflows.
+   * Use the v2 observations endpoint with a bounded time range and group rows by
+   * <code>sessionId</code> instead:
+   * <code>GET /api/public/v2/observations?fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
    */
   public LangfuseClientHttpResponse<PaginatedSessions> list(GetSessionsRequest request,
       RequestOptions requestOptions) {
@@ -95,6 +112,9 @@ public class RawSessionsClient {
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
         client = clientOptions.httpClientWithTimeout(requestOptions);
       }
+      if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+        okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+      }
       try (Response response = client.newCall(okhttpRequest).execute()) {
         ResponseBody responseBody = response.body();
         String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -116,20 +136,31 @@ public class RawSessionsClient {
         Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
         throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
       }
+      catch (JsonProcessingException e) {
+        throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
+      }
       catch (IOException e) {
         throw new LangfuseClientException("Network error executing HTTP request", e);
       }
     }
 
     /**
-     * Get a session. Please note that <code>traces</code> on this endpoint are not paginated, if you plan to fetch large sessions, consider <code>GET /api/public/traces?sessionId=&lt;sessionId&gt;</code>
+     * Get a session.
+     * <p>Please note that <code>traces</code> on this endpoint are not paginated. For large
+     * sessions or new data extraction workflows, use the v2 observations endpoint
+     * with a URL-encoded <code>sessionId</code> filter and a bounded time range:
+     * <code>GET /api/public/v2/observations?filter=&lt;sessionId filter&gt;&amp;fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
      */
     public LangfuseClientHttpResponse<SessionWithTraces> get(String sessionId) {
       return get(sessionId,null);
     }
 
     /**
-     * Get a session. Please note that <code>traces</code> on this endpoint are not paginated, if you plan to fetch large sessions, consider <code>GET /api/public/traces?sessionId=&lt;sessionId&gt;</code>
+     * Get a session.
+     * <p>Please note that <code>traces</code> on this endpoint are not paginated. For large
+     * sessions or new data extraction workflows, use the v2 observations endpoint
+     * with a URL-encoded <code>sessionId</code> filter and a bounded time range:
+     * <code>GET /api/public/v2/observations?filter=&lt;sessionId filter&gt;&amp;fromStartTime=&lt;from&gt;&amp;toStartTime=&lt;to&gt;</code>.</p>
      */
     public LangfuseClientHttpResponse<SessionWithTraces> get(String sessionId,
         RequestOptions requestOptions) {
@@ -151,6 +182,9 @@ public class RawSessionsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
           client = clientOptions.httpClientWithTimeout(requestOptions);
         }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+          okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+        }
         try (Response response = client.newCall(okhttpRequest).execute()) {
           ResponseBody responseBody = response.body();
           String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -171,6 +205,9 @@ public class RawSessionsClient {
           }
           Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
           throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+        }
+        catch (JsonProcessingException e) {
+          throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
         }
         catch (IOException e) {
           throw new LangfuseClientException("Network error executing HTTP request", e);

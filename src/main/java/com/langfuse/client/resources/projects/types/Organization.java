@@ -128,7 +128,6 @@ public final class Organization {
 
     /**
      * <p>The unique identifier of the organization</p>
-     * <p>The unique identifier of the organization</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -139,7 +138,6 @@ public final class Organization {
     }
 
     /**
-     * <p>The name of the organization</p>
      * <p>The name of the organization</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

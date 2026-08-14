@@ -208,14 +208,6 @@ public final class PricingTierCondition {
      * <li>&quot;_cache$&quot; matches &quot;input_cache&quot;, &quot;output_cache&quot;, etc.</li>
      * </ul>
      * <p>The pattern is case-insensitive by default. If no keys match, the sum is treated as zero.</p>
-     * <p>Regex pattern to match against usage detail keys. All matching keys' values are summed for threshold comparison.</p>
-     * <p>Examples:</p>
-     * <ul>
-     * <li>&quot;^input&quot; matches &quot;input&quot;, &quot;input_tokens&quot;, &quot;input_cached&quot;, etc.</li>
-     * <li>&quot;^(input|prompt)&quot; matches both &quot;input_tokens&quot; and &quot;prompt_tokens&quot;</li>
-     * <li>&quot;_cache$&quot; matches &quot;input_cache&quot;, &quot;output_cache&quot;, etc.</li>
-     * </ul>
-     * <p>The pattern is case-insensitive by default. If no keys match, the sum is treated as zero.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -226,15 +218,6 @@ public final class PricingTierCondition {
     }
 
     /**
-     * <p>Comparison operator to apply between the summed value and the threshold.</p>
-     * <ul>
-     * <li>gt: greater than (sum &gt; threshold)</li>
-     * <li>gte: greater than or equal (sum &gt;= threshold)</li>
-     * <li>lt: less than (sum &lt; threshold)</li>
-     * <li>lte: less than or equal (sum &lt;= threshold)</li>
-     * <li>eq: equal (sum == threshold)</li>
-     * <li>neq: not equal (sum != threshold)</li>
-     * </ul>
      * <p>Comparison operator to apply between the summed value and the threshold.</p>
      * <ul>
      * <li>gt: greater than (sum &gt; threshold)</li>
@@ -255,7 +238,6 @@ public final class PricingTierCondition {
 
     /**
      * <p>Threshold value for comparison. For token-based pricing, this is typically the token count threshold (e.g., 200000 for a 200K token threshold).</p>
-     * <p>Threshold value for comparison. For token-based pricing, this is typically the token count threshold (e.g., 200000 for a 200K token threshold).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -266,7 +248,6 @@ public final class PricingTierCondition {
     }
 
     /**
-     * <p>Whether the regex pattern matching is case-sensitive. Default is false (case-insensitive matching).</p>
      * <p>Whether the regex pattern matching is case-sensitive. Default is false (case-insensitive matching).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

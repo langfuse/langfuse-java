@@ -107,7 +107,6 @@ public final class CreateCommentResponse {
 
     /**
      * <p>The id of the created object in Langfuse</p>
-     * <p>The id of the created object in Langfuse</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override

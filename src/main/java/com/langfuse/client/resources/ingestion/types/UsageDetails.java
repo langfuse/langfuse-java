@@ -101,16 +101,20 @@ public final class UsageDetails {
     public UsageDetails deserialize(JsonParser p, DeserializationContext context) throws
         IOException {
       Object value = p.readValueAs(Object.class);
+      if (value instanceof Map<?, ?> && ((Map<?, ?>) value).containsKey("prompt_tokens") && ((Map<?, ?>) value).containsKey("completion_tokens") && ((Map<?, ?>) value).containsKey("total_tokens")) {
+        try {
+          return of(ObjectMappers.JSON_MAPPER.convertValue(value, OpenAiCompletionUsageSchema.class));
+        } catch(RuntimeException e) {
+        }
+      }
+      if (value instanceof Map<?, ?> && ((Map<?, ?>) value).containsKey("input_tokens") && ((Map<?, ?>) value).containsKey("output_tokens") && ((Map<?, ?>) value).containsKey("total_tokens")) {
+        try {
+          return of(ObjectMappers.JSON_MAPPER.convertValue(value, OpenAiResponseUsageSchema.class));
+        } catch(RuntimeException e) {
+        }
+      }
       try {
         return of(ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<Map<String, Integer>>() {}));
-      } catch(RuntimeException e) {
-      }
-      try {
-        return of(ObjectMappers.JSON_MAPPER.convertValue(value, OpenAiCompletionUsageSchema.class));
-      } catch(RuntimeException e) {
-      }
-      try {
-        return of(ObjectMappers.JSON_MAPPER.convertValue(value, OpenAiResponseUsageSchema.class));
       } catch(RuntimeException e) {
       }
       throw new JsonParseException(p, "Failed to deserialize");

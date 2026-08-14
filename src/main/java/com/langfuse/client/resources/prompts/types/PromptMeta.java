@@ -223,7 +223,6 @@ public final class PromptMeta {
 
     /**
      * <p>Indicates whether the prompt is a text or chat prompt.</p>
-     * <p>Indicates whether the prompt is a text or chat prompt.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -241,7 +240,6 @@ public final class PromptMeta {
     }
 
     /**
-     * <p>Config object of the most recent prompt version that matches the filters (if any are provided)</p>
      * <p>Config object of the most recent prompt version that matches the filters (if any are provided)</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

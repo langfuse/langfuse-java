@@ -194,7 +194,6 @@ public final class CreateCommentRequest {
 
     /**
      * <p>The id of the project to attach the comment to.</p>
-     * <p>The id of the project to attach the comment to.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -205,7 +204,6 @@ public final class CreateCommentRequest {
     }
 
     /**
-     * <p>The type of the object to attach the comment to (trace, observation, session, prompt).</p>
      * <p>The type of the object to attach the comment to (trace, observation, session, prompt).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -218,7 +216,6 @@ public final class CreateCommentRequest {
 
     /**
      * <p>The id of the object to attach the comment to. If this does not reference a valid existing object, an error will be thrown.</p>
-     * <p>The id of the object to attach the comment to. If this does not reference a valid existing object, an error will be thrown.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -229,7 +226,6 @@ public final class CreateCommentRequest {
     }
 
     /**
-     * <p>The content of the comment. May include markdown. Currently limited to 5000 characters.</p>
      * <p>The content of the comment. May include markdown. Currently limited to 5000 characters.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

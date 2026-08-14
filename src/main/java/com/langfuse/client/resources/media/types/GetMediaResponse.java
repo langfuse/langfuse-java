@@ -215,7 +215,6 @@ public final class GetMediaResponse {
 
     /**
      * <p>The unique langfuse identifier of a media record</p>
-     * <p>The unique langfuse identifier of a media record</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -226,7 +225,6 @@ public final class GetMediaResponse {
     }
 
     /**
-     * <p>The MIME type of the media record</p>
      * <p>The MIME type of the media record</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -239,7 +237,6 @@ public final class GetMediaResponse {
 
     /**
      * <p>The size of the media record in bytes</p>
-     * <p>The size of the media record in bytes</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -250,7 +247,6 @@ public final class GetMediaResponse {
     }
 
     /**
-     * <p>The date and time when the media record was uploaded</p>
      * <p>The date and time when the media record was uploaded</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -263,7 +259,6 @@ public final class GetMediaResponse {
 
     /**
      * <p>The download URL of the media record</p>
-     * <p>The download URL of the media record</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -274,7 +269,6 @@ public final class GetMediaResponse {
     }
 
     /**
-     * <p>The expiry date and time of the media record download URL</p>
      * <p>The expiry date and time of the media record download URL</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

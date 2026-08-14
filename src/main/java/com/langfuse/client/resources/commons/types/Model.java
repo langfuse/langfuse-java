@@ -492,7 +492,6 @@ public final class Model {
 
     /**
      * <p>Name of the model definition. If multiple with the same name exist, they are applied in the following order: (1) custom over built-in, (2) newest according to startTime where model.startTime&lt;observation.startTime</p>
-     * <p>Name of the model definition. If multiple with the same name exist, they are applied in the following order: (1) custom over built-in, (2) newest according to startTime where model.startTime&lt;observation.startTime</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -504,7 +503,6 @@ public final class Model {
 
     /**
      * <p>Regex pattern which matches this model definition to generation.model. Useful in case of fine-tuned models. If you want to exact match, use <code>(?i)^modelname$</code></p>
-     * <p>Regex pattern which matches this model definition to generation.model. Useful in case of fine-tuned models. If you want to exact match, use <code>(?i)^modelname$</code></p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -515,7 +513,6 @@ public final class Model {
     }
 
     /**
-     * <p>Optional. Configuration for the selected tokenizer. Needs to be JSON. See docs for more details.</p>
      * <p>Optional. Configuration for the selected tokenizer. Needs to be JSON. See docs for more details.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -534,7 +531,6 @@ public final class Model {
     }
 
     /**
-     * <p>Timestamp when the model was created</p>
      * <p>Timestamp when the model was created</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

@@ -284,7 +284,6 @@ public final class DatasetRun implements IDatasetRun {
 
     /**
      * <p>Unique identifier of the dataset run</p>
-     * <p>Unique identifier of the dataset run</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -295,7 +294,6 @@ public final class DatasetRun implements IDatasetRun {
     }
 
     /**
-     * <p>Name of the dataset run</p>
      * <p>Name of the dataset run</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -308,7 +306,6 @@ public final class DatasetRun implements IDatasetRun {
 
     /**
      * <p>Metadata of the dataset run</p>
-     * <p>Metadata of the dataset run</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -319,7 +316,6 @@ public final class DatasetRun implements IDatasetRun {
     }
 
     /**
-     * <p>Id of the associated dataset</p>
      * <p>Id of the associated dataset</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -332,7 +328,6 @@ public final class DatasetRun implements IDatasetRun {
 
     /**
      * <p>Name of the associated dataset</p>
-     * <p>Name of the associated dataset</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -344,7 +339,6 @@ public final class DatasetRun implements IDatasetRun {
 
     /**
      * <p>The date and time when the dataset run was created</p>
-     * <p>The date and time when the dataset run was created</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -355,7 +349,6 @@ public final class DatasetRun implements IDatasetRun {
     }
 
     /**
-     * <p>The date and time when the dataset run was last updated</p>
      * <p>The date and time when the dataset run was last updated</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

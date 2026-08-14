@@ -50,11 +50,14 @@ public final class DatasetRunWithItems implements IDatasetRun {
 
   private final List<DatasetRunItem> datasetRunItems;
 
+  private final Optional<Deprecation> deprecation;
+
   private final Map<String, Object> additionalProperties;
 
   private DatasetRunWithItems(String id, String name, Optional<String> description, Object metadata,
       String datasetId, String datasetName, OffsetDateTime createdAt, OffsetDateTime updatedAt,
-      List<DatasetRunItem> datasetRunItems, Map<String, Object> additionalProperties) {
+      List<DatasetRunItem> datasetRunItems, Optional<Deprecation> deprecation,
+      Map<String, Object> additionalProperties) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -64,6 +67,7 @@ public final class DatasetRunWithItems implements IDatasetRun {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.datasetRunItems = datasetRunItems;
+    this.deprecation = deprecation;
     this.additionalProperties = additionalProperties;
   }
 
@@ -147,6 +151,11 @@ public final class DatasetRunWithItems implements IDatasetRun {
     return datasetRunItems;
   }
 
+  @JsonProperty("_deprecation")
+  public Optional<Deprecation> getDeprecation() {
+    return deprecation;
+  }
+
   @JsonInclude(
       value = JsonInclude.Include.CUSTOM,
       valueFilter = NullableNonemptyFilter.class
@@ -168,12 +177,12 @@ public final class DatasetRunWithItems implements IDatasetRun {
   }
 
   private boolean equalTo(DatasetRunWithItems other) {
-    return id.equals(other.id) && name.equals(other.name) && description.equals(other.description) && metadata.equals(other.metadata) && datasetId.equals(other.datasetId) && datasetName.equals(other.datasetName) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt) && datasetRunItems.equals(other.datasetRunItems);
+    return id.equals(other.id) && name.equals(other.name) && description.equals(other.description) && metadata.equals(other.metadata) && datasetId.equals(other.datasetId) && datasetName.equals(other.datasetName) && createdAt.equals(other.createdAt) && updatedAt.equals(other.updatedAt) && datasetRunItems.equals(other.datasetRunItems) && deprecation.equals(other.deprecation);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.id, this.name, this.description, this.metadata, this.datasetId, this.datasetName, this.createdAt, this.updatedAt, this.datasetRunItems);
+    return Objects.hash(this.id, this.name, this.description, this.metadata, this.datasetId, this.datasetName, this.createdAt, this.updatedAt, this.datasetRunItems, this.deprecation);
   }
 
   @java.lang.Override
@@ -257,6 +266,10 @@ public final class DatasetRunWithItems implements IDatasetRun {
     _FinalStage addDatasetRunItems(DatasetRunItem datasetRunItems);
 
     _FinalStage addAllDatasetRunItems(List<DatasetRunItem> datasetRunItems);
+
+    _FinalStage deprecation(Optional<Deprecation> deprecation);
+
+    _FinalStage deprecation(Deprecation deprecation);
   }
 
   @JsonIgnoreProperties(
@@ -276,6 +289,8 @@ public final class DatasetRunWithItems implements IDatasetRun {
     private OffsetDateTime createdAt;
 
     private OffsetDateTime updatedAt;
+
+    private Optional<Deprecation> deprecation = Optional.empty();
 
     private List<DatasetRunItem> datasetRunItems = new ArrayList<>();
 
@@ -298,11 +313,11 @@ public final class DatasetRunWithItems implements IDatasetRun {
       createdAt(other.getCreatedAt());
       updatedAt(other.getUpdatedAt());
       datasetRunItems(other.getDatasetRunItems());
+      deprecation(other.getDeprecation());
       return this;
     }
 
     /**
-     * <p>Unique identifier of the dataset run</p>
      * <p>Unique identifier of the dataset run</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -315,7 +330,6 @@ public final class DatasetRunWithItems implements IDatasetRun {
 
     /**
      * <p>Name of the dataset run</p>
-     * <p>Name of the dataset run</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -326,7 +340,6 @@ public final class DatasetRunWithItems implements IDatasetRun {
     }
 
     /**
-     * <p>Metadata of the dataset run</p>
      * <p>Metadata of the dataset run</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -339,7 +352,6 @@ public final class DatasetRunWithItems implements IDatasetRun {
 
     /**
      * <p>Id of the associated dataset</p>
-     * <p>Id of the associated dataset</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -350,7 +362,6 @@ public final class DatasetRunWithItems implements IDatasetRun {
     }
 
     /**
-     * <p>Name of the associated dataset</p>
      * <p>Name of the associated dataset</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -363,7 +374,6 @@ public final class DatasetRunWithItems implements IDatasetRun {
 
     /**
      * <p>The date and time when the dataset run was created</p>
-     * <p>The date and time when the dataset run was created</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -375,13 +385,28 @@ public final class DatasetRunWithItems implements IDatasetRun {
 
     /**
      * <p>The date and time when the dataset run was last updated</p>
-     * <p>The date and time when the dataset run was last updated</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
     @JsonSetter("updatedAt")
     public _FinalStage updatedAt(@NotNull OffsetDateTime updatedAt) {
       this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage deprecation(Deprecation deprecation) {
+      this.deprecation = Optional.ofNullable(deprecation);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "_deprecation",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage deprecation(Optional<Deprecation> deprecation) {
+      this.deprecation = deprecation;
       return this;
     }
 
@@ -455,7 +480,7 @@ public final class DatasetRunWithItems implements IDatasetRun {
 
     @java.lang.Override
     public DatasetRunWithItems build() {
-      return new DatasetRunWithItems(id, name, description, metadata, datasetId, datasetName, createdAt, updatedAt, datasetRunItems, additionalProperties);
+      return new DatasetRunWithItems(id, name, description, metadata, datasetId, datasetName, createdAt, updatedAt, datasetRunItems, deprecation, additionalProperties);
     }
 
     @java.lang.Override

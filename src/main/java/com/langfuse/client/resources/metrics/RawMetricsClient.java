@@ -12,6 +12,7 @@ import com.langfuse.client.core.LangfuseClientHttpResponse;
 import com.langfuse.client.core.ObjectMappers;
 import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
+import com.langfuse.client.core.RetryInterceptor;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.String;
@@ -26,8 +27,8 @@ import com.langfuse.client.resources.commons.errors.Error;
 import com.langfuse.client.resources.commons.errors.MethodNotAllowedError;
 import com.langfuse.client.resources.commons.errors.NotFoundError;
 import com.langfuse.client.resources.commons.errors.UnauthorizedError;
-import com.langfuse.client.resources.metrics.requests.GetMetricsRequest;
-import com.langfuse.client.resources.metrics.types.MetricsResponse;
+import com.langfuse.client.resources.metrics.requests.GetMetricsV2Request;
+import com.langfuse.client.resources.metrics.types.MetricsV2Response;
 
 public class RawMetricsClient {
   protected final ClientOptions clientOptions;
@@ -37,24 +38,250 @@ public class RawMetricsClient {
   }
 
   /**
-   * Get metrics from the Langfuse project using a query object.
-   * <p>Consider using the <a href="/api-reference#tag/metricsv2/GET/api/public/v2/metrics">v2 metrics endpoint</a> for better performance.</p>
+   * Get metrics from the Langfuse project using a query object. V2 endpoint with optimized performance.
+   * <h2>V2 Differences</h2>
+   * <ul>
+   * <li>Supports <code>observations</code>, <code>scores-numeric</code>, <code>scores-boolean</code>, and <code>scores-categorical</code> views only (traces view not supported)</li>
+   * <li>Direct access to tags and release fields on observations</li>
+   * <li>Semantic-root filtering and grouping through the v2-only <code>isRootObservation</code> dimension</li>
+   * <li>Backwards-compatible: traceName, traceRelease, traceVersion dimensions are still available on observations view</li>
+   * <li>High cardinality dimensions are not supported and will return a 400 error (see below)</li>
+   * </ul>
    * <p>For more details, see the <a href="https://langfuse.com/docs/metrics/features/metrics-api">Metrics API documentation</a>.</p>
+   * <h2>Available Views</h2>
+   * <h3>observations</h3>
+   * <p>Query observation-level data (spans, generations, events).</p>
+   * <p><strong>Dimensions:</strong></p>
+   * <ul>
+   * <li><code>environment</code> - Deployment environment (e.g., production, staging)</li>
+   * <li><code>type</code> - Type of observation (SPAN, GENERATION, EVENT)</li>
+   * <li><code>name</code> - Name of the observation</li>
+   * <li><code>level</code> - Logging level of the observation</li>
+   * <li><code>version</code> - Version of the observation</li>
+   * <li><code>tags</code> - User-defined tags</li>
+   * <li><code>release</code> - Release version</li>
+   * <li><code>traceName</code> - Name of the parent trace (backwards-compatible)</li>
+   * <li><code>traceRelease</code> - Release version of the parent trace (backwards-compatible, maps to release)</li>
+   * <li><code>traceVersion</code> - Version of the parent trace (backwards-compatible, maps to version)</li>
+   * <li><code>providedModelName</code> - Name of the model used</li>
+   * <li><code>promptName</code> - Name of the prompt used</li>
+   * <li><code>promptVersion</code> - Version of the prompt used</li>
+   * <li><code>isRootObservation</code> - Boolean semantic-root status. <code>true</code> includes physical roots and app roots whose SDK parent is external (so <code>parentObservationId</code> may be non-null).</li>
+   * <li><code>startTimeMonth</code> - Month of start_time in YYYY-MM format</li>
+   * </ul>
+   * <p><strong>Measures:</strong></p>
+   * <ul>
+   * <li><code>count</code> - Total number of observations</li>
+   * <li><code>latency</code> - Observation latency (milliseconds)</li>
+   * <li><code>streamingLatency</code> - Generation latency from completion start to end (milliseconds)</li>
+   * <li><code>inputTokens</code> - Sum of input tokens consumed</li>
+   * <li><code>outputTokens</code> - Sum of output tokens produced</li>
+   * <li><code>totalTokens</code> - Sum of all tokens consumed</li>
+   * <li><code>outputTokensPerSecond</code> - Output tokens per second</li>
+   * <li><code>tokensPerSecond</code> - Total tokens per second</li>
+   * <li><code>inputCost</code> - Input cost (USD)</li>
+   * <li><code>outputCost</code> - Output cost (USD)</li>
+   * <li><code>totalCost</code> - Total cost (USD)</li>
+   * <li><code>timeToFirstToken</code> - Time to first token (milliseconds)</li>
+   * <li><code>countScores</code> - Number of scores attached to the observation</li>
+   * </ul>
+   * <h3>scores-numeric</h3>
+   * <p>Query numeric and boolean score data.</p>
+   * <p><strong>Dimensions:</strong></p>
+   * <ul>
+   * <li><code>environment</code> - Deployment environment</li>
+   * <li><code>name</code> - Name of the score (e.g., accuracy, toxicity)</li>
+   * <li><code>source</code> - Origin of the score (API, ANNOTATION, EVAL)</li>
+   * <li><code>dataType</code> - Data type (NUMERIC, BOOLEAN)</li>
+   * <li><code>configId</code> - Identifier of the score config</li>
+   * <li><code>timestampMonth</code> - Month in YYYY-MM format</li>
+   * <li><code>timestampDay</code> - Day in YYYY-MM-DD format</li>
+   * <li><code>value</code> - Numeric value of the score</li>
+   * <li><code>traceName</code> - Name of the parent trace</li>
+   * <li><code>tags</code> - Tags</li>
+   * <li><code>traceRelease</code> - Release version</li>
+   * <li><code>traceVersion</code> - Version</li>
+   * <li><code>observationName</code> - Name of the associated observation</li>
+   * <li><code>observationModelName</code> - Model name of the associated observation</li>
+   * <li><code>observationPromptName</code> - Prompt name of the associated observation</li>
+   * <li><code>observationPromptVersion</code> - Prompt version of the associated observation</li>
+   * </ul>
+   * <p><strong>Measures:</strong></p>
+   * <ul>
+   * <li><code>count</code> - Total number of scores</li>
+   * <li><code>value</code> - Score value (for aggregations)</li>
+   * </ul>
+   * <h3>scores-boolean</h3>
+   * <p>Query boolean score data. It has the same score and parent trace/observation dimensions as scores-numeric, plus:</p>
+   * <p><strong>Dimensions:</strong></p>
+   * <ul>
+   * <li><code>booleanValue</code> - Boolean value for true/false grouping and filtering</li>
+   * </ul>
+   * <p><strong>Measures:</strong></p>
+   * <ul>
+   * <li><code>count</code> - Total number of boolean scores</li>
+   * <li><code>value</code> - Numeric 0/1 score value; <code>avg</code> returns the true-rate</li>
+   * </ul>
+   * <h3>scores-categorical</h3>
+   * <p>Query categorical score data. Same dimensions as scores-numeric except uses <code>stringValue</code> instead of <code>value</code>.</p>
+   * <p><strong>Measures:</strong></p>
+   * <ul>
+   * <li><code>count</code> - Total number of scores</li>
+   * </ul>
+   * <h2>High Cardinality Dimensions</h2>
+   * <p>The following dimensions cannot be used as grouping dimensions in v2 metrics API as they can cause performance issues.
+   * Use them in filters instead.</p>
+   * <p><strong>observations view:</strong></p>
+   * <ul>
+   * <li><code>id</code> - Use traceId filter to narrow down results</li>
+   * <li><code>traceId</code> - Use traceId filter instead</li>
+   * <li><code>userId</code> - Use userId filter instead</li>
+   * <li><code>sessionId</code> - Use sessionId filter instead</li>
+   * <li><code>parentObservationId</code> - Use parentObservationId filter instead</li>
+   * </ul>
+   * <p><strong>scores-numeric / scores-boolean / scores-categorical views:</strong></p>
+   * <ul>
+   * <li><code>id</code> - Use specific filters to narrow down results</li>
+   * <li><code>traceId</code> - Use traceId filter instead</li>
+   * <li><code>userId</code> - Use userId filter instead</li>
+   * <li><code>sessionId</code> - Use sessionId filter instead</li>
+   * <li><code>observationId</code> - Use observationId filter instead</li>
+   * </ul>
+   * <h2>Aggregations</h2>
+   * <p>Available aggregation functions: <code>sum</code>, <code>avg</code>, <code>count</code>, <code>max</code>, <code>min</code>, <code>p50</code>, <code>p75</code>, <code>p90</code>, <code>p95</code>, <code>p99</code>, <code>histogram</code></p>
+   * <h2>Time Granularities</h2>
+   * <p>Available granularities for timeDimension: <code>auto</code>, <code>minute</code>, <code>hour</code>, <code>day</code>, <code>week</code>, <code>month</code></p>
+   * <ul>
+   * <li><code>auto</code> bins the data into approximately 50 buckets based on the time range</li>
+   * </ul>
    */
-  public LangfuseClientHttpResponse<MetricsResponse> metrics(GetMetricsRequest request) {
+  public LangfuseClientHttpResponse<MetricsV2Response> metrics(GetMetricsV2Request request) {
     return metrics(request,null);
   }
 
   /**
-   * Get metrics from the Langfuse project using a query object.
-   * <p>Consider using the <a href="/api-reference#tag/metricsv2/GET/api/public/v2/metrics">v2 metrics endpoint</a> for better performance.</p>
+   * Get metrics from the Langfuse project using a query object. V2 endpoint with optimized performance.
+   * <h2>V2 Differences</h2>
+   * <ul>
+   * <li>Supports <code>observations</code>, <code>scores-numeric</code>, <code>scores-boolean</code>, and <code>scores-categorical</code> views only (traces view not supported)</li>
+   * <li>Direct access to tags and release fields on observations</li>
+   * <li>Semantic-root filtering and grouping through the v2-only <code>isRootObservation</code> dimension</li>
+   * <li>Backwards-compatible: traceName, traceRelease, traceVersion dimensions are still available on observations view</li>
+   * <li>High cardinality dimensions are not supported and will return a 400 error (see below)</li>
+   * </ul>
    * <p>For more details, see the <a href="https://langfuse.com/docs/metrics/features/metrics-api">Metrics API documentation</a>.</p>
+   * <h2>Available Views</h2>
+   * <h3>observations</h3>
+   * <p>Query observation-level data (spans, generations, events).</p>
+   * <p><strong>Dimensions:</strong></p>
+   * <ul>
+   * <li><code>environment</code> - Deployment environment (e.g., production, staging)</li>
+   * <li><code>type</code> - Type of observation (SPAN, GENERATION, EVENT)</li>
+   * <li><code>name</code> - Name of the observation</li>
+   * <li><code>level</code> - Logging level of the observation</li>
+   * <li><code>version</code> - Version of the observation</li>
+   * <li><code>tags</code> - User-defined tags</li>
+   * <li><code>release</code> - Release version</li>
+   * <li><code>traceName</code> - Name of the parent trace (backwards-compatible)</li>
+   * <li><code>traceRelease</code> - Release version of the parent trace (backwards-compatible, maps to release)</li>
+   * <li><code>traceVersion</code> - Version of the parent trace (backwards-compatible, maps to version)</li>
+   * <li><code>providedModelName</code> - Name of the model used</li>
+   * <li><code>promptName</code> - Name of the prompt used</li>
+   * <li><code>promptVersion</code> - Version of the prompt used</li>
+   * <li><code>isRootObservation</code> - Boolean semantic-root status. <code>true</code> includes physical roots and app roots whose SDK parent is external (so <code>parentObservationId</code> may be non-null).</li>
+   * <li><code>startTimeMonth</code> - Month of start_time in YYYY-MM format</li>
+   * </ul>
+   * <p><strong>Measures:</strong></p>
+   * <ul>
+   * <li><code>count</code> - Total number of observations</li>
+   * <li><code>latency</code> - Observation latency (milliseconds)</li>
+   * <li><code>streamingLatency</code> - Generation latency from completion start to end (milliseconds)</li>
+   * <li><code>inputTokens</code> - Sum of input tokens consumed</li>
+   * <li><code>outputTokens</code> - Sum of output tokens produced</li>
+   * <li><code>totalTokens</code> - Sum of all tokens consumed</li>
+   * <li><code>outputTokensPerSecond</code> - Output tokens per second</li>
+   * <li><code>tokensPerSecond</code> - Total tokens per second</li>
+   * <li><code>inputCost</code> - Input cost (USD)</li>
+   * <li><code>outputCost</code> - Output cost (USD)</li>
+   * <li><code>totalCost</code> - Total cost (USD)</li>
+   * <li><code>timeToFirstToken</code> - Time to first token (milliseconds)</li>
+   * <li><code>countScores</code> - Number of scores attached to the observation</li>
+   * </ul>
+   * <h3>scores-numeric</h3>
+   * <p>Query numeric and boolean score data.</p>
+   * <p><strong>Dimensions:</strong></p>
+   * <ul>
+   * <li><code>environment</code> - Deployment environment</li>
+   * <li><code>name</code> - Name of the score (e.g., accuracy, toxicity)</li>
+   * <li><code>source</code> - Origin of the score (API, ANNOTATION, EVAL)</li>
+   * <li><code>dataType</code> - Data type (NUMERIC, BOOLEAN)</li>
+   * <li><code>configId</code> - Identifier of the score config</li>
+   * <li><code>timestampMonth</code> - Month in YYYY-MM format</li>
+   * <li><code>timestampDay</code> - Day in YYYY-MM-DD format</li>
+   * <li><code>value</code> - Numeric value of the score</li>
+   * <li><code>traceName</code> - Name of the parent trace</li>
+   * <li><code>tags</code> - Tags</li>
+   * <li><code>traceRelease</code> - Release version</li>
+   * <li><code>traceVersion</code> - Version</li>
+   * <li><code>observationName</code> - Name of the associated observation</li>
+   * <li><code>observationModelName</code> - Model name of the associated observation</li>
+   * <li><code>observationPromptName</code> - Prompt name of the associated observation</li>
+   * <li><code>observationPromptVersion</code> - Prompt version of the associated observation</li>
+   * </ul>
+   * <p><strong>Measures:</strong></p>
+   * <ul>
+   * <li><code>count</code> - Total number of scores</li>
+   * <li><code>value</code> - Score value (for aggregations)</li>
+   * </ul>
+   * <h3>scores-boolean</h3>
+   * <p>Query boolean score data. It has the same score and parent trace/observation dimensions as scores-numeric, plus:</p>
+   * <p><strong>Dimensions:</strong></p>
+   * <ul>
+   * <li><code>booleanValue</code> - Boolean value for true/false grouping and filtering</li>
+   * </ul>
+   * <p><strong>Measures:</strong></p>
+   * <ul>
+   * <li><code>count</code> - Total number of boolean scores</li>
+   * <li><code>value</code> - Numeric 0/1 score value; <code>avg</code> returns the true-rate</li>
+   * </ul>
+   * <h3>scores-categorical</h3>
+   * <p>Query categorical score data. Same dimensions as scores-numeric except uses <code>stringValue</code> instead of <code>value</code>.</p>
+   * <p><strong>Measures:</strong></p>
+   * <ul>
+   * <li><code>count</code> - Total number of scores</li>
+   * </ul>
+   * <h2>High Cardinality Dimensions</h2>
+   * <p>The following dimensions cannot be used as grouping dimensions in v2 metrics API as they can cause performance issues.
+   * Use them in filters instead.</p>
+   * <p><strong>observations view:</strong></p>
+   * <ul>
+   * <li><code>id</code> - Use traceId filter to narrow down results</li>
+   * <li><code>traceId</code> - Use traceId filter instead</li>
+   * <li><code>userId</code> - Use userId filter instead</li>
+   * <li><code>sessionId</code> - Use sessionId filter instead</li>
+   * <li><code>parentObservationId</code> - Use parentObservationId filter instead</li>
+   * </ul>
+   * <p><strong>scores-numeric / scores-boolean / scores-categorical views:</strong></p>
+   * <ul>
+   * <li><code>id</code> - Use specific filters to narrow down results</li>
+   * <li><code>traceId</code> - Use traceId filter instead</li>
+   * <li><code>userId</code> - Use userId filter instead</li>
+   * <li><code>sessionId</code> - Use sessionId filter instead</li>
+   * <li><code>observationId</code> - Use observationId filter instead</li>
+   * </ul>
+   * <h2>Aggregations</h2>
+   * <p>Available aggregation functions: <code>sum</code>, <code>avg</code>, <code>count</code>, <code>max</code>, <code>min</code>, <code>p50</code>, <code>p75</code>, <code>p90</code>, <code>p95</code>, <code>p99</code>, <code>histogram</code></p>
+   * <h2>Time Granularities</h2>
+   * <p>Available granularities for timeDimension: <code>auto</code>, <code>minute</code>, <code>hour</code>, <code>day</code>, <code>week</code>, <code>month</code></p>
+   * <ul>
+   * <li><code>auto</code> bins the data into approximately 50 buckets based on the time range</li>
+   * </ul>
    */
-  public LangfuseClientHttpResponse<MetricsResponse> metrics(GetMetricsRequest request,
+  public LangfuseClientHttpResponse<MetricsV2Response> metrics(GetMetricsV2Request request,
       RequestOptions requestOptions) {
     HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
       .addPathSegments("api/public")
-      .addPathSegments("metrics");QueryStringMapper.addQueryParameter(httpUrl, "query", request.getQuery(), false);
+      .addPathSegments("v2/metrics");QueryStringMapper.addQueryParameter(httpUrl, "query", request.getQuery(), false);
       if (requestOptions != null) {
         requestOptions.getQueryParameters().forEach((_key, _value) -> {
           httpUrl.addQueryParameter(_key, _value);
@@ -70,11 +297,14 @@ public class RawMetricsClient {
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
         client = clientOptions.httpClientWithTimeout(requestOptions);
       }
+      if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+        okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+      }
       try (Response response = client.newCall(okhttpRequest).execute()) {
         ResponseBody responseBody = response.body();
         String responseBodyString = responseBody != null ? responseBody.string() : "{}";
         if (response.isSuccessful()) {
-          return new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, MetricsResponse.class), response);
+          return new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, MetricsV2Response.class), response);
         }
         try {
           switch (response.code()) {
@@ -90,6 +320,9 @@ public class RawMetricsClient {
         }
         Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
         throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+      }
+      catch (JsonProcessingException e) {
+        throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
       }
       catch (IOException e) {
         throw new LangfuseClientException("Network error executing HTTP request", e);

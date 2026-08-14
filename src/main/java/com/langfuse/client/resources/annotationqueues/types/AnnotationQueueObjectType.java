@@ -10,11 +10,11 @@ import java.lang.Object;
 import java.lang.String;
 
 public final class AnnotationQueueObjectType {
+  public static final AnnotationQueueObjectType TRACE = new AnnotationQueueObjectType(Value.TRACE, "TRACE");
+
   public static final AnnotationQueueObjectType OBSERVATION = new AnnotationQueueObjectType(Value.OBSERVATION, "OBSERVATION");
 
   public static final AnnotationQueueObjectType SESSION = new AnnotationQueueObjectType(Value.SESSION, "SESSION");
-
-  public static final AnnotationQueueObjectType TRACE = new AnnotationQueueObjectType(Value.TRACE, "TRACE");
 
   private final Value value;
 
@@ -48,12 +48,12 @@ public final class AnnotationQueueObjectType {
 
   public <T> T visit(Visitor<T> visitor) {
     switch (value) {
+      case TRACE:
+        return visitor.visitTrace();
       case OBSERVATION:
         return visitor.visitObservation();
       case SESSION:
         return visitor.visitSession();
-      case TRACE:
-        return visitor.visitTrace();
       case UNKNOWN:
       default:
         return visitor.visitUnknown(string);
@@ -65,12 +65,12 @@ public final class AnnotationQueueObjectType {
   )
   public static AnnotationQueueObjectType valueOf(String value) {
     switch (value) {
+      case "TRACE":
+        return TRACE;
       case "OBSERVATION":
         return OBSERVATION;
       case "SESSION":
         return SESSION;
-      case "TRACE":
-        return TRACE;
       default:
         return new AnnotationQueueObjectType(Value.UNKNOWN, value);
     }

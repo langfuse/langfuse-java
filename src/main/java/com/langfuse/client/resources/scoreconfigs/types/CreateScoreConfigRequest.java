@@ -57,6 +57,9 @@ public final class CreateScoreConfigRequest {
     this.additionalProperties = additionalProperties;
   }
 
+  /**
+   * @return Name of the score config. Max 35 characters. Only letters, numbers, underscores, spaces, periods, parentheses, and hyphens are allowed.
+   */
   @JsonProperty("name")
   public String getName() {
     return name;
@@ -129,6 +132,9 @@ public final class CreateScoreConfigRequest {
   }
 
   public interface NameStage {
+    /**
+     * <p>Name of the score config. Max 35 characters. Only letters, numbers, underscores, spaces, periods, parentheses, and hyphens are allowed.</p>
+     */
     DataTypeStage name(@NotNull String name);
 
     Builder from(CreateScoreConfigRequest other);
@@ -207,6 +213,10 @@ public final class CreateScoreConfigRequest {
       return this;
     }
 
+    /**
+     * <p>Name of the score config. Max 35 characters. Only letters, numbers, underscores, spaces, periods, parentheses, and hyphens are allowed.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     @JsonSetter("name")
     public DataTypeStage name(@NotNull String name) {

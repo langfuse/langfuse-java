@@ -12,6 +12,7 @@ import com.langfuse.client.core.LangfuseClientHttpResponse;
 import com.langfuse.client.core.ObjectMappers;
 import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
+import com.langfuse.client.core.RetryInterceptor;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -31,9 +32,8 @@ import com.langfuse.client.resources.commons.errors.Error;
 import com.langfuse.client.resources.commons.errors.MethodNotAllowedError;
 import com.langfuse.client.resources.commons.errors.NotFoundError;
 import com.langfuse.client.resources.commons.errors.UnauthorizedError;
-import com.langfuse.client.resources.commons.types.ObservationsView;
-import com.langfuse.client.resources.observations.requests.GetObservationsRequest;
-import com.langfuse.client.resources.observations.types.ObservationsViews;
+import com.langfuse.client.resources.observations.requests.GetObservationsV2Request;
+import com.langfuse.client.resources.observations.types.ObservationsV2Response;
 
 public class AsyncRawObservationsClient {
   protected final ClientOptions clientOptions;
@@ -43,43 +43,203 @@ public class AsyncRawObservationsClient {
   }
 
   /**
-   * Get a observation
+   * Get a list of observations with cursor-based pagination and flexible field selection.
+   * <h2>Cursor-based Pagination</h2>
+   * <p>This endpoint uses cursor-based pagination for efficient traversal of large datasets.
+   * The cursor is returned in the response metadata and should be passed in subsequent requests
+   * to retrieve the next page of results.</p>
+   * <h2>Field Selection</h2>
+   * <p>Use the <code>fields</code> parameter to control which observation fields are returned:</p>
+   * <ul>
+   * <li><code>core</code> - Always included: id, traceId, startTime, endTime, projectId, parentObservationId, type</li>
+   * <li><code>basic</code> - name, level, statusMessage, version, environment, bookmarked, public, userId, sessionId, isRootObservation</li>
+   * <li><code>time</code> - completionStartTime, createdAt, updatedAt</li>
+   * <li><code>io</code> - input, output</li>
+   * <li><code>metadata</code> - metadata (truncated to 200 chars by default, use <code>expandMetadata</code> to get full values)</li>
+   * <li><code>model</code> - providedModelName, internalModelId, modelParameters</li>
+   * <li><code>usage</code> - usageDetails, costDetails, totalCost, usagePricingTierName</li>
+   * <li><code>prompt</code> - promptId, promptName, promptVersion</li>
+   * <li><code>metrics</code> - latency, timeToFirstToken</li>
+   * <li><code>trace_context</code> - tags, release, traceName</li>
+   * </ul>
+   * <p>If not specified, <code>core</code> and <code>basic</code> field groups are returned.</p>
+   * <h2>Filters</h2>
+   * <p>Multiple filtering options are available via query parameters or the structured <code>filter</code> parameter.
+   * When using the <code>filter</code> parameter, it takes precedence over individual query parameter filters.</p>
    */
-  public CompletableFuture<LangfuseClientHttpResponse<ObservationsView>> get(String observationId) {
-    return get(observationId,null);
+  public CompletableFuture<LangfuseClientHttpResponse<ObservationsV2Response>> getMany() {
+    return getMany(GetObservationsV2Request.builder().build());
   }
 
   /**
-   * Get a observation
+   * Get a list of observations with cursor-based pagination and flexible field selection.
+   * <h2>Cursor-based Pagination</h2>
+   * <p>This endpoint uses cursor-based pagination for efficient traversal of large datasets.
+   * The cursor is returned in the response metadata and should be passed in subsequent requests
+   * to retrieve the next page of results.</p>
+   * <h2>Field Selection</h2>
+   * <p>Use the <code>fields</code> parameter to control which observation fields are returned:</p>
+   * <ul>
+   * <li><code>core</code> - Always included: id, traceId, startTime, endTime, projectId, parentObservationId, type</li>
+   * <li><code>basic</code> - name, level, statusMessage, version, environment, bookmarked, public, userId, sessionId, isRootObservation</li>
+   * <li><code>time</code> - completionStartTime, createdAt, updatedAt</li>
+   * <li><code>io</code> - input, output</li>
+   * <li><code>metadata</code> - metadata (truncated to 200 chars by default, use <code>expandMetadata</code> to get full values)</li>
+   * <li><code>model</code> - providedModelName, internalModelId, modelParameters</li>
+   * <li><code>usage</code> - usageDetails, costDetails, totalCost, usagePricingTierName</li>
+   * <li><code>prompt</code> - promptId, promptName, promptVersion</li>
+   * <li><code>metrics</code> - latency, timeToFirstToken</li>
+   * <li><code>trace_context</code> - tags, release, traceName</li>
+   * </ul>
+   * <p>If not specified, <code>core</code> and <code>basic</code> field groups are returned.</p>
+   * <h2>Filters</h2>
+   * <p>Multiple filtering options are available via query parameters or the structured <code>filter</code> parameter.
+   * When using the <code>filter</code> parameter, it takes precedence over individual query parameter filters.</p>
    */
-  public CompletableFuture<LangfuseClientHttpResponse<ObservationsView>> get(String observationId,
+  public CompletableFuture<LangfuseClientHttpResponse<ObservationsV2Response>> getMany(
       RequestOptions requestOptions) {
+    return getMany(GetObservationsV2Request.builder().build(),requestOptions);
+  }
+
+  /**
+   * Get a list of observations with cursor-based pagination and flexible field selection.
+   * <h2>Cursor-based Pagination</h2>
+   * <p>This endpoint uses cursor-based pagination for efficient traversal of large datasets.
+   * The cursor is returned in the response metadata and should be passed in subsequent requests
+   * to retrieve the next page of results.</p>
+   * <h2>Field Selection</h2>
+   * <p>Use the <code>fields</code> parameter to control which observation fields are returned:</p>
+   * <ul>
+   * <li><code>core</code> - Always included: id, traceId, startTime, endTime, projectId, parentObservationId, type</li>
+   * <li><code>basic</code> - name, level, statusMessage, version, environment, bookmarked, public, userId, sessionId, isRootObservation</li>
+   * <li><code>time</code> - completionStartTime, createdAt, updatedAt</li>
+   * <li><code>io</code> - input, output</li>
+   * <li><code>metadata</code> - metadata (truncated to 200 chars by default, use <code>expandMetadata</code> to get full values)</li>
+   * <li><code>model</code> - providedModelName, internalModelId, modelParameters</li>
+   * <li><code>usage</code> - usageDetails, costDetails, totalCost, usagePricingTierName</li>
+   * <li><code>prompt</code> - promptId, promptName, promptVersion</li>
+   * <li><code>metrics</code> - latency, timeToFirstToken</li>
+   * <li><code>trace_context</code> - tags, release, traceName</li>
+   * </ul>
+   * <p>If not specified, <code>core</code> and <code>basic</code> field groups are returned.</p>
+   * <h2>Filters</h2>
+   * <p>Multiple filtering options are available via query parameters or the structured <code>filter</code> parameter.
+   * When using the <code>filter</code> parameter, it takes precedence over individual query parameter filters.</p>
+   */
+  public CompletableFuture<LangfuseClientHttpResponse<ObservationsV2Response>> getMany(
+      GetObservationsV2Request request) {
+    return getMany(request,null);
+  }
+
+  /**
+   * Get a list of observations with cursor-based pagination and flexible field selection.
+   * <h2>Cursor-based Pagination</h2>
+   * <p>This endpoint uses cursor-based pagination for efficient traversal of large datasets.
+   * The cursor is returned in the response metadata and should be passed in subsequent requests
+   * to retrieve the next page of results.</p>
+   * <h2>Field Selection</h2>
+   * <p>Use the <code>fields</code> parameter to control which observation fields are returned:</p>
+   * <ul>
+   * <li><code>core</code> - Always included: id, traceId, startTime, endTime, projectId, parentObservationId, type</li>
+   * <li><code>basic</code> - name, level, statusMessage, version, environment, bookmarked, public, userId, sessionId, isRootObservation</li>
+   * <li><code>time</code> - completionStartTime, createdAt, updatedAt</li>
+   * <li><code>io</code> - input, output</li>
+   * <li><code>metadata</code> - metadata (truncated to 200 chars by default, use <code>expandMetadata</code> to get full values)</li>
+   * <li><code>model</code> - providedModelName, internalModelId, modelParameters</li>
+   * <li><code>usage</code> - usageDetails, costDetails, totalCost, usagePricingTierName</li>
+   * <li><code>prompt</code> - promptId, promptName, promptVersion</li>
+   * <li><code>metrics</code> - latency, timeToFirstToken</li>
+   * <li><code>trace_context</code> - tags, release, traceName</li>
+   * </ul>
+   * <p>If not specified, <code>core</code> and <code>basic</code> field groups are returned.</p>
+   * <h2>Filters</h2>
+   * <p>Multiple filtering options are available via query parameters or the structured <code>filter</code> parameter.
+   * When using the <code>filter</code> parameter, it takes precedence over individual query parameter filters.</p>
+   */
+  public CompletableFuture<LangfuseClientHttpResponse<ObservationsV2Response>> getMany(
+      GetObservationsV2Request request, RequestOptions requestOptions) {
     HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
       .addPathSegments("api/public")
-      .addPathSegments("observations")
-      .addPathSegment(observationId);if (requestOptions != null) {
+      .addPathSegments("v2/observations");if (request.getFields().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "fields", request.getFields().get(), false);
+      }
+      if (request.getExpandMetadata().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "expandMetadata", request.getExpandMetadata().get(), false);
+      }
+      if (request.getLimit().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get(), false);
+      }
+      if (request.getCursor().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "cursor", request.getCursor().get(), false);
+      }
+      if (request.getParseIoAsJson().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "parseIoAsJson", request.getParseIoAsJson().get(), false);
+      }
+      if (request.getName().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "name", request.getName().get(), false);
+      }
+      if (request.getUserId().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "userId", request.getUserId().get(), false);
+      }
+      if (request.getSessionId().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "sessionId", request.getSessionId().get(), false);
+      }
+      if (request.getType().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "type", request.getType().get(), false);
+      }
+      if (request.getTraceId().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "traceId", request.getTraceId().get(), false);
+      }
+      if (request.getLevel().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "level", request.getLevel().get(), false);
+      }
+      if (request.getParentObservationId().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "parentObservationId", request.getParentObservationId().get(), false);
+      }
+      if (request.getIsRootObservation().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "isRootObservation", request.getIsRootObservation().get(), false);
+      }
+      if (request.getFromStartTime().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "fromStartTime", request.getFromStartTime().get(), false);
+      }
+      if (request.getToStartTime().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "toStartTime", request.getToStartTime().get(), false);
+      }
+      if (request.getVersion().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "version", request.getVersion().get(), false);
+      }
+      if (request.getFilter().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "filter", request.getFilter().get(), false);
+      }
+      if (request.getEnvironment().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "environment", request.getEnvironment().get(), true);
+      }
+      if (requestOptions != null) {
         requestOptions.getQueryParameters().forEach((_key, _value) -> {
           httpUrl.addQueryParameter(_key, _value);
         } );
       }
-      Request okhttpRequest = new Request.Builder()
+      Request.Builder _requestBuilder = new Request.Builder()
         .url(httpUrl.build())
         .method("GET", null)
         .headers(Headers.of(clientOptions.headers(requestOptions)))
-        .addHeader("Accept", "application/json")
-        .build();
+        .addHeader("Accept", "application/json");
+      Request okhttpRequest = _requestBuilder.build();
       OkHttpClient client = clientOptions.httpClient();
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
         client = clientOptions.httpClientWithTimeout(requestOptions);
       }
-      CompletableFuture<LangfuseClientHttpResponse<ObservationsView>> future = new CompletableFuture<>();
+      if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+        okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+      }
+      CompletableFuture<LangfuseClientHttpResponse<ObservationsV2Response>> future = new CompletableFuture<>();
       client.newCall(okhttpRequest).enqueue(new Callback() {
         @Override
         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
           try (ResponseBody responseBody = response.body()) {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
-              future.complete(new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ObservationsView.class), response));
+              future.complete(new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ObservationsV2Response.class), response));
               return;
             }
             try {
@@ -103,6 +263,9 @@ public class AsyncRawObservationsClient {
             future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
             return;
           }
+          catch (JsonProcessingException e) {
+            future.completeExceptionally(new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e));
+          }
           catch (IOException e) {
             future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
           }
@@ -115,136 +278,4 @@ public class AsyncRawObservationsClient {
       });
       return future;
     }
-
-    /**
-     * Get a list of observations.
-     * <p>Consider using the <a href="/api-reference#tag/observationsv2/GET/api/public/v2/observations">v2 observations endpoint</a> for cursor-based pagination and field selection.</p>
-     */
-    public CompletableFuture<LangfuseClientHttpResponse<ObservationsViews>> getMany() {
-      return getMany(GetObservationsRequest.builder().build());
-    }
-
-    /**
-     * Get a list of observations.
-     * <p>Consider using the <a href="/api-reference#tag/observationsv2/GET/api/public/v2/observations">v2 observations endpoint</a> for cursor-based pagination and field selection.</p>
-     */
-    public CompletableFuture<LangfuseClientHttpResponse<ObservationsViews>> getMany(
-        RequestOptions requestOptions) {
-      return getMany(GetObservationsRequest.builder().build(),requestOptions);
-    }
-
-    /**
-     * Get a list of observations.
-     * <p>Consider using the <a href="/api-reference#tag/observationsv2/GET/api/public/v2/observations">v2 observations endpoint</a> for cursor-based pagination and field selection.</p>
-     */
-    public CompletableFuture<LangfuseClientHttpResponse<ObservationsViews>> getMany(
-        GetObservationsRequest request) {
-      return getMany(request,null);
-    }
-
-    /**
-     * Get a list of observations.
-     * <p>Consider using the <a href="/api-reference#tag/observationsv2/GET/api/public/v2/observations">v2 observations endpoint</a> for cursor-based pagination and field selection.</p>
-     */
-    public CompletableFuture<LangfuseClientHttpResponse<ObservationsViews>> getMany(
-        GetObservationsRequest request, RequestOptions requestOptions) {
-      HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
-        .addPathSegments("api/public")
-        .addPathSegments("observations");if (request.getPage().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get(), false);
-        }
-        if (request.getLimit().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get(), false);
-        }
-        if (request.getName().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "name", request.getName().get(), false);
-        }
-        if (request.getUserId().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "userId", request.getUserId().get(), false);
-        }
-        if (request.getType().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "type", request.getType().get(), false);
-        }
-        if (request.getTraceId().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "traceId", request.getTraceId().get(), false);
-        }
-        if (request.getLevel().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "level", request.getLevel().get(), false);
-        }
-        if (request.getParentObservationId().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "parentObservationId", request.getParentObservationId().get(), false);
-        }
-        if (request.getFromStartTime().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "fromStartTime", request.getFromStartTime().get(), false);
-        }
-        if (request.getToStartTime().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "toStartTime", request.getToStartTime().get(), false);
-        }
-        if (request.getVersion().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "version", request.getVersion().get(), false);
-        }
-        if (request.getFilter().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "filter", request.getFilter().get(), false);
-        }
-        if (request.getEnvironment().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "environment", request.getEnvironment().get(), true);
-        }
-        if (requestOptions != null) {
-          requestOptions.getQueryParameters().forEach((_key, _value) -> {
-            httpUrl.addQueryParameter(_key, _value);
-          } );
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-          .url(httpUrl.build())
-          .method("GET", null)
-          .headers(Headers.of(clientOptions.headers(requestOptions)))
-          .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-          client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        CompletableFuture<LangfuseClientHttpResponse<ObservationsViews>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
-          @Override
-          public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-            try (ResponseBody responseBody = response.body()) {
-              String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-              if (response.isSuccessful()) {
-                future.complete(new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ObservationsViews.class), response));
-                return;
-              }
-              try {
-                switch (response.code()) {
-                  case 400:future.completeExceptionally(new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
-                  return;
-                  case 401:future.completeExceptionally(new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
-                  return;
-                  case 403:future.completeExceptionally(new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
-                  return;
-                  case 404:future.completeExceptionally(new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
-                  return;
-                  case 405:future.completeExceptionally(new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
-                  return;
-                }
-              }
-              catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-              }
-              Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-              future.completeExceptionally(new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response));
-              return;
-            }
-            catch (IOException e) {
-              future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
-            }
-          }
-
-          @Override
-          public void onFailure(@NotNull Call call, @NotNull IOException e) {
-            future.completeExceptionally(new LangfuseClientException("Network error executing HTTP request", e));
-          }
-        });
-        return future;
-      }
-    }
+  }

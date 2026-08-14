@@ -12,6 +12,7 @@ import com.langfuse.client.core.LangfuseClientHttpResponse;
 import com.langfuse.client.core.MediaTypes;
 import com.langfuse.client.core.ObjectMappers;
 import com.langfuse.client.core.RequestOptions;
+import com.langfuse.client.core.RetryInterceptor;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.String;
@@ -24,6 +25,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationDeletionResponse;
 import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationResponse;
+import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationStatusResponse;
 import com.langfuse.client.resources.blobstorageintegrations.types.BlobStorageIntegrationsResponse;
 import com.langfuse.client.resources.blobstorageintegrations.types.CreateBlobStorageIntegrationRequest;
 import com.langfuse.client.resources.commons.errors.AccessDeniedError;
@@ -68,6 +70,9 @@ public class RawBlobStorageIntegrationsClient {
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
         client = clientOptions.httpClientWithTimeout(requestOptions);
       }
+      if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+        okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+      }
       try (Response response = client.newCall(okhttpRequest).execute()) {
         ResponseBody responseBody = response.body();
         String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -88,6 +93,9 @@ public class RawBlobStorageIntegrationsClient {
         }
         Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
         throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+      }
+      catch (JsonProcessingException e) {
+        throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
       }
       catch (IOException e) {
         throw new LangfuseClientException("Network error executing HTTP request", e);
@@ -132,6 +140,9 @@ public class RawBlobStorageIntegrationsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
           client = clientOptions.httpClientWithTimeout(requestOptions);
         }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+          okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+        }
         try (Response response = client.newCall(okhttpRequest).execute()) {
           ResponseBody responseBody = response.body();
           String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -153,23 +164,26 @@ public class RawBlobStorageIntegrationsClient {
           Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
           throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
         }
+        catch (JsonProcessingException e) {
+          throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
+        }
         catch (IOException e) {
           throw new LangfuseClientException("Network error executing HTTP request", e);
         }
       }
 
       /**
-       * Delete a blob storage integration by ID (requires organization-scoped API key)
+       * Get the sync status of a blob storage integration by integration ID (requires organization-scoped API key)
        */
-      public LangfuseClientHttpResponse<BlobStorageIntegrationDeletionResponse> deleteBlobStorageIntegration(
+      public LangfuseClientHttpResponse<BlobStorageIntegrationStatusResponse> getBlobStorageIntegrationStatus(
           String id) {
-        return deleteBlobStorageIntegration(id,null);
+        return getBlobStorageIntegrationStatus(id,null);
       }
 
       /**
-       * Delete a blob storage integration by ID (requires organization-scoped API key)
+       * Get the sync status of a blob storage integration by integration ID (requires organization-scoped API key)
        */
-      public LangfuseClientHttpResponse<BlobStorageIntegrationDeletionResponse> deleteBlobStorageIntegration(
+      public LangfuseClientHttpResponse<BlobStorageIntegrationStatusResponse> getBlobStorageIntegrationStatus(
           String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
           .addPathSegments("api/public/integrations/blob-storage")
@@ -181,7 +195,7 @@ public class RawBlobStorageIntegrationsClient {
           }
           Request okhttpRequest = new Request.Builder()
             .url(httpUrl.build())
-            .method("DELETE", null)
+            .method("GET", null)
             .headers(Headers.of(clientOptions.headers(requestOptions)))
             .addHeader("Accept", "application/json")
             .build();
@@ -189,11 +203,14 @@ public class RawBlobStorageIntegrationsClient {
           if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
           }
+          if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+            okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+          }
           try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
-              return new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BlobStorageIntegrationDeletionResponse.class), response);
+              return new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BlobStorageIntegrationStatusResponse.class), response);
             }
             try {
               switch (response.code()) {
@@ -210,8 +227,74 @@ public class RawBlobStorageIntegrationsClient {
             Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
           }
+          catch (JsonProcessingException e) {
+            throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
+          }
           catch (IOException e) {
             throw new LangfuseClientException("Network error executing HTTP request", e);
           }
         }
-      }
+
+        /**
+         * Delete a blob storage integration by ID (requires organization-scoped API key)
+         */
+        public LangfuseClientHttpResponse<BlobStorageIntegrationDeletionResponse> deleteBlobStorageIntegration(
+            String id) {
+          return deleteBlobStorageIntegration(id,null);
+        }
+
+        /**
+         * Delete a blob storage integration by ID (requires organization-scoped API key)
+         */
+        public LangfuseClientHttpResponse<BlobStorageIntegrationDeletionResponse> deleteBlobStorageIntegration(
+            String id, RequestOptions requestOptions) {
+          HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+            .addPathSegments("api/public/integrations/blob-storage")
+
+            .addPathSegment(id);if (requestOptions != null) {
+              requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+              } );
+            }
+            Request okhttpRequest = new Request.Builder()
+              .url(httpUrl.build())
+              .method("DELETE", null)
+              .headers(Headers.of(clientOptions.headers(requestOptions)))
+              .addHeader("Accept", "application/json")
+              .build();
+            OkHttpClient client = clientOptions.httpClient();
+            if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+              client = clientOptions.httpClientWithTimeout(requestOptions);
+            }
+            if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+              okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+            }
+            try (Response response = client.newCall(okhttpRequest).execute()) {
+              ResponseBody responseBody = response.body();
+              String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+              if (response.isSuccessful()) {
+                return new LangfuseClientHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BlobStorageIntegrationDeletionResponse.class), response);
+              }
+              try {
+                switch (response.code()) {
+                  case 400:throw new Error(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                  case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                  case 403:throw new AccessDeniedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                  case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                  case 405:throw new MethodNotAllowedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+              }
+              catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+              }
+              Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+              throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+            }
+            catch (JsonProcessingException e) {
+              throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
+            }
+            catch (IOException e) {
+              throw new LangfuseClientException("Network error executing HTTP request", e);
+            }
+          }
+        }

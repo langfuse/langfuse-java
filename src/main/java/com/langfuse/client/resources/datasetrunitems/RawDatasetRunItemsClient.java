@@ -13,6 +13,7 @@ import com.langfuse.client.core.MediaTypes;
 import com.langfuse.client.core.ObjectMappers;
 import com.langfuse.client.core.QueryStringMapper;
 import com.langfuse.client.core.RequestOptions;
+import com.langfuse.client.core.RetryInterceptor;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.String;
@@ -77,6 +78,9 @@ public class RawDatasetRunItemsClient {
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
         client = clientOptions.httpClientWithTimeout(requestOptions);
       }
+      if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+        okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+      }
       try (Response response = client.newCall(okhttpRequest).execute()) {
         ResponseBody responseBody = response.body();
         String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -97,6 +101,9 @@ public class RawDatasetRunItemsClient {
         }
         Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
         throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+      }
+      catch (JsonProcessingException e) {
+        throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
       }
       catch (IOException e) {
         throw new LangfuseClientException("Network error executing HTTP request", e);
@@ -141,6 +148,9 @@ public class RawDatasetRunItemsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
           client = clientOptions.httpClientWithTimeout(requestOptions);
         }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+          okhttpRequest = okhttpRequest.newBuilder().tag(RetryInterceptor.MaxRetriesOverride.class, new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())).build();
+        }
         try (Response response = client.newCall(okhttpRequest).execute()) {
           ResponseBody responseBody = response.body();
           String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -161,6 +171,9 @@ public class RawDatasetRunItemsClient {
           }
           Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
           throw new LangfuseClientApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+        }
+        catch (JsonProcessingException e) {
+          throw new LangfuseClientException("Failed to deserialize response: " + e.getMessage(), e);
         }
         catch (IOException e) {
           throw new LangfuseClientException("Network error executing HTTP request", e);

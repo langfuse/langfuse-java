@@ -523,7 +523,6 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
 
     /**
      * <p>Metadata associated with the score</p>
-     * <p>Metadata associated with the score</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -534,7 +533,6 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
     }
 
     /**
-     * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * <p>The environment from which this score originated. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -547,7 +545,6 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
 
     /**
      * <p>Represents the numeric category mapping of the stringValue. If no config is linked, defaults to 0.</p>
-     * <p>Represents the numeric category mapping of the stringValue. If no config is linked, defaults to 0.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -558,7 +555,6 @@ public final class CategoricalScoreV1 implements IBaseScoreV1 {
     }
 
     /**
-     * <p>The string representation of the score value. If no config is linked, can be any string. Otherwise, must map to a config category</p>
      * <p>The string representation of the score value. If no config is linked, can be any string. Otherwise, must map to a config category</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

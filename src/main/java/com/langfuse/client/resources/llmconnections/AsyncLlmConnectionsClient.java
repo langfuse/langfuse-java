@@ -6,8 +6,10 @@ package com.langfuse.client.resources.llmconnections;
 
 import com.langfuse.client.core.ClientOptions;
 import com.langfuse.client.core.RequestOptions;
+import java.lang.String;
 import java.util.concurrent.CompletableFuture;
 import com.langfuse.client.resources.llmconnections.requests.GetLlmConnectionsRequest;
+import com.langfuse.client.resources.llmconnections.types.DeleteLlmConnectionResponse;
 import com.langfuse.client.resources.llmconnections.types.LlmConnection;
 import com.langfuse.client.resources.llmconnections.types.PaginatedLlmConnections;
 import com.langfuse.client.resources.llmconnections.types.UpsertLlmConnectionRequest;
@@ -71,5 +73,20 @@ public class AsyncLlmConnectionsClient {
   public CompletableFuture<LlmConnection> upsert(UpsertLlmConnectionRequest request,
       RequestOptions requestOptions) {
     return this.rawClient.upsert(request, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Delete an LLM connection by id. Evaluators that depend on the deleted connection are automatically paused.
+   */
+  public CompletableFuture<DeleteLlmConnectionResponse> delete(String id) {
+    return this.rawClient.delete(id).thenApply(response -> response.body());
+  }
+
+  /**
+   * Delete an LLM connection by id. Evaluators that depend on the deleted connection are automatically paused.
+   */
+  public CompletableFuture<DeleteLlmConnectionResponse> delete(String id,
+      RequestOptions requestOptions) {
+    return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
   }
 }

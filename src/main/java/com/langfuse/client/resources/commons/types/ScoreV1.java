@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.lang.Object;
+import java.lang.Override;
 import java.lang.String;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,6 +44,10 @@ public final class ScoreV1 {
     return new ScoreV1(new BooleanValue(value));
   }
 
+  public static ScoreV1 text(TextScoreV1 value) {
+    return new ScoreV1(new TextValue(value));
+  }
+
   public boolean isNumeric() {
     return value instanceof NumericValue;
   }
@@ -53,6 +58,10 @@ public final class ScoreV1 {
 
   public boolean isBoolean() {
     return value instanceof BooleanValue;
+  }
+
+  public boolean isText() {
+    return value instanceof TextValue;
   }
 
   public boolean _isUnknown() {
@@ -80,11 +89,34 @@ public final class ScoreV1 {
     return Optional.empty();
   }
 
+  public Optional<TextScoreV1> getText() {
+    if (isText()) {
+      return Optional.of(((TextValue) value).value);
+    }
+    return Optional.empty();
+  }
+
   public Optional<Object> _getUnknown() {
     if (_isUnknown()) {
       return Optional.of(((_UnknownValue) value).value);
     }
     return Optional.empty();
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ScoreV1 && value.equals(((ScoreV1) other).value);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(value);
+  }
+
+  @Override
+  public String toString() {
+    return value.toString();
   }
 
   @JsonValue
@@ -99,6 +131,8 @@ public final class ScoreV1 {
 
     T visitBoolean(BooleanScoreV1 boolean_);
 
+    T visitText(TextScoreV1 text);
+
     T _visitUnknown(Object unknownType);
   }
 
@@ -111,7 +145,8 @@ public final class ScoreV1 {
   @JsonSubTypes({
       @JsonSubTypes.Type(NumericValue.class),
       @JsonSubTypes.Type(CategoricalValue.class),
-      @JsonSubTypes.Type(BooleanValue.class)
+      @JsonSubTypes.Type(BooleanValue.class),
+      @JsonSubTypes.Type(TextValue.class)
   })
   @JsonIgnoreProperties(
       ignoreUnknown = true
@@ -124,6 +159,10 @@ public final class ScoreV1 {
   @JsonIgnoreProperties("dataType")
   private static final class NumericValue implements Value {
     @JsonUnwrapped
+    @JsonIgnoreProperties(
+        value = "dataType",
+        allowSetters = true
+    )
     private NumericScoreV1 value;
 
     @JsonCreator(
@@ -166,6 +205,10 @@ public final class ScoreV1 {
   @JsonIgnoreProperties("dataType")
   private static final class CategoricalValue implements Value {
     @JsonUnwrapped
+    @JsonIgnoreProperties(
+        value = "dataType",
+        allowSetters = true
+    )
     private CategoricalScoreV1 value;
 
     @JsonCreator(
@@ -208,6 +251,10 @@ public final class ScoreV1 {
   @JsonIgnoreProperties("dataType")
   private static final class BooleanValue implements Value {
     @JsonUnwrapped
+    @JsonIgnoreProperties(
+        value = "dataType",
+        allowSetters = true
+    )
     private BooleanScoreV1 value;
 
     @JsonCreator(
@@ -232,6 +279,52 @@ public final class ScoreV1 {
     }
 
     private boolean equalTo(BooleanValue other) {
+      return value.equals(other.value);
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      return Objects.hash(this.value);
+    }
+
+    @java.lang.Override
+    public String toString() {
+      return "ScoreV1{" + "value: " + value + "}";
+    }
+  }
+
+  @JsonTypeName("TEXT")
+  @JsonIgnoreProperties("dataType")
+  private static final class TextValue implements Value {
+    @JsonUnwrapped
+    @JsonIgnoreProperties(
+        value = "dataType",
+        allowSetters = true
+    )
+    private TextScoreV1 value;
+
+    @JsonCreator(
+        mode = JsonCreator.Mode.PROPERTIES
+    )
+    private TextValue() {
+    }
+
+    private TextValue(TextScoreV1 value) {
+      this.value = value;
+    }
+
+    @java.lang.Override
+    public <T> T visit(Visitor<T> visitor) {
+      return visitor.visitText(value);
+    }
+
+    @java.lang.Override
+    public boolean equals(Object other) {
+      if (this == other) return true;
+      return other instanceof TextValue && equalTo((TextValue) other);
+    }
+
+    private boolean equalTo(TextValue other) {
       return value.equals(other.value);
     }
 

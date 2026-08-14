@@ -155,7 +155,6 @@ public final class BaseEvent implements IBaseEvent {
 
     /**
      * <p>UUID v4 that identifies the event</p>
-     * <p>UUID v4 that identifies the event</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -166,7 +165,6 @@ public final class BaseEvent implements IBaseEvent {
     }
 
     /**
-     * <p>Datetime (ISO 8601) of event creation in client. Should be as close to actual event creation in client as possible, this timestamp will be used for ordering of events in future release. Resolution: milliseconds (required), microseconds (optimal).</p>
      * <p>Datetime (ISO 8601) of event creation in client. Should be as close to actual event creation in client as possible, this timestamp will be used for ordering of events in future release. Resolution: milliseconds (required), microseconds (optimal).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */

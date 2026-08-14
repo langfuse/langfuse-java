@@ -1,8 +1,11 @@
 {
-  "cliVersion": "3.88.0",
+  "cliVersion": "5.89.4",
   "generatorName": "fernapi/fern-java-sdk",
-  "generatorVersion": "3.38.1",
+  "generatorVersion": "4.17.0",
   "generatorConfig": {
     "client-class-name": "LangfuseClient"
-  }
+  },
+  "originGitCommit": "c7323d47bbdd49ca8edaae0e4dade7d437c999b1",
+  "originGitCommitIsDirty": true,
+  "invokedBy": "manual"
 }

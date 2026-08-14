@@ -124,7 +124,7 @@ public final class ScoreBody {
   }
 
   /**
-   * @return The value of the score. Must be passed as string for categorical scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false)
+   * @return The value of the score. Must be passed as string for categorical and text scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false). Text score values must be between 1 and 500 characters.
    */
   @JsonProperty("value")
   public CreateScoreValue getValue() {
@@ -197,7 +197,7 @@ public final class ScoreBody {
 
   public interface ValueStage {
     /**
-     * <p>The value of the score. Must be passed as string for categorical scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false)</p>
+     * <p>The value of the score. Must be passed as string for categorical and text scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false). Text score values must be between 1 and 500 characters.</p>
      */
     _FinalStage value(@NotNull CreateScoreValue value);
   }
@@ -319,7 +319,6 @@ public final class ScoreBody {
 
     /**
      * <p>The name of the score. Always overrides &quot;output&quot; for correction scores.</p>
-     * <p>The name of the score. Always overrides &quot;output&quot; for correction scores.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -330,8 +329,7 @@ public final class ScoreBody {
     }
 
     /**
-     * <p>The value of the score. Must be passed as string for categorical scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false)</p>
-     * <p>The value of the score. Must be passed as string for categorical scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false)</p>
+     * <p>The value of the score. Must be passed as string for categorical and text scores, and numeric for boolean and numeric scores. Boolean score values must equal either 1 or 0 (true or false). Text score values must be between 1 and 500 characters.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override

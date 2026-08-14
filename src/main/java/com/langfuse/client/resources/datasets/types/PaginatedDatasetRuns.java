@@ -20,8 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import com.langfuse.client.resources.commons.types.DatasetRun;
+import com.langfuse.client.resources.commons.types.Deprecation;
 import com.langfuse.client.resources.utils.pagination.types.MetaResponse;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -33,12 +35,15 @@ public final class PaginatedDatasetRuns {
 
   private final MetaResponse meta;
 
+  private final Optional<Deprecation> deprecation;
+
   private final Map<String, Object> additionalProperties;
 
   private PaginatedDatasetRuns(List<DatasetRun> data, MetaResponse meta,
-      Map<String, Object> additionalProperties) {
+      Optional<Deprecation> deprecation, Map<String, Object> additionalProperties) {
     this.data = data;
     this.meta = meta;
+    this.deprecation = deprecation;
     this.additionalProperties = additionalProperties;
   }
 
@@ -50,6 +55,11 @@ public final class PaginatedDatasetRuns {
   @JsonProperty("meta")
   public MetaResponse getMeta() {
     return meta;
+  }
+
+  @JsonProperty("_deprecation")
+  public Optional<Deprecation> getDeprecation() {
+    return deprecation;
   }
 
   @java.lang.Override
@@ -64,12 +74,12 @@ public final class PaginatedDatasetRuns {
   }
 
   private boolean equalTo(PaginatedDatasetRuns other) {
-    return data.equals(other.data) && meta.equals(other.meta);
+    return data.equals(other.data) && meta.equals(other.meta) && deprecation.equals(other.deprecation);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.data, this.meta);
+    return Objects.hash(this.data, this.meta, this.deprecation);
   }
 
   @java.lang.Override
@@ -99,6 +109,10 @@ public final class PaginatedDatasetRuns {
     _FinalStage addData(DatasetRun data);
 
     _FinalStage addAllData(List<DatasetRun> data);
+
+    _FinalStage deprecation(Optional<Deprecation> deprecation);
+
+    _FinalStage deprecation(Deprecation deprecation);
   }
 
   @JsonIgnoreProperties(
@@ -106,6 +120,8 @@ public final class PaginatedDatasetRuns {
   )
   public static final class Builder implements MetaStage, _FinalStage {
     private MetaResponse meta;
+
+    private Optional<Deprecation> deprecation = Optional.empty();
 
     private List<DatasetRun> data = new ArrayList<>();
 
@@ -119,6 +135,7 @@ public final class PaginatedDatasetRuns {
     public Builder from(PaginatedDatasetRuns other) {
       data(other.getData());
       meta(other.getMeta());
+      deprecation(other.getDeprecation());
       return this;
     }
 
@@ -126,6 +143,22 @@ public final class PaginatedDatasetRuns {
     @JsonSetter("meta")
     public _FinalStage meta(@NotNull MetaResponse meta) {
       this.meta = Objects.requireNonNull(meta, "meta must not be null");
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage deprecation(Deprecation deprecation) {
+      this.deprecation = Optional.ofNullable(deprecation);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "_deprecation",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage deprecation(Optional<Deprecation> deprecation) {
+      this.deprecation = deprecation;
       return this;
     }
 
@@ -158,7 +191,7 @@ public final class PaginatedDatasetRuns {
 
     @java.lang.Override
     public PaginatedDatasetRuns build() {
-      return new PaginatedDatasetRuns(data, meta, additionalProperties);
+      return new PaginatedDatasetRuns(data, meta, deprecation, additionalProperties);
     }
 
     @java.lang.Override

@@ -13,10 +13,12 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.langfuse.client.core.ObjectMappers;
+import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.String;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -55,6 +57,12 @@ public final class CreateBlobStorageIntegrationRequest {
 
   private final Optional<OffsetDateTime> exportStartDate;
 
+  private final Optional<Boolean> compressed;
+
+  private final Optional<BlobStorageExportSource> exportSource;
+
+  private final Optional<List<BlobStorageExportFieldGroup>> exportFieldGroups;
+
   private final Map<String, Object> additionalProperties;
 
   private CreateBlobStorageIntegrationRequest(String projectId, BlobStorageIntegrationType type,
@@ -62,7 +70,10 @@ public final class CreateBlobStorageIntegrationRequest {
       Optional<String> secretAccessKey, Optional<String> prefix,
       BlobStorageExportFrequency exportFrequency, boolean enabled, boolean forcePathStyle,
       BlobStorageIntegrationFileType fileType, BlobStorageExportMode exportMode,
-      Optional<OffsetDateTime> exportStartDate, Map<String, Object> additionalProperties) {
+      Optional<OffsetDateTime> exportStartDate, Optional<Boolean> compressed,
+      Optional<BlobStorageExportSource> exportSource,
+      Optional<List<BlobStorageExportFieldGroup>> exportFieldGroups,
+      Map<String, Object> additionalProperties) {
     this.projectId = projectId;
     this.type = type;
     this.bucketName = bucketName;
@@ -77,6 +88,9 @@ public final class CreateBlobStorageIntegrationRequest {
     this.fileType = fileType;
     this.exportMode = exportMode;
     this.exportStartDate = exportStartDate;
+    this.compressed = compressed;
+    this.exportSource = exportSource;
+    this.exportFieldGroups = exportFieldGroups;
     this.additionalProperties = additionalProperties;
   }
 
@@ -94,7 +108,7 @@ public final class CreateBlobStorageIntegrationRequest {
   }
 
   /**
-   * @return Name of the storage bucket
+   * @return Name of the storage bucket. For AZURE_BLOB_STORAGE, must be a valid Azure container name (3-63 chars, lowercase letters, numbers, and hyphens only, must start and end with a letter or number, no consecutive hyphens).
    */
   @JsonProperty("bucketName")
   public String getBucketName() {
@@ -173,11 +187,38 @@ public final class CreateBlobStorageIntegrationRequest {
   }
 
   /**
-   * @return Custom start date for exports (required when exportMode is FROM_CUSTOM_DATE)
+   * @return Custom start date for exports (required when exportMode is FROM_CUSTOM_DATE). Must not be in the future (27 h tolerance for timezone differences).
    */
   @JsonProperty("exportStartDate")
   public Optional<OffsetDateTime> getExportStartDate() {
     return exportStartDate;
+  }
+
+  /**
+   * @return Enable gzip compression for exported files (.csv.gz, .json.gz, .jsonl.gz). Defaults to true.
+   */
+  @JsonProperty("compressed")
+  public Optional<Boolean> getCompressed() {
+    return compressed;
+  }
+
+  /**
+   * @return Data to export. When omitted on update, the existing value is preserved. When omitted on create: integrations on Langfuse Cloud default to <code>OBSERVATIONS_V2</code>; self-hosted deployments fall back to <code>LEGACY_TRACES_OBSERVATIONS</code>. Required when <code>exportFieldGroups</code> is provided.
+   * <p><strong>Cloud-only project deprecation gate (effective 2026-05-20):</strong> For projects created on or after 2026-05-20 on Langfuse Cloud, <code>LEGACY_TRACES_OBSERVATIONS</code> and <code>LEGACY_TRACES_AND_ENRICHED_OBSERVATIONS</code> are rejected with HTTP 400. Use <code>OBSERVATIONS_V2</code> for all new integrations. Self-hosted deployments are unaffected.</p>
+   * <p><strong>Cloud-only integration deprecation gate (effective 2026-06-22):</strong> On Langfuse Cloud, legacy export sources are only accepted for blob storage integrations created before 2026-06-22, regardless of project age. Requests that would create a new integration with <code>LEGACY_TRACES_OBSERVATIONS</code> or <code>LEGACY_TRACES_AND_ENRICHED_OBSERVATIONS</code> are rejected with HTTP 400. Use <code>OBSERVATIONS_V2</code> instead. Self-hosted deployments are unaffected.</p>
+   */
+  @JsonProperty("exportSource")
+  public Optional<BlobStorageExportSource> getExportSource() {
+    return exportSource;
+  }
+
+  /**
+   * @return Field groups to include in each exported observation row. Applies to all export sources; must include <code>core</code> if provided. When omitted on create, the column default (all groups) applies. When omitted on update, the existing value is preserved.
+   * <p><code>exportFieldGroups</code> requires <code>exportSource</code> to be provided in the same request.</p>
+   */
+  @JsonProperty("exportFieldGroups")
+  public Optional<List<BlobStorageExportFieldGroup>> getExportFieldGroups() {
+    return exportFieldGroups;
   }
 
   @java.lang.Override
@@ -192,12 +233,12 @@ public final class CreateBlobStorageIntegrationRequest {
   }
 
   private boolean equalTo(CreateBlobStorageIntegrationRequest other) {
-    return projectId.equals(other.projectId) && type.equals(other.type) && bucketName.equals(other.bucketName) && endpoint.equals(other.endpoint) && region.equals(other.region) && accessKeyId.equals(other.accessKeyId) && secretAccessKey.equals(other.secretAccessKey) && prefix.equals(other.prefix) && exportFrequency.equals(other.exportFrequency) && enabled == other.enabled && forcePathStyle == other.forcePathStyle && fileType.equals(other.fileType) && exportMode.equals(other.exportMode) && exportStartDate.equals(other.exportStartDate);
+    return projectId.equals(other.projectId) && type.equals(other.type) && bucketName.equals(other.bucketName) && endpoint.equals(other.endpoint) && region.equals(other.region) && accessKeyId.equals(other.accessKeyId) && secretAccessKey.equals(other.secretAccessKey) && prefix.equals(other.prefix) && exportFrequency.equals(other.exportFrequency) && enabled == other.enabled && forcePathStyle == other.forcePathStyle && fileType.equals(other.fileType) && exportMode.equals(other.exportMode) && exportStartDate.equals(other.exportStartDate) && compressed.equals(other.compressed) && exportSource.equals(other.exportSource) && exportFieldGroups.equals(other.exportFieldGroups);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.projectId, this.type, this.bucketName, this.endpoint, this.region, this.accessKeyId, this.secretAccessKey, this.prefix, this.exportFrequency, this.enabled, this.forcePathStyle, this.fileType, this.exportMode, this.exportStartDate);
+    return Objects.hash(this.projectId, this.type, this.bucketName, this.endpoint, this.region, this.accessKeyId, this.secretAccessKey, this.prefix, this.exportFrequency, this.enabled, this.forcePathStyle, this.fileType, this.exportMode, this.exportStartDate, this.compressed, this.exportSource, this.exportFieldGroups);
   }
 
   @java.lang.Override
@@ -224,7 +265,7 @@ public final class CreateBlobStorageIntegrationRequest {
 
   public interface BucketNameStage {
     /**
-     * <p>Name of the storage bucket</p>
+     * <p>Name of the storage bucket. For AZURE_BLOB_STORAGE, must be a valid Azure container name (3-63 chars, lowercase letters, numbers, and hyphens only, must start and end with a letter or number, no consecutive hyphens).</p>
      */
     RegionStage bucketName(@NotNull String bucketName);
   }
@@ -298,11 +339,35 @@ public final class CreateBlobStorageIntegrationRequest {
     _FinalStage prefix(String prefix);
 
     /**
-     * <p>Custom start date for exports (required when exportMode is FROM_CUSTOM_DATE)</p>
+     * <p>Custom start date for exports (required when exportMode is FROM_CUSTOM_DATE). Must not be in the future (27 h tolerance for timezone differences).</p>
      */
     _FinalStage exportStartDate(Optional<OffsetDateTime> exportStartDate);
 
     _FinalStage exportStartDate(OffsetDateTime exportStartDate);
+
+    /**
+     * <p>Enable gzip compression for exported files (.csv.gz, .json.gz, .jsonl.gz). Defaults to true.</p>
+     */
+    _FinalStage compressed(Optional<Boolean> compressed);
+
+    _FinalStage compressed(Boolean compressed);
+
+    /**
+     * <p>Data to export. When omitted on update, the existing value is preserved. When omitted on create: integrations on Langfuse Cloud default to <code>OBSERVATIONS_V2</code>; self-hosted deployments fall back to <code>LEGACY_TRACES_OBSERVATIONS</code>. Required when <code>exportFieldGroups</code> is provided.</p>
+     * <p><strong>Cloud-only project deprecation gate (effective 2026-05-20):</strong> For projects created on or after 2026-05-20 on Langfuse Cloud, <code>LEGACY_TRACES_OBSERVATIONS</code> and <code>LEGACY_TRACES_AND_ENRICHED_OBSERVATIONS</code> are rejected with HTTP 400. Use <code>OBSERVATIONS_V2</code> for all new integrations. Self-hosted deployments are unaffected.</p>
+     * <p><strong>Cloud-only integration deprecation gate (effective 2026-06-22):</strong> On Langfuse Cloud, legacy export sources are only accepted for blob storage integrations created before 2026-06-22, regardless of project age. Requests that would create a new integration with <code>LEGACY_TRACES_OBSERVATIONS</code> or <code>LEGACY_TRACES_AND_ENRICHED_OBSERVATIONS</code> are rejected with HTTP 400. Use <code>OBSERVATIONS_V2</code> instead. Self-hosted deployments are unaffected.</p>
+     */
+    _FinalStage exportSource(Optional<BlobStorageExportSource> exportSource);
+
+    _FinalStage exportSource(BlobStorageExportSource exportSource);
+
+    /**
+     * <p>Field groups to include in each exported observation row. Applies to all export sources; must include <code>core</code> if provided. When omitted on create, the column default (all groups) applies. When omitted on update, the existing value is preserved.</p>
+     * <p><code>exportFieldGroups</code> requires <code>exportSource</code> to be provided in the same request.</p>
+     */
+    _FinalStage exportFieldGroups(Optional<List<BlobStorageExportFieldGroup>> exportFieldGroups);
+
+    _FinalStage exportFieldGroups(List<BlobStorageExportFieldGroup> exportFieldGroups);
   }
 
   @JsonIgnoreProperties(
@@ -326,6 +391,12 @@ public final class CreateBlobStorageIntegrationRequest {
     private BlobStorageIntegrationFileType fileType;
 
     private BlobStorageExportMode exportMode;
+
+    private Optional<List<BlobStorageExportFieldGroup>> exportFieldGroups = Optional.empty();
+
+    private Optional<BlobStorageExportSource> exportSource = Optional.empty();
+
+    private Optional<Boolean> compressed = Optional.empty();
 
     private Optional<OffsetDateTime> exportStartDate = Optional.empty();
 
@@ -359,11 +430,13 @@ public final class CreateBlobStorageIntegrationRequest {
       fileType(other.getFileType());
       exportMode(other.getExportMode());
       exportStartDate(other.getExportStartDate());
+      compressed(other.getCompressed());
+      exportSource(other.getExportSource());
+      exportFieldGroups(other.getExportFieldGroups());
       return this;
     }
 
     /**
-     * <p>ID of the project in which to configure the blob storage integration</p>
      * <p>ID of the project in which to configure the blob storage integration</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -382,8 +455,7 @@ public final class CreateBlobStorageIntegrationRequest {
     }
 
     /**
-     * <p>Name of the storage bucket</p>
-     * <p>Name of the storage bucket</p>
+     * <p>Name of the storage bucket. For AZURE_BLOB_STORAGE, must be a valid Azure container name (3-63 chars, lowercase letters, numbers, and hyphens only, must start and end with a letter or number, no consecutive hyphens).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -394,7 +466,6 @@ public final class CreateBlobStorageIntegrationRequest {
     }
 
     /**
-     * <p>Storage region</p>
      * <p>Storage region</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -414,7 +485,6 @@ public final class CreateBlobStorageIntegrationRequest {
 
     /**
      * <p>Whether the integration is active</p>
-     * <p>Whether the integration is active</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -425,7 +495,6 @@ public final class CreateBlobStorageIntegrationRequest {
     }
 
     /**
-     * <p>Use path-style URLs for S3 requests</p>
      * <p>Use path-style URLs for S3 requests</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
@@ -451,7 +520,83 @@ public final class CreateBlobStorageIntegrationRequest {
     }
 
     /**
-     * <p>Custom start date for exports (required when exportMode is FROM_CUSTOM_DATE)</p>
+     * <p>Field groups to include in each exported observation row. Applies to all export sources; must include <code>core</code> if provided. When omitted on create, the column default (all groups) applies. When omitted on update, the existing value is preserved.</p>
+     * <p><code>exportFieldGroups</code> requires <code>exportSource</code> to be provided in the same request.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage exportFieldGroups(List<BlobStorageExportFieldGroup> exportFieldGroups) {
+      this.exportFieldGroups = Optional.ofNullable(exportFieldGroups);
+      return this;
+    }
+
+    /**
+     * <p>Field groups to include in each exported observation row. Applies to all export sources; must include <code>core</code> if provided. When omitted on create, the column default (all groups) applies. When omitted on update, the existing value is preserved.</p>
+     * <p><code>exportFieldGroups</code> requires <code>exportSource</code> to be provided in the same request.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "exportFieldGroups",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage exportFieldGroups(
+        Optional<List<BlobStorageExportFieldGroup>> exportFieldGroups) {
+      this.exportFieldGroups = exportFieldGroups;
+      return this;
+    }
+
+    /**
+     * <p>Data to export. When omitted on update, the existing value is preserved. When omitted on create: integrations on Langfuse Cloud default to <code>OBSERVATIONS_V2</code>; self-hosted deployments fall back to <code>LEGACY_TRACES_OBSERVATIONS</code>. Required when <code>exportFieldGroups</code> is provided.</p>
+     * <p><strong>Cloud-only project deprecation gate (effective 2026-05-20):</strong> For projects created on or after 2026-05-20 on Langfuse Cloud, <code>LEGACY_TRACES_OBSERVATIONS</code> and <code>LEGACY_TRACES_AND_ENRICHED_OBSERVATIONS</code> are rejected with HTTP 400. Use <code>OBSERVATIONS_V2</code> for all new integrations. Self-hosted deployments are unaffected.</p>
+     * <p><strong>Cloud-only integration deprecation gate (effective 2026-06-22):</strong> On Langfuse Cloud, legacy export sources are only accepted for blob storage integrations created before 2026-06-22, regardless of project age. Requests that would create a new integration with <code>LEGACY_TRACES_OBSERVATIONS</code> or <code>LEGACY_TRACES_AND_ENRICHED_OBSERVATIONS</code> are rejected with HTTP 400. Use <code>OBSERVATIONS_V2</code> instead. Self-hosted deployments are unaffected.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage exportSource(BlobStorageExportSource exportSource) {
+      this.exportSource = Optional.ofNullable(exportSource);
+      return this;
+    }
+
+    /**
+     * <p>Data to export. When omitted on update, the existing value is preserved. When omitted on create: integrations on Langfuse Cloud default to <code>OBSERVATIONS_V2</code>; self-hosted deployments fall back to <code>LEGACY_TRACES_OBSERVATIONS</code>. Required when <code>exportFieldGroups</code> is provided.</p>
+     * <p><strong>Cloud-only project deprecation gate (effective 2026-05-20):</strong> For projects created on or after 2026-05-20 on Langfuse Cloud, <code>LEGACY_TRACES_OBSERVATIONS</code> and <code>LEGACY_TRACES_AND_ENRICHED_OBSERVATIONS</code> are rejected with HTTP 400. Use <code>OBSERVATIONS_V2</code> for all new integrations. Self-hosted deployments are unaffected.</p>
+     * <p><strong>Cloud-only integration deprecation gate (effective 2026-06-22):</strong> On Langfuse Cloud, legacy export sources are only accepted for blob storage integrations created before 2026-06-22, regardless of project age. Requests that would create a new integration with <code>LEGACY_TRACES_OBSERVATIONS</code> or <code>LEGACY_TRACES_AND_ENRICHED_OBSERVATIONS</code> are rejected with HTTP 400. Use <code>OBSERVATIONS_V2</code> instead. Self-hosted deployments are unaffected.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "exportSource",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage exportSource(Optional<BlobStorageExportSource> exportSource) {
+      this.exportSource = exportSource;
+      return this;
+    }
+
+    /**
+     * <p>Enable gzip compression for exported files (.csv.gz, .json.gz, .jsonl.gz). Defaults to true.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage compressed(Boolean compressed) {
+      this.compressed = Optional.ofNullable(compressed);
+      return this;
+    }
+
+    /**
+     * <p>Enable gzip compression for exported files (.csv.gz, .json.gz, .jsonl.gz). Defaults to true.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "compressed",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage compressed(Optional<Boolean> compressed) {
+      this.compressed = compressed;
+      return this;
+    }
+
+    /**
+     * <p>Custom start date for exports (required when exportMode is FROM_CUSTOM_DATE). Must not be in the future (27 h tolerance for timezone differences).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -461,7 +606,7 @@ public final class CreateBlobStorageIntegrationRequest {
     }
 
     /**
-     * <p>Custom start date for exports (required when exportMode is FROM_CUSTOM_DATE)</p>
+     * <p>Custom start date for exports (required when exportMode is FROM_CUSTOM_DATE). Must not be in the future (27 h tolerance for timezone differences).</p>
      */
     @java.lang.Override
     @JsonSetter(
@@ -567,7 +712,7 @@ public final class CreateBlobStorageIntegrationRequest {
 
     @java.lang.Override
     public CreateBlobStorageIntegrationRequest build() {
-      return new CreateBlobStorageIntegrationRequest(projectId, type, bucketName, endpoint, region, accessKeyId, secretAccessKey, prefix, exportFrequency, enabled, forcePathStyle, fileType, exportMode, exportStartDate, additionalProperties);
+      return new CreateBlobStorageIntegrationRequest(projectId, type, bucketName, endpoint, region, accessKeyId, secretAccessKey, prefix, exportFrequency, enabled, forcePathStyle, fileType, exportMode, exportStartDate, compressed, exportSource, exportFieldGroups, additionalProperties);
     }
 
     @java.lang.Override

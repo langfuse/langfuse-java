@@ -41,12 +41,14 @@ public final class CreateDatasetRunItemRequest {
 
   private final Optional<OffsetDateTime> datasetVersion;
 
+  private final Optional<OffsetDateTime> createdAt;
+
   private final Map<String, Object> additionalProperties;
 
   private CreateDatasetRunItemRequest(String runName, Optional<String> runDescription,
       Optional<Object> metadata, String datasetItemId, Optional<String> observationId,
       Optional<String> traceId, Optional<OffsetDateTime> datasetVersion,
-      Map<String, Object> additionalProperties) {
+      Optional<OffsetDateTime> createdAt, Map<String, Object> additionalProperties) {
     this.runName = runName;
     this.runDescription = runDescription;
     this.metadata = metadata;
@@ -54,6 +56,7 @@ public final class CreateDatasetRunItemRequest {
     this.observationId = observationId;
     this.traceId = traceId;
     this.datasetVersion = datasetVersion;
+    this.createdAt = createdAt;
     this.additionalProperties = additionalProperties;
   }
 
@@ -107,6 +110,14 @@ public final class CreateDatasetRunItemRequest {
     return datasetVersion;
   }
 
+  /**
+   * @return Optional timestamp to set the createdAt field of the dataset run item. If not provided or null, defaults to current timestamp.
+   */
+  @JsonProperty("createdAt")
+  public Optional<OffsetDateTime> getCreatedAt() {
+    return createdAt;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -119,12 +130,12 @@ public final class CreateDatasetRunItemRequest {
   }
 
   private boolean equalTo(CreateDatasetRunItemRequest other) {
-    return runName.equals(other.runName) && runDescription.equals(other.runDescription) && metadata.equals(other.metadata) && datasetItemId.equals(other.datasetItemId) && observationId.equals(other.observationId) && traceId.equals(other.traceId) && datasetVersion.equals(other.datasetVersion);
+    return runName.equals(other.runName) && runDescription.equals(other.runDescription) && metadata.equals(other.metadata) && datasetItemId.equals(other.datasetItemId) && observationId.equals(other.observationId) && traceId.equals(other.traceId) && datasetVersion.equals(other.datasetVersion) && createdAt.equals(other.createdAt);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.runName, this.runDescription, this.metadata, this.datasetItemId, this.observationId, this.traceId, this.datasetVersion);
+    return Objects.hash(this.runName, this.runDescription, this.metadata, this.datasetItemId, this.observationId, this.traceId, this.datasetVersion, this.createdAt);
   }
 
   @java.lang.Override
@@ -187,6 +198,13 @@ public final class CreateDatasetRunItemRequest {
     _FinalStage datasetVersion(Optional<OffsetDateTime> datasetVersion);
 
     _FinalStage datasetVersion(OffsetDateTime datasetVersion);
+
+    /**
+     * <p>Optional timestamp to set the createdAt field of the dataset run item. If not provided or null, defaults to current timestamp.</p>
+     */
+    _FinalStage createdAt(Optional<OffsetDateTime> createdAt);
+
+    _FinalStage createdAt(OffsetDateTime createdAt);
   }
 
   @JsonIgnoreProperties(
@@ -196,6 +214,8 @@ public final class CreateDatasetRunItemRequest {
     private String runName;
 
     private String datasetItemId;
+
+    private Optional<OffsetDateTime> createdAt = Optional.empty();
 
     private Optional<OffsetDateTime> datasetVersion = Optional.empty();
 
@@ -222,6 +242,7 @@ public final class CreateDatasetRunItemRequest {
       observationId(other.getObservationId());
       traceId(other.getTraceId());
       datasetVersion(other.getDatasetVersion());
+      createdAt(other.getCreatedAt());
       return this;
     }
 
@@ -236,6 +257,29 @@ public final class CreateDatasetRunItemRequest {
     @JsonSetter("datasetItemId")
     public _FinalStage datasetItemId(@NotNull String datasetItemId) {
       this.datasetItemId = Objects.requireNonNull(datasetItemId, "datasetItemId must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Optional timestamp to set the createdAt field of the dataset run item. If not provided or null, defaults to current timestamp.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage createdAt(OffsetDateTime createdAt) {
+      this.createdAt = Optional.ofNullable(createdAt);
+      return this;
+    }
+
+    /**
+     * <p>Optional timestamp to set the createdAt field of the dataset run item. If not provided or null, defaults to current timestamp.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "createdAt",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage createdAt(Optional<OffsetDateTime> createdAt) {
+      this.createdAt = createdAt;
       return this;
     }
 
@@ -355,7 +399,7 @@ public final class CreateDatasetRunItemRequest {
 
     @java.lang.Override
     public CreateDatasetRunItemRequest build() {
-      return new CreateDatasetRunItemRequest(runName, runDescription, metadata, datasetItemId, observationId, traceId, datasetVersion, additionalProperties);
+      return new CreateDatasetRunItemRequest(runName, runDescription, metadata, datasetItemId, observationId, traceId, datasetVersion, createdAt, additionalProperties);
     }
 
     @java.lang.Override
