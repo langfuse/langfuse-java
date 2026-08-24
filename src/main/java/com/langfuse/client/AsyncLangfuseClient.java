@@ -9,16 +9,12 @@ import com.langfuse.client.resources.annotationqueues.AsyncAnnotationQueuesClien
 import com.langfuse.client.resources.blobstorageintegrations.AsyncBlobStorageIntegrationsClient;
 import com.langfuse.client.resources.comments.AsyncCommentsClient;
 import com.langfuse.client.resources.datasetitems.AsyncDatasetItemsClient;
-import com.langfuse.client.resources.datasetrunitems.AsyncDatasetRunItemsClient;
 import com.langfuse.client.resources.datasets.AsyncDatasetsClient;
 import com.langfuse.client.resources.health.AsyncHealthClient;
-import com.langfuse.client.resources.ingestion.AsyncIngestionClient;
 import com.langfuse.client.resources.llmconnections.AsyncLlmConnectionsClient;
 import com.langfuse.client.resources.media.AsyncMediaClient;
-import com.langfuse.client.resources.metrics.AsyncMetricsClient;
 import com.langfuse.client.resources.metricsv2.AsyncMetricsV2Client;
 import com.langfuse.client.resources.models.AsyncModelsClient;
-import com.langfuse.client.resources.observations.AsyncObservationsClient;
 import com.langfuse.client.resources.observationsv2.AsyncObservationsV2Client;
 import com.langfuse.client.resources.opentelemetry.AsyncOpentelemetryClient;
 import com.langfuse.client.resources.organizations.AsyncOrganizationsClient;
@@ -28,8 +24,6 @@ import com.langfuse.client.resources.promptversion.AsyncPromptVersionClient;
 import com.langfuse.client.resources.scim.AsyncScimClient;
 import com.langfuse.client.resources.score.AsyncScoreClient;
 import com.langfuse.client.resources.scoreconfigs.AsyncScoreConfigsClient;
-import com.langfuse.client.resources.scorev2.AsyncScoreV2Client;
-import com.langfuse.client.resources.sessions.AsyncSessionsClient;
 import com.langfuse.client.resources.trace.AsyncTraceClient;
 
 public class AsyncLangfuseClient {
@@ -43,13 +37,9 @@ public class AsyncLangfuseClient {
 
   protected final Supplier<AsyncDatasetItemsClient> datasetItemsClient;
 
-  protected final Supplier<AsyncDatasetRunItemsClient> datasetRunItemsClient;
-
   protected final Supplier<AsyncDatasetsClient> datasetsClient;
 
   protected final Supplier<AsyncHealthClient> healthClient;
-
-  protected final Supplier<AsyncIngestionClient> ingestionClient;
 
   protected final Supplier<AsyncLlmConnectionsClient> llmConnectionsClient;
 
@@ -57,13 +47,9 @@ public class AsyncLangfuseClient {
 
   protected final Supplier<AsyncMetricsV2Client> metricsV2Client;
 
-  protected final Supplier<AsyncMetricsClient> metricsClient;
-
   protected final Supplier<AsyncModelsClient> modelsClient;
 
   protected final Supplier<AsyncObservationsV2Client> observationsV2Client;
-
-  protected final Supplier<AsyncObservationsClient> observationsClient;
 
   protected final Supplier<AsyncOpentelemetryClient> opentelemetryClient;
 
@@ -79,11 +65,7 @@ public class AsyncLangfuseClient {
 
   protected final Supplier<AsyncScoreConfigsClient> scoreConfigsClient;
 
-  protected final Supplier<AsyncScoreV2Client> scoreV2Client;
-
   protected final Supplier<AsyncScoreClient> scoreClient;
-
-  protected final Supplier<AsyncSessionsClient> sessionsClient;
 
   protected final Supplier<AsyncTraceClient> traceClient;
 
@@ -93,17 +75,13 @@ public class AsyncLangfuseClient {
     this.blobStorageIntegrationsClient = Suppliers.memoize(() -> new AsyncBlobStorageIntegrationsClient(clientOptions));
     this.commentsClient = Suppliers.memoize(() -> new AsyncCommentsClient(clientOptions));
     this.datasetItemsClient = Suppliers.memoize(() -> new AsyncDatasetItemsClient(clientOptions));
-    this.datasetRunItemsClient = Suppliers.memoize(() -> new AsyncDatasetRunItemsClient(clientOptions));
     this.datasetsClient = Suppliers.memoize(() -> new AsyncDatasetsClient(clientOptions));
     this.healthClient = Suppliers.memoize(() -> new AsyncHealthClient(clientOptions));
-    this.ingestionClient = Suppliers.memoize(() -> new AsyncIngestionClient(clientOptions));
     this.llmConnectionsClient = Suppliers.memoize(() -> new AsyncLlmConnectionsClient(clientOptions));
     this.mediaClient = Suppliers.memoize(() -> new AsyncMediaClient(clientOptions));
     this.metricsV2Client = Suppliers.memoize(() -> new AsyncMetricsV2Client(clientOptions));
-    this.metricsClient = Suppliers.memoize(() -> new AsyncMetricsClient(clientOptions));
     this.modelsClient = Suppliers.memoize(() -> new AsyncModelsClient(clientOptions));
     this.observationsV2Client = Suppliers.memoize(() -> new AsyncObservationsV2Client(clientOptions));
-    this.observationsClient = Suppliers.memoize(() -> new AsyncObservationsClient(clientOptions));
     this.opentelemetryClient = Suppliers.memoize(() -> new AsyncOpentelemetryClient(clientOptions));
     this.organizationsClient = Suppliers.memoize(() -> new AsyncOrganizationsClient(clientOptions));
     this.projectsClient = Suppliers.memoize(() -> new AsyncProjectsClient(clientOptions));
@@ -111,9 +89,7 @@ public class AsyncLangfuseClient {
     this.promptsClient = Suppliers.memoize(() -> new AsyncPromptsClient(clientOptions));
     this.scimClient = Suppliers.memoize(() -> new AsyncScimClient(clientOptions));
     this.scoreConfigsClient = Suppliers.memoize(() -> new AsyncScoreConfigsClient(clientOptions));
-    this.scoreV2Client = Suppliers.memoize(() -> new AsyncScoreV2Client(clientOptions));
     this.scoreClient = Suppliers.memoize(() -> new AsyncScoreClient(clientOptions));
-    this.sessionsClient = Suppliers.memoize(() -> new AsyncSessionsClient(clientOptions));
     this.traceClient = Suppliers.memoize(() -> new AsyncTraceClient(clientOptions));
   }
 
@@ -133,20 +109,12 @@ public class AsyncLangfuseClient {
     return this.datasetItemsClient.get();
   }
 
-  public AsyncDatasetRunItemsClient datasetRunItems() {
-    return this.datasetRunItemsClient.get();
-  }
-
   public AsyncDatasetsClient datasets() {
     return this.datasetsClient.get();
   }
 
   public AsyncHealthClient health() {
     return this.healthClient.get();
-  }
-
-  public AsyncIngestionClient ingestion() {
-    return this.ingestionClient.get();
   }
 
   public AsyncLlmConnectionsClient llmConnections() {
@@ -161,20 +129,12 @@ public class AsyncLangfuseClient {
     return this.metricsV2Client.get();
   }
 
-  public AsyncMetricsClient metrics() {
-    return this.metricsClient.get();
-  }
-
   public AsyncModelsClient models() {
     return this.modelsClient.get();
   }
 
   public AsyncObservationsV2Client observationsV2() {
     return this.observationsV2Client.get();
-  }
-
-  public AsyncObservationsClient observations() {
-    return this.observationsClient.get();
   }
 
   public AsyncOpentelemetryClient opentelemetry() {
@@ -205,16 +165,8 @@ public class AsyncLangfuseClient {
     return this.scoreConfigsClient.get();
   }
 
-  public AsyncScoreV2Client scoreV2() {
-    return this.scoreV2Client.get();
-  }
-
   public AsyncScoreClient score() {
     return this.scoreClient.get();
-  }
-
-  public AsyncSessionsClient sessions() {
-    return this.sessionsClient.get();
   }
 
   public AsyncTraceClient trace() {

@@ -11,16 +11,12 @@ import com.langfuse.client.resources.annotationqueues.AnnotationQueuesClient;
 import com.langfuse.client.resources.blobstorageintegrations.BlobStorageIntegrationsClient;
 import com.langfuse.client.resources.comments.CommentsClient;
 import com.langfuse.client.resources.datasetitems.DatasetItemsClient;
-import com.langfuse.client.resources.datasetrunitems.DatasetRunItemsClient;
 import com.langfuse.client.resources.datasets.DatasetsClient;
 import com.langfuse.client.resources.health.HealthClient;
-import com.langfuse.client.resources.ingestion.IngestionClient;
 import com.langfuse.client.resources.llmconnections.LlmConnectionsClient;
 import com.langfuse.client.resources.media.MediaClient;
-import com.langfuse.client.resources.metrics.MetricsClient;
 import com.langfuse.client.resources.metricsv2.MetricsV2Client;
 import com.langfuse.client.resources.models.ModelsClient;
-import com.langfuse.client.resources.observations.ObservationsClient;
 import com.langfuse.client.resources.observationsv2.ObservationsV2Client;
 import com.langfuse.client.resources.opentelemetry.OpentelemetryClient;
 import com.langfuse.client.resources.organizations.OrganizationsClient;
@@ -30,8 +26,6 @@ import com.langfuse.client.resources.promptversion.PromptVersionClient;
 import com.langfuse.client.resources.scim.ScimClient;
 import com.langfuse.client.resources.score.ScoreClient;
 import com.langfuse.client.resources.scoreconfigs.ScoreConfigsClient;
-import com.langfuse.client.resources.scorev2.ScoreV2Client;
-import com.langfuse.client.resources.sessions.SessionsClient;
 import com.langfuse.client.resources.trace.TraceClient;
 
 public class LangfuseClient {
@@ -45,13 +39,9 @@ public class LangfuseClient {
 
   protected final Supplier<DatasetItemsClient> datasetItemsClient;
 
-  protected final Supplier<DatasetRunItemsClient> datasetRunItemsClient;
-
   protected final Supplier<DatasetsClient> datasetsClient;
 
   protected final Supplier<HealthClient> healthClient;
-
-  protected final Supplier<IngestionClient> ingestionClient;
 
   protected final Supplier<LlmConnectionsClient> llmConnectionsClient;
 
@@ -59,13 +49,9 @@ public class LangfuseClient {
 
   protected final Supplier<MetricsV2Client> metricsV2Client;
 
-  protected final Supplier<MetricsClient> metricsClient;
-
   protected final Supplier<ModelsClient> modelsClient;
 
   protected final Supplier<ObservationsV2Client> observationsV2Client;
-
-  protected final Supplier<ObservationsClient> observationsClient;
 
   protected final Supplier<OpentelemetryClient> opentelemetryClient;
 
@@ -81,11 +67,7 @@ public class LangfuseClient {
 
   protected final Supplier<ScoreConfigsClient> scoreConfigsClient;
 
-  protected final Supplier<ScoreV2Client> scoreV2Client;
-
   protected final Supplier<ScoreClient> scoreClient;
-
-  protected final Supplier<SessionsClient> sessionsClient;
 
   protected final Supplier<TraceClient> traceClient;
 
@@ -95,17 +77,13 @@ public class LangfuseClient {
     this.blobStorageIntegrationsClient = Suppliers.memoize(() -> new BlobStorageIntegrationsClient(clientOptions));
     this.commentsClient = Suppliers.memoize(() -> new CommentsClient(clientOptions));
     this.datasetItemsClient = Suppliers.memoize(() -> new DatasetItemsClient(clientOptions));
-    this.datasetRunItemsClient = Suppliers.memoize(() -> new DatasetRunItemsClient(clientOptions));
     this.datasetsClient = Suppliers.memoize(() -> new DatasetsClient(clientOptions));
     this.healthClient = Suppliers.memoize(() -> new HealthClient(clientOptions));
-    this.ingestionClient = Suppliers.memoize(() -> new IngestionClient(clientOptions));
     this.llmConnectionsClient = Suppliers.memoize(() -> new LlmConnectionsClient(clientOptions));
     this.mediaClient = Suppliers.memoize(() -> new MediaClient(clientOptions));
     this.metricsV2Client = Suppliers.memoize(() -> new MetricsV2Client(clientOptions));
-    this.metricsClient = Suppliers.memoize(() -> new MetricsClient(clientOptions));
     this.modelsClient = Suppliers.memoize(() -> new ModelsClient(clientOptions));
     this.observationsV2Client = Suppliers.memoize(() -> new ObservationsV2Client(clientOptions));
-    this.observationsClient = Suppliers.memoize(() -> new ObservationsClient(clientOptions));
     this.opentelemetryClient = Suppliers.memoize(() -> new OpentelemetryClient(clientOptions));
     this.organizationsClient = Suppliers.memoize(() -> new OrganizationsClient(clientOptions));
     this.projectsClient = Suppliers.memoize(() -> new ProjectsClient(clientOptions));
@@ -113,9 +91,7 @@ public class LangfuseClient {
     this.promptsClient = Suppliers.memoize(() -> new PromptsClient(clientOptions));
     this.scimClient = Suppliers.memoize(() -> new ScimClient(clientOptions));
     this.scoreConfigsClient = Suppliers.memoize(() -> new ScoreConfigsClient(clientOptions));
-    this.scoreV2Client = Suppliers.memoize(() -> new ScoreV2Client(clientOptions));
     this.scoreClient = Suppliers.memoize(() -> new ScoreClient(clientOptions));
-    this.sessionsClient = Suppliers.memoize(() -> new SessionsClient(clientOptions));
     this.traceClient = Suppliers.memoize(() -> new TraceClient(clientOptions));
   }
 
@@ -135,20 +111,12 @@ public class LangfuseClient {
     return this.datasetItemsClient.get();
   }
 
-  public DatasetRunItemsClient datasetRunItems() {
-    return this.datasetRunItemsClient.get();
-  }
-
   public DatasetsClient datasets() {
     return this.datasetsClient.get();
   }
 
   public HealthClient health() {
     return this.healthClient.get();
-  }
-
-  public IngestionClient ingestion() {
-    return this.ingestionClient.get();
   }
 
   public LlmConnectionsClient llmConnections() {
@@ -163,20 +131,12 @@ public class LangfuseClient {
     return this.metricsV2Client.get();
   }
 
-  public MetricsClient metrics() {
-    return this.metricsClient.get();
-  }
-
   public ModelsClient models() {
     return this.modelsClient.get();
   }
 
   public ObservationsV2Client observationsV2() {
     return this.observationsV2Client.get();
-  }
-
-  public ObservationsClient observations() {
-    return this.observationsClient.get();
   }
 
   public OpentelemetryClient opentelemetry() {
@@ -207,16 +167,8 @@ public class LangfuseClient {
     return this.scoreConfigsClient.get();
   }
 
-  public ScoreV2Client scoreV2() {
-    return this.scoreV2Client.get();
-  }
-
   public ScoreClient score() {
     return this.scoreClient.get();
-  }
-
-  public SessionsClient sessions() {
-    return this.sessionsClient.get();
   }
 
   public TraceClient trace() {

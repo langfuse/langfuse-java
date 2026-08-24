@@ -9,12 +9,8 @@ import com.langfuse.client.core.RequestOptions;
 import java.lang.String;
 import java.util.concurrent.CompletableFuture;
 import com.langfuse.client.resources.commons.types.Dataset;
-import com.langfuse.client.resources.commons.types.DatasetRunWithItems;
-import com.langfuse.client.resources.datasets.requests.GetDatasetRunsRequest;
 import com.langfuse.client.resources.datasets.requests.GetDatasetsRequest;
 import com.langfuse.client.resources.datasets.types.CreateDatasetRequest;
-import com.langfuse.client.resources.datasets.types.DeleteDatasetRunResponse;
-import com.langfuse.client.resources.datasets.types.PaginatedDatasetRuns;
 import com.langfuse.client.resources.datasets.types.PaginatedDatasets;
 
 public class AsyncDatasetsClient {
@@ -90,66 +86,5 @@ public class AsyncDatasetsClient {
   public CompletableFuture<Dataset> create(CreateDatasetRequest request,
       RequestOptions requestOptions) {
     return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
-  }
-
-  /**
-   * Get a dataset run and its items
-   */
-  public CompletableFuture<DatasetRunWithItems> getRun(String datasetName, String runName) {
-    return this.rawClient.getRun(datasetName, runName).thenApply(response -> response.body());
-  }
-
-  /**
-   * Get a dataset run and its items
-   */
-  public CompletableFuture<DatasetRunWithItems> getRun(String datasetName, String runName,
-      RequestOptions requestOptions) {
-    return this.rawClient.getRun(datasetName, runName, requestOptions).thenApply(response -> response.body());
-  }
-
-  /**
-   * Delete a dataset run and all its run items. This action is irreversible.
-   */
-  public CompletableFuture<DeleteDatasetRunResponse> deleteRun(String datasetName, String runName) {
-    return this.rawClient.deleteRun(datasetName, runName).thenApply(response -> response.body());
-  }
-
-  /**
-   * Delete a dataset run and all its run items. This action is irreversible.
-   */
-  public CompletableFuture<DeleteDatasetRunResponse> deleteRun(String datasetName, String runName,
-      RequestOptions requestOptions) {
-    return this.rawClient.deleteRun(datasetName, runName, requestOptions).thenApply(response -> response.body());
-  }
-
-  /**
-   * Get dataset runs
-   */
-  public CompletableFuture<PaginatedDatasetRuns> getRuns(String datasetName) {
-    return this.rawClient.getRuns(datasetName).thenApply(response -> response.body());
-  }
-
-  /**
-   * Get dataset runs
-   */
-  public CompletableFuture<PaginatedDatasetRuns> getRuns(String datasetName,
-      RequestOptions requestOptions) {
-    return this.rawClient.getRuns(datasetName, requestOptions).thenApply(response -> response.body());
-  }
-
-  /**
-   * Get dataset runs
-   */
-  public CompletableFuture<PaginatedDatasetRuns> getRuns(String datasetName,
-      GetDatasetRunsRequest request) {
-    return this.rawClient.getRuns(datasetName, request).thenApply(response -> response.body());
-  }
-
-  /**
-   * Get dataset runs
-   */
-  public CompletableFuture<PaginatedDatasetRuns> getRuns(String datasetName,
-      GetDatasetRunsRequest request, RequestOptions requestOptions) {
-    return this.rawClient.getRuns(datasetName, request, requestOptions).thenApply(response -> response.body());
   }
 }

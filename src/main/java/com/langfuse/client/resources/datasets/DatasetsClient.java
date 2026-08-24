@@ -8,12 +8,8 @@ import com.langfuse.client.core.ClientOptions;
 import com.langfuse.client.core.RequestOptions;
 import java.lang.String;
 import com.langfuse.client.resources.commons.types.Dataset;
-import com.langfuse.client.resources.commons.types.DatasetRunWithItems;
-import com.langfuse.client.resources.datasets.requests.GetDatasetRunsRequest;
 import com.langfuse.client.resources.datasets.requests.GetDatasetsRequest;
 import com.langfuse.client.resources.datasets.types.CreateDatasetRequest;
-import com.langfuse.client.resources.datasets.types.DeleteDatasetRunResponse;
-import com.langfuse.client.resources.datasets.types.PaginatedDatasetRuns;
 import com.langfuse.client.resources.datasets.types.PaginatedDatasets;
 
 public class DatasetsClient {
@@ -87,64 +83,5 @@ public class DatasetsClient {
    */
   public Dataset create(CreateDatasetRequest request, RequestOptions requestOptions) {
     return this.rawClient.create(request, requestOptions).body();
-  }
-
-  /**
-   * Get a dataset run and its items
-   */
-  public DatasetRunWithItems getRun(String datasetName, String runName) {
-    return this.rawClient.getRun(datasetName, runName).body();
-  }
-
-  /**
-   * Get a dataset run and its items
-   */
-  public DatasetRunWithItems getRun(String datasetName, String runName,
-      RequestOptions requestOptions) {
-    return this.rawClient.getRun(datasetName, runName, requestOptions).body();
-  }
-
-  /**
-   * Delete a dataset run and all its run items. This action is irreversible.
-   */
-  public DeleteDatasetRunResponse deleteRun(String datasetName, String runName) {
-    return this.rawClient.deleteRun(datasetName, runName).body();
-  }
-
-  /**
-   * Delete a dataset run and all its run items. This action is irreversible.
-   */
-  public DeleteDatasetRunResponse deleteRun(String datasetName, String runName,
-      RequestOptions requestOptions) {
-    return this.rawClient.deleteRun(datasetName, runName, requestOptions).body();
-  }
-
-  /**
-   * Get dataset runs
-   */
-  public PaginatedDatasetRuns getRuns(String datasetName) {
-    return this.rawClient.getRuns(datasetName).body();
-  }
-
-  /**
-   * Get dataset runs
-   */
-  public PaginatedDatasetRuns getRuns(String datasetName, RequestOptions requestOptions) {
-    return this.rawClient.getRuns(datasetName, requestOptions).body();
-  }
-
-  /**
-   * Get dataset runs
-   */
-  public PaginatedDatasetRuns getRuns(String datasetName, GetDatasetRunsRequest request) {
-    return this.rawClient.getRuns(datasetName, request).body();
-  }
-
-  /**
-   * Get dataset runs
-   */
-  public PaginatedDatasetRuns getRuns(String datasetName, GetDatasetRunsRequest request,
-      RequestOptions requestOptions) {
-    return this.rawClient.getRuns(datasetName, request, requestOptions).body();
   }
 }

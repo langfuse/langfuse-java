@@ -8,11 +8,8 @@ import com.langfuse.client.core.ClientOptions;
 import com.langfuse.client.core.RequestOptions;
 import java.lang.String;
 import java.util.concurrent.CompletableFuture;
-import com.langfuse.client.resources.commons.types.TraceWithFullDetails;
 import com.langfuse.client.resources.trace.requests.DeleteTracesRequest;
-import com.langfuse.client.resources.trace.requests.GetTracesRequest;
 import com.langfuse.client.resources.trace.types.DeleteTraceResponse;
-import com.langfuse.client.resources.trace.types.Traces;
 
 public class AsyncTraceClient {
   protected final ClientOptions clientOptions;
@@ -32,21 +29,6 @@ public class AsyncTraceClient {
   }
 
   /**
-   * Get a specific trace
-   */
-  public CompletableFuture<TraceWithFullDetails> get(String traceId) {
-    return this.rawClient.get(traceId).thenApply(response -> response.body());
-  }
-
-  /**
-   * Get a specific trace
-   */
-  public CompletableFuture<TraceWithFullDetails> get(String traceId,
-      RequestOptions requestOptions) {
-    return this.rawClient.get(traceId, requestOptions).thenApply(response -> response.body());
-  }
-
-  /**
    * Delete a specific trace
    */
   public CompletableFuture<DeleteTraceResponse> delete(String traceId) {
@@ -59,34 +41,6 @@ public class AsyncTraceClient {
   public CompletableFuture<DeleteTraceResponse> delete(String traceId,
       RequestOptions requestOptions) {
     return this.rawClient.delete(traceId, requestOptions).thenApply(response -> response.body());
-  }
-
-  /**
-   * Get list of traces
-   */
-  public CompletableFuture<Traces> list() {
-    return this.rawClient.list().thenApply(response -> response.body());
-  }
-
-  /**
-   * Get list of traces
-   */
-  public CompletableFuture<Traces> list(RequestOptions requestOptions) {
-    return this.rawClient.list(requestOptions).thenApply(response -> response.body());
-  }
-
-  /**
-   * Get list of traces
-   */
-  public CompletableFuture<Traces> list(GetTracesRequest request) {
-    return this.rawClient.list(request).thenApply(response -> response.body());
-  }
-
-  /**
-   * Get list of traces
-   */
-  public CompletableFuture<Traces> list(GetTracesRequest request, RequestOptions requestOptions) {
-    return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
   }
 
   /**

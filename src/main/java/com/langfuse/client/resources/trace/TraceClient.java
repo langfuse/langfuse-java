@@ -7,11 +7,8 @@ package com.langfuse.client.resources.trace;
 import com.langfuse.client.core.ClientOptions;
 import com.langfuse.client.core.RequestOptions;
 import java.lang.String;
-import com.langfuse.client.resources.commons.types.TraceWithFullDetails;
 import com.langfuse.client.resources.trace.requests.DeleteTracesRequest;
-import com.langfuse.client.resources.trace.requests.GetTracesRequest;
 import com.langfuse.client.resources.trace.types.DeleteTraceResponse;
-import com.langfuse.client.resources.trace.types.Traces;
 
 public class TraceClient {
   protected final ClientOptions clientOptions;
@@ -31,20 +28,6 @@ public class TraceClient {
   }
 
   /**
-   * Get a specific trace
-   */
-  public TraceWithFullDetails get(String traceId) {
-    return this.rawClient.get(traceId).body();
-  }
-
-  /**
-   * Get a specific trace
-   */
-  public TraceWithFullDetails get(String traceId, RequestOptions requestOptions) {
-    return this.rawClient.get(traceId, requestOptions).body();
-  }
-
-  /**
    * Delete a specific trace
    */
   public DeleteTraceResponse delete(String traceId) {
@@ -56,34 +39,6 @@ public class TraceClient {
    */
   public DeleteTraceResponse delete(String traceId, RequestOptions requestOptions) {
     return this.rawClient.delete(traceId, requestOptions).body();
-  }
-
-  /**
-   * Get list of traces
-   */
-  public Traces list() {
-    return this.rawClient.list().body();
-  }
-
-  /**
-   * Get list of traces
-   */
-  public Traces list(RequestOptions requestOptions) {
-    return this.rawClient.list(requestOptions).body();
-  }
-
-  /**
-   * Get list of traces
-   */
-  public Traces list(GetTracesRequest request) {
-    return this.rawClient.list(request).body();
-  }
-
-  /**
-   * Get list of traces
-   */
-  public Traces list(GetTracesRequest request, RequestOptions requestOptions) {
-    return this.rawClient.list(request, requestOptions).body();
   }
 
   /**
