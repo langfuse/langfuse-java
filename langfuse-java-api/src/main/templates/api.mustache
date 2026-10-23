@@ -1,0 +1,127 @@
+{{#operations}}
+package {{package}}.{{classVarName}};
+{{/operations}}
+
+{{#imports}}
+import {{import}};
+{{/imports}}
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+{{#operations}}
+/**
+ * Langfuse {{classname}} - synchronous API interface.
+ */
+public interface {{classname}} {
+{{#operation}}
+  {{#vendorExtensions.x-group-parameters}}
+  {{#hasParams}}
+
+    /**
+     * {{summary}}
+     *{{#notes}}
+     * <p>{{notes}}{{/notes}}
+     *
+     * @param apiRequest {@link API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request}
+    {{#returnType}}
+     * @return {{{returnType}}}
+    {{/returnType}}
+     */
+    {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}void{{/returnType}} {{operationId}}(API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request apiRequest);
+
+    /**
+     * Request object for {@link #{{operationId}}(API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request)}.
+     */
+    final class API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request {
+      {{#allParams}}
+        private {{{dataType}}} {{paramName}}{{#isArray}} = new java.util.ArrayList<>(){{/isArray}}{{#isMap}} = new java.util.HashMap<>(){{/isMap}};
+      {{/allParams}}
+
+        private API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request(Builder builder) {
+          {{#allParams}}
+            this.{{paramName}} = builder.{{paramName}};
+          {{/allParams}}
+        }
+      {{#allParams}}
+
+        /**
+         * @return {{description}}
+         */
+        public {{{dataType}}} {{paramName}}() {
+            return {{paramName}};
+        }
+      {{/allParams}}
+
+        /**
+         * Creates a new builder.
+         *
+         * @return a new {@link Builder}
+         */
+        public static Builder newBuilder() {
+            return new Builder();
+        }
+
+        /**
+         * Builder for {@link API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request}.
+         */
+        public static class Builder {
+          {{#allParams}}
+            private {{{dataType}}} {{paramName}}{{#isArray}} = new java.util.ArrayList<>(){{/isArray}}{{#isMap}} = new java.util.HashMap<>(){{/isMap}};
+          {{/allParams}}
+          {{#allParams}}
+
+            /**
+             * @param {{paramName}} {{description}}
+             * @return this builder
+             */
+            public Builder {{paramName}}({{{dataType}}} {{paramName}}) {
+                this.{{paramName}} = {{paramName}};
+                return this;
+            }
+          {{/allParams}}
+
+            /**
+             * Builds the request object.
+             *
+             * @return the request
+             */
+            public API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request build() {
+                return new API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request(this);
+            }
+        }
+    }
+  {{/hasParams}}
+  {{^hasParams}}
+
+    /**
+     * {{summary}}
+     *{{#notes}}
+     * <p>{{notes}}{{/notes}}
+     *
+    {{#returnType}}
+     * @return {{{returnType}}}
+    {{/returnType}}
+     */
+    {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}void{{/returnType}} {{operationId}}();
+  {{/hasParams}}
+  {{/vendorExtensions.x-group-parameters}}
+  {{^vendorExtensions.x-group-parameters}}
+
+    /**
+     * {{summary}}
+     *{{#notes}}
+     * <p>{{notes}}{{/notes}}
+     *
+    {{#allParams}}
+     * @param {{paramName}} {{description}}{{#required}} (required){{/required}}{{^required}} (optional){{/required}}
+    {{/allParams}}
+    {{#returnType}}
+     * @return {{{returnType}}}
+    {{/returnType}}
+     */
+    {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}void{{/returnType}} {{operationId}}({{#allParams}}{{{dataType}}} {{paramName}}{{^-last}}, {{/-last}}{{/allParams}});
+  {{/vendorExtensions.x-group-parameters}}
+{{/operation}}
+}
+{{/operations}}
