@@ -1,0 +1,78 @@
+{{#operations}}
+package {{package}}.{{classVarName}}.async;
+{{/operations}}
+
+{{#imports}}
+import {{import}};
+{{/imports}}
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletionStage;
+
+{{#operations}}
+/**
+ * Langfuse {{classname}} - asynchronous API interface.
+ *
+ * <p>All methods return {@link CompletionStage} to support non-blocking usage
+ * and integration with reactive frameworks.
+ */
+public interface {{classname}} {
+{{#operation}}
+  {{#vendorExtensions.x-group-parameters}}
+  {{#hasParams}}
+
+    /**
+     * {{summary}}
+     *{{#notes}}
+     * <p>{{notes}}{{/notes}}
+     *
+     * @param apiRequest {@link com.langfuse.api.{{classVarName}}.{{classname}}.API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request}
+    {{#returnType}}
+     * @return a {@link CompletionStage} containing {{{returnType}}}
+    {{/returnType}}
+    {{^returnType}}
+     * @return a {@link CompletionStage} completing when the operation finishes
+    {{/returnType}}
+     */
+    {{#returnType}}CompletionStage<{{{returnType}}}>{{/returnType}}{{^returnType}}CompletionStage<Void>{{/returnType}} {{operationId}}(com.langfuse.api.{{classVarName}}.{{classname}}.API{{#lambda.titlecase}}{{operationId}}{{/lambda.titlecase}}Request apiRequest);
+  {{/hasParams}}
+  {{^hasParams}}
+
+    /**
+     * {{summary}}
+     *{{#notes}}
+     * <p>{{notes}}{{/notes}}
+     *
+    {{#returnType}}
+     * @return a {@link CompletionStage} containing {{{returnType}}}
+    {{/returnType}}
+    {{^returnType}}
+     * @return a {@link CompletionStage} completing when the operation finishes
+    {{/returnType}}
+     */
+    {{#returnType}}CompletionStage<{{{returnType}}}>{{/returnType}}{{^returnType}}CompletionStage<Void>{{/returnType}} {{operationId}}();
+  {{/hasParams}}
+  {{/vendorExtensions.x-group-parameters}}
+  {{^vendorExtensions.x-group-parameters}}
+
+    /**
+     * {{summary}}
+     *{{#notes}}
+     * <p>{{notes}}{{/notes}}
+     *
+    {{#allParams}}
+     * @param {{paramName}} {{description}}{{#required}} (required){{/required}}{{^required}} (optional){{/required}}
+    {{/allParams}}
+    {{#returnType}}
+     * @return a {@link CompletionStage} containing {{{returnType}}}
+    {{/returnType}}
+    {{^returnType}}
+     * @return a {@link CompletionStage} completing when the operation finishes
+    {{/returnType}}
+     */
+    {{#returnType}}CompletionStage<{{{returnType}}}>{{/returnType}}{{^returnType}}CompletionStage<Void>{{/returnType}} {{operationId}}({{#allParams}}{{{dataType}}} {{paramName}}{{^-last}}, {{/-last}}{{/allParams}});
+  {{/vendorExtensions.x-group-parameters}}
+{{/operation}}
+}
+{{/operations}}
