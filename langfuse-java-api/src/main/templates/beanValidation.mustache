@@ -1,0 +1,11 @@
+{{#required}}
+{{^isReadOnly}}
+  @NotNull
+{{/isReadOnly}}
+{{/required}}
+{{^isContainer}}
+{{^isPrimitiveType}}
+  @Valid
+{{/isPrimitiveType}}
+{{/isContainer}}
+{{>beanValidationCore}}
